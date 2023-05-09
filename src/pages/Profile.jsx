@@ -1,0 +1,186 @@
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Dialog,
+  DialogContent,
+  Grid,
+  Rating,
+  Slide,
+  Stack,
+  Typography,
+} from "@mui/material";
+import React from "react";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import TtyIcon from "@mui/icons-material/Tty";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import EditProfile from "../components/profile/EditProfile";
+import LeftBarProfile from "../components/profile/LeftBarProfile";
+import VideoProfileContent from "../components/profile/VideoProfileContent";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+
+function Profile() {
+  //For Open/Close Edit Profile Modal
+  const [openEditProfile, setOpenEditProfile] = React.useState(false);
+
+  const handleClickOpenEditProfile = () => {
+    setOpenEditProfile(true);
+  };
+
+  const handleCloseEditProfile = () => {
+    setOpenEditProfile(false);
+  };
+
+  return (
+    <Box>
+      <Box sx={{ position: "relative" }}>
+        <CardMedia
+          sx={{ height: 400 }}
+          image="https://images.unsplash.com/photo-1682687220211-c471118c9e92?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+          title="green iguana"
+        />
+
+        <Avatar
+          alt="Remy Sharp"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
+          sx={{
+            width: { xs: 150, sm: 160, md: 180 },
+            height: { xs: 150, sm: 160, md: 180 },
+            position: "absolute",
+            top: 280,
+            left: { xs: "50%", sm: "50%", md: "17%" },
+            transform: "translateX(-50%)",
+            zIndex: 100,
+            border: "5px solid white",
+            boxShadow: 10,
+          }}
+        />
+        <Card sx={{ width: "100%" }}>
+          <Grid
+            sx={{
+              marginLeft: {
+                xs: "0%",
+                sm: "0%",
+                md: "26%",
+                lg: "26%",
+                xl: "26%",
+              },
+              marginTop: { xs: 5, sm: 7, md: 2, lg: 2 },
+            }}
+          >
+            <CardContent>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid container spacing={2}>
+                  <Grid xs={12}>
+                    <Stack
+                      direction={{ xs: "column", sm: "column", md: "row" }}
+                      justifyContent={{ xs: "center", md: "flex-start" }}
+                      alignItems={{ xs: "center", md: "flex-start" }}
+                      spacing={1}
+                    >
+                      <Grid md={9}>
+                        <Typography gutterBottom variant="h5" component="div">
+                          Jade Lester Ballester
+                        </Typography>
+                      </Grid>
+                      <Grid md={3}>
+                        <Button
+                          variant="outlined"
+                          sx={{ borderRadius: 10 }}
+                          onClick={handleClickOpenEditProfile}
+                        >
+                          Edit Profile
+                        </Button>
+                      </Grid>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12}>
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      justifyContent={{ xs: "center", md: "flex-start" }}
+                      alignItems={{ xs: "center", md: "flex-start" }}
+                      spacing={2}
+                      sx={{ pt: 1 }}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        Full Stack Java Developer
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                  <Grid xs={12}>
+                    <Stack
+                      direction={{ xs: "column", sm: "row" }}
+                      justifyContent={{ xs: "center", md: "flex-start" }}
+                      alignItems={{ xs: "center", md: "flex-start" }}
+                      spacing={2}
+                      sx={{ pt: 3 }}
+                    >
+                      <Typography variant="caption">
+                        <LocationOnIcon />
+                        Camarines Sur, Iriga City
+                      </Typography>
+                      <Typography variant="caption">
+                        <TtyIcon />
+                        +63 9051438786
+                      </Typography>
+                      <Typography variant="caption">
+                        <AlternateEmailIcon />
+                        jadelesterballester@gmail.com
+                      </Typography>
+                    </Stack>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Grid>
+        </Card>
+        {/* Dialog For Edit Profile */}
+        <Dialog
+          open={openEditProfile}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleCloseEditProfile}
+          aria-describedby="alert-dialog-slide-description-2"
+          PaperProps={{
+            style: { borderRadius: 20 },
+          }}
+          fullWidth={true}
+          maxWidth={"lg"}
+        >
+          <DialogContent>
+            <EditProfile closeEditProfile={handleCloseEditProfile} />
+          </DialogContent>
+        </Dialog>
+      </Box>
+      <Box>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-evenly"
+          sx={{
+            marginLeft: { xs: "0%", sm: 0, md: "10%" },
+            marginRight: { xs: "0%", sm: 0, md: "10%" },
+            spacing: { xs: 0, sm: 0, md: 2 },
+          }}
+          alignItems="center"
+        >
+          <LeftBarProfile />
+          <VideoProfileContent />
+        </Stack>
+      </Box>
+    </Box>
+  );
+}
+
+export default Profile;
