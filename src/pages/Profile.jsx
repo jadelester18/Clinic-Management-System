@@ -21,10 +21,21 @@ import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import EditProfile from "../components/profile/EditProfile";
 import LeftBarProfile from "../components/profile/LeftBarProfile";
 import VideoProfileContent from "../components/profile/VideoProfileContent";
+import styled from "@mui/system/styled";
+import Navbar from "../components/navbar/Navbar";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
+
+const Item = styled("div")(({ theme }) => ({
+  // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  // border: "1px solid",
+  borderColor: theme.palette.mode === "dark" ? "#444d58" : "#ced7e0",
+  // padding: theme.spacing(1),
+  // borderRadius: "4px",
+  // textAlign: "center",
+}));
 
 function Profile() {
   //For Open/Close Edit Profile Modal
@@ -91,18 +102,22 @@ function Profile() {
                       spacing={1}
                     >
                       <Grid md={9}>
-                        <Typography gutterBottom variant="h5" component="div">
-                          Jade Lester Ballester
-                        </Typography>
+                        <Item>
+                          <Typography gutterBottom variant="h5" component="div">
+                            Jade Lester Ballester
+                          </Typography>
+                        </Item>
                       </Grid>
                       <Grid md={3}>
-                        <Button
-                          variant="outlined"
-                          sx={{ borderRadius: 10 }}
-                          onClick={handleClickOpenEditProfile}
-                        >
-                          Edit Profile
-                        </Button>
+                        <Item>
+                          <Button
+                            variant="outlined"
+                            sx={{ borderRadius: 10 }}
+                            onClick={handleClickOpenEditProfile}
+                          >
+                            Edit Profile
+                          </Button>
+                        </Item>
                       </Grid>
                     </Stack>
                   </Grid>
@@ -164,16 +179,15 @@ function Profile() {
           </DialogContent>
         </Dialog>
       </Box>
-      <Box>
+      <Box mt={3}>
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          justifyContent="space-evenly"
+          justifyContent="space-between"
           sx={{
             marginLeft: { xs: "0%", sm: 0, md: "10%" },
             marginRight: { xs: "0%", sm: 0, md: "10%" },
             spacing: { xs: 0, sm: 0, md: 2 },
           }}
-          alignItems="center"
         >
           <LeftBarProfile />
           <VideoProfileContent />

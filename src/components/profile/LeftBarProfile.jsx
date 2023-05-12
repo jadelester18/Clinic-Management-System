@@ -12,7 +12,7 @@ const LeftBarProfile = () => {
       <Stack
         direction="column"
         // justifyContent="center"
-        alignItems="flex-start"
+        alignItems={{ xs: "center", md: "flex-start" }}
         spacing={2}
       >
         <Typography variant="caption">
@@ -36,11 +36,11 @@ const LeftBarProfile = () => {
         </Button>
         <Stack
           direction={{ xs: "column", sm: "row" }}
-          // justifyContent="center"
-          alignItems="flex-start"
-          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+          spacing={{ xs: 0, md: 1 }}
         >
-          <Typography variant="h4">5.3</Typography>
+          <Typography variant="h3">5.3</Typography>
           <Stack
             direction="column"
             // justifyContent="center"
