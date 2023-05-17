@@ -13,6 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { themeSettings } from "./components/theme/Theme";
 import Navbar from "./components/navbar/Navbar";
 import { useEffect, useState } from "react";
+import PatientHome from "./pages/patient/PatientHome";
+import BookAppointment from "./components/patient/appointment/SetAppointment/BookAppointment";
 
 function App() {
   const [mode, setMode] = useState(localStorage.getItem("theme") || "light");
@@ -32,13 +34,24 @@ function App() {
         <Navbar toggleMode={toggleMode} mode={mode} />
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/nurse" element={<NurseHome />} />
-          <Route path="/doctor" element={<DoctorHome />} />
+          <Route
+            path="/nurse"
+            element={<NurseHome toggleMode={toggleMode} mode={mode} />}
+          />
+          <Route
+            path="/doctor"
+            element={<DoctorHome toggleMode={toggleMode} mode={mode} />}
+          />
+          <Route
+            path="/patient"
+            element={<PatientHome toggleMode={toggleMode} mode={mode} />}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgetPassword />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/book-appointment" element={<BookAppointment />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>

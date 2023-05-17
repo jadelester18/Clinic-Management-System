@@ -25,7 +25,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { StaticDateTimePicker } from "@mui/x-date-pickers";
 
-function NurseRightBar() {
+const NurseContentBottom = () => {
   const [open, setOpen] = React.useState(false);
   const [openConfirmation, setOpenConfirmation] = React.useState(false);
 
@@ -44,17 +44,20 @@ function NurseRightBar() {
   const handleClickCloseConfirmation = () => {
     setOpenConfirmation(false);
   };
-
   return (
     <Box
       flex={2}
       p={2}
       sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
     >
-      <Card sx={{ maxWidth: 1000, height: 480 }} elevation={3}>
+      <Card sx={{ height: 440, borderRadius: 10 }} elevation={3}>
         <CardContent>
           <List
-            sx={{ width: "100%", maxWidth: 1000, bgcolor: "background.paper" }}
+            sx={{
+              width: "100%",
+              bgcolor: "background.paper",
+              borderRadius: 10,
+            }}
           >
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
@@ -167,6 +170,6 @@ function NurseRightBar() {
       </Dialog>
     </Box>
   );
-}
+};
 
-export default NurseRightBar;
+export default NurseContentBottom;

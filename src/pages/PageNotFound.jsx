@@ -1,4 +1,4 @@
-import { Box, CardMedia, Container, Stack, Typography } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import "../components/page-not-found/PageNotFound.css";
 import React from "react";
 

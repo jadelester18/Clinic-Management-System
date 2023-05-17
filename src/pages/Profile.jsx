@@ -3,26 +3,24 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardMedia,
   Dialog,
   DialogContent,
   Grid,
-  Rating,
   Slide,
   Stack,
   Typography,
 } from "@mui/material";
 import React from "react";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import TtyIcon from "@mui/icons-material/Tty";
-import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import EditProfile from "../components/profile/EditProfile";
 import LeftBarProfile from "../components/profile/LeftBarProfile";
 import VideoProfileContent from "../components/profile/VideoProfileContent";
 import styled from "@mui/system/styled";
-import Navbar from "../components/navbar/Navbar";
+import LooksOneIcon from "@mui/icons-material/LooksOne";
+import LooksTwoIcon from "@mui/icons-material/LooksTwo";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import { Link } from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -117,6 +115,14 @@ function Profile() {
                           >
                             Edit Profile
                           </Button>
+                          <Button
+                            variant="contained"
+                            sx={{ borderRadius: 10 }}
+                            component={Link}
+                            to={`/book-appointment`}
+                          >
+                            Book An Appointment
+                          </Button>
                         </Item>
                       </Grid>
                     </Stack>
@@ -143,16 +149,16 @@ function Profile() {
                       sx={{ pt: 3 }}
                     >
                       <Typography variant="caption">
-                        <LocationOnIcon />
-                        Camarines Sur, Iriga City
+                        <LooksOneIcon />
+                        Internal Medicine
                       </Typography>
                       <Typography variant="caption">
-                        <TtyIcon />
-                        +63 9051438786
+                        <LooksTwoIcon />
+                        Gastroenterology
                       </Typography>
                       <Typography variant="caption">
-                        <AlternateEmailIcon />
-                        jadelesterballester@gmail.com
+                        <DateRangeIcon />
+                        Tuesday, Thursday, Saturday 9:00 AM - 5:00 PM
                       </Typography>
                     </Stack>
                   </Grid>

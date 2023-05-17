@@ -66,7 +66,7 @@ const StyledFab = styled(Fab)({
   margin: "0 auto",
 });
 
-function NurseLeftBar() {
+function DoctorLeftBar() {
   const requestAbortController = React.useRef(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
@@ -102,36 +102,37 @@ function NurseLeftBar() {
       p={2}
       sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
     >
-      <Card sx={{ maxWidth: 345 }} elevation={3}>
-        <CardContent>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StaticDatePicker
-              orientation="orientation"
-              showDaysOutsideCurrentMonth
-              //   fixedWeekNumber={6}
-              //   defaultValue={initialValue}
-              //   loading={isLoading}
-              //   onMonthChange={handleMonthChange}
-              //   renderLoading={() => <DayCalendarSkeleton />}
-              slots={{
-                day: ServerDay,
-              }}
-              slotProps={{
-                day: {
-                  highlightedDays,
-                },
-                actionBar: { actions: [] },
-              }}
-            />
-          </LocalizationProvider>
-        </CardContent>
+      {/* <Card sx={{ maxWidth: 345 }} elevation={3}> */}
+      {/* <CardContent> */}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <StaticDatePicker
+          orientation="orientation"
+          showDaysOutsideCurrentMonth
+          //   fixedWeekNumber={6}
+          //   defaultValue={initialValue}
+          //   loading={isLoading}
+          //   onMonthChange={handleMonthChange}
+          //   renderLoading={() => <DayCalendarSkeleton />}
+          slots={{
+            day: ServerDay,
+          }}
+          slotProps={{
+            day: {
+              highlightedDays,
+            },
+            actionBar: { actions: [] },
+          }}
+          sx={{ boxShadow: 10, borderRadius: 10 }}
+        />
+      </LocalizationProvider>
+      {/* </CardContent> */}
 
-        {/* <CardMedia
+      {/* <CardMedia
           sx={{ height: 140 }}
           image="/static/images/cards/contemplative-reptile.jpg"
           title="green iguana"
         /> */}
-        {/* <CardContent>
+      {/* <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             Calender
           </Typography>
@@ -143,9 +144,9 @@ function NurseLeftBar() {
           <Button size="small">Share</Button>
           <Button size="small">Learn More</Button>
         </CardActions> */}
-      </Card>
+      {/* </Card> */}
     </Box>
   );
 }
 
-export default NurseLeftBar;
+export default DoctorLeftBar;

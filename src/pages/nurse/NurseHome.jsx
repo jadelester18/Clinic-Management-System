@@ -1,25 +1,575 @@
-import React from "react";
-import NurseLeftBar from "../../components/nurse/leftbar/NurseLeftBar";
-import NurseRightBar from "../../components/nurse/righbar/NurseRightBar";
-import { Box, Stack } from "@mui/material";
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import MuiDrawer from "@mui/material/Drawer";
+import MuiAppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import CssBaseline from "@mui/material/CssBaseline";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import React, { useState } from "react";
+import {
+  Avatar,
+  Badge,
+  BottomNavigation,
+  BottomNavigationAction,
+  Button,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  ListItemAvatar,
+  Menu,
+  MenuItem,
+  Paper,
+  Tooltip,
+  useMediaQuery,
+} from "@mui/material";
+import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
+import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
+import RestoreIcon from "@mui/icons-material/Restore";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ArchiveIcon from "@mui/icons-material/Archive";
+import { Link } from "react-router-dom";
+import DarkMode from "../../components/theme/DarkMode";
+import NurseViewAppointmentQueue from "./Viewing/NurseViewAppointmentQueue";
 
-function NurseHome() {
+const drawerWidth = 240;
+
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: "hidden",
+});
+
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up("sm")]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(["width", "margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
+}));
+
+//For Notification mock Data
+function refreshMessages() {
+  const getRandomInt = (max) => Math.floor(Math.random() * Math.floor(max));
+
+  return Array.from(new Array(50)).map(
+    () => messageExamples[getRandomInt(messageExamples.length)]
+  );
+}
+
+const messageExamples = [
+  {
+    primary: "Brunch this week?",
+    secondary:
+      "I'll be in the neighbourhood this week. Let's grab a bite to eat",
+    person: "/static/images/avatar/5.jpg",
+  },
+  {
+    primary: "Birthday Gift",
+    secondary: `Do you have a suggestion for a good present for John on his work
+      anniversary. I am really confused & would love your thoughts on it.`,
+    person: "/static/images/avatar/1.jpg",
+  },
+  {
+    primary: "Recipe to try",
+    secondary:
+      "I am try out this new BBQ recipe, I think this might be amazing",
+    person: "/static/images/avatar/2.jpg",
+  },
+  {
+    primary: "Yes!",
+    secondary: "I have the tickets to the ReactConf for this year.",
+    person: "/static/images/avatar/3.jpg",
+  },
+  {
+    primary: "Doctor's Appointment",
+    secondary:
+      "My appointment for the doctor was rescheduled for next Saturday.",
+    person: "/static/images/avatar/4.jpg",
+  },
+  {
+    primary: "Discussion",
+    secondary: `Menus that are generated by the bottom app bar (such as a bottom
+      navigation drawer or overflow menu) open as bottom sheets at a higher elevation
+      than the bar.`,
+    person: "/static/images/avatar/5.jpg",
+  },
+  {
+    primary: "Summer BBQ",
+    secondary: `Who wants to have a cookout this weekend? I just got some furniture
+      for my backyard and would love to fire up the grill.`,
+    person: "/static/images/avatar/1.jpg",
+  },
+];
+
+function NurseHome({ toggleMode, mode }) {
+  const theme = useTheme();
+  //For Drawer
+  const isScreenMdOrUp = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const [open, setOpen] = React.useState(isScreenMdOrUp);
+  // const [open, setOpen] = React.useState(true);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  //For Menu Item
+  const [menuData, setMenuData] = useState("Home");
+
+  //For Open Tree/Sub Category Dropdown
+  const [openAppointmentTree, setOpenAppointmentTree] = React.useState(
+    open ? true : false
+  );
+
+  const handleClickOpenAppointmentTree = () => {
+    setOpenAppointmentTree(!openAppointmentTree);
+  };
+
+  // For Profile/Logout Dropdown
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  //For Logout Confirmation
+  const [openConfirmation, setOpenConfirmation] = React.useState(false);
+
+  const handleClickOpenConfirmation = () => {
+    setOpenConfirmation(true);
+  };
+
+  const handleClickCloseConfirmation = () => {
+    setOpenConfirmation(false);
+  };
+
+  //For Notification Button/Badge
+  function notificationsLabel(count) {
+    if (count === 0) {
+      return "no notifications";
+    }
+    if (count > 99) {
+      return "more than 99 notifications";
+    }
+    return `${count} notifications`;
+  }
+
+  //For Notification Popup
+  const [anchorElNotification, setAnchorElNotification] = React.useState(null);
+  const handleOpenNotificationMenu = (event) => {
+    setAnchorElNotification(event.currentTarget);
+  };
+  const handleCloseNotificationMenu = () => {
+    setAnchorElNotification(null);
+  };
+
+  //For Notification Content
+  const [value, setValue] = React.useState(0);
+  const ref = React.useRef(null);
+  const [messages, setMessages] = React.useState(() => refreshMessages());
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const body = ref.current.ownerDocument.body;
+      if (body) {
+        body.scrollTop = 0;
+      }
+    }
+    setMessages(refreshMessages());
+  }, [setMessages]);
+
   return (
-    <Box>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-evenly"
-        sx={{
-          marginLeft: { xs: "0%", sm: "0px", md: "10%" },
-          marginRight: { xs: "0%", sm: "0px", md: "10%" },
-          spacing: { xs: 0, sm: 0, md: 2 },
-        }}
-        alignItems="center"
-      >
-        <NurseLeftBar />
-        <NurseRightBar />
-      </Stack>
-    </Box>
+    <>
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <AppBar position="fixed">
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              //   onClick={handleDrawerOpen}
+              onClick={() => {
+                setOpen(!open);
+                setOpenAppointmentTree(false);
+              }}
+              edge="start"
+              sx={{
+                marginRight: 5,
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              Mini variant drawer
+            </Typography>
+            {/* For Dark Mode Toggle Button */}
+            <Box sx={{ flexGrow: 1 }} />
+            <DarkMode toggleMode={toggleMode} mode={mode} />
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton
+                  aria-label={notificationsLabel(100)}
+                  size="large"
+                  sx={{ mr: 2 }}
+                  variant="contained"
+                  onClick={handleOpenNotificationMenu}
+                >
+                  <Badge badgeContent={100} color="secondary">
+                    <NotificationImportantIcon />
+                  </Badge>
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElNotification}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElNotification)}
+                onClose={handleCloseNotificationMenu}
+              >
+                <MenuItem sx={{ position: "relative", paddingBottom: "64px" }}>
+                  <CssBaseline />
+                  <List
+                    dense
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "25rem",
+                      overflowY: "scroll",
+                      "&::-webkit-scrollbar": {
+                        width: "0.4em",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        backgroundColor: "#888",
+                      },
+                    }}
+                  >
+                    {messages.map(({ primary, secondary, person }, index) => (
+                      <ListItemButton
+                        key={index + person}
+                        onClick={handleCloseNotificationMenu}
+                      >
+                        <ListItemAvatar>
+                          <Avatar alt="Profile Picture" src={person} />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={primary.slice(0, 35)}
+                          secondary={secondary.slice(0, 35)}
+                        />
+                      </ListItemButton>
+                    ))}
+                  </List>
+                  <Paper
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      width: "100%",
+                    }}
+                    elevation={3}
+                  >
+                    <BottomNavigation
+                      showLabels
+                      value={value}
+                      onChange={(event, newValue) => {
+                        setValue(newValue);
+                      }}
+                    >
+                      <BottomNavigationAction
+                        label="Recents"
+                        icon={<RestoreIcon />}
+                      />
+                      <BottomNavigationAction
+                        label="Favorites"
+                        icon={<FavoriteIcon />}
+                      />
+                      <BottomNavigationAction
+                        label="Archive"
+                        icon={<ArchiveIcon />}
+                      />
+                    </BottomNavigation>
+                  </Paper>
+                </MenuItem>
+              </Menu>
+            </Box>
+
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar
+                    alt="Remy Sharp"
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
+                  />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem
+                  onClick={handleCloseUserMenu}
+                  component={Link}
+                  to={`/profile`}
+                >
+                  <Typography textAlign="center">Profile</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    handleClickOpenConfirmation();
+                  }}
+                >
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Toolbar>
+          {/* For Confirmation Logout */}
+          <Dialog
+            open={openConfirmation}
+            onClose={handleClickCloseConfirmation}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">
+              {"Are you sure you want to logout?"}
+            </DialogTitle>
+            <DialogActions>
+              <Button onClick={handleClickCloseConfirmation}>Disagree</Button>
+              <Button
+                onClick={() => {
+                  handleClickCloseConfirmation();
+                }}
+                autoFocus
+              >
+                Agree
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </AppBar>
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "rtl" ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("Home")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Dashboard"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("Appointments")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Appointments"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          {/* <Divider /> */}
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("Queu")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+                onClick={() => {
+                  setOpen(open ? open : !open);
+                  handleClickOpenAppointmentTree();
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Queu"
+                  sx={{
+                    opacity: open ? 1 : 0,
+                  }}
+                />
+                {openAppointmentTree ? (
+                  <ExpandLess sx={{ display: open ? "block" : "none" }} />
+                ) : (
+                  <ExpandMore sx={{ display: open ? "block" : "none" }} />
+                )}
+              </ListItemButton>
+            </ListItem>
+            <Collapse in={openAppointmentTree} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemIcon>
+                    <StarBorder />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Starred"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </List>
+            </Collapse>
+          </List>
+          <Divider />
+        </Drawer>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          {menuData === "Home" && <NurseViewAppointmentQueue />}
+          {menuData === "Appointments" && <NurseViewAppointmentQueue />}
+          {menuData === "Queu" && <NurseViewAppointmentQueue />}
+        </Box>
+      </Box>
+    </>
   );
 }
 

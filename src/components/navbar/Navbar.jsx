@@ -247,7 +247,21 @@ function Navbar({ toggleMode, mode }) {
           >
             <MenuItem sx={{ position: "relative", paddingBottom: "64px" }}>
               <CssBaseline />
-              <List>
+              <List
+                dense
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "25rem",
+                  overflowY: "scroll",
+                  "&::-webkit-scrollbar": {
+                    width: "0.4em",
+                  },
+                  "&::-webkit-scrollbar-thumb": {
+                    backgroundColor: "#888",
+                  },
+                }}
+              >
                 {messages.map(({ primary, secondary, person }, index) => (
                   <ListItemButton
                     key={index + person}
@@ -256,7 +270,10 @@ function Navbar({ toggleMode, mode }) {
                     <ListItemAvatar>
                       <Avatar alt="Profile Picture" src={person} />
                     </ListItemAvatar>
-                    <ListItemText primary={primary} secondary={secondary} />
+                    <ListItemText
+                      primary={primary.slice(0, 35)}
+                      secondary={secondary.slice(0, 35)}
+                    />
                   </ListItemButton>
                 ))}
               </List>
@@ -380,6 +397,7 @@ function Navbar({ toggleMode, mode }) {
           </Container>
         </DialogContent>
       </Dialog>
+      {/* For register modal */}
       <Dialog
         open={openRegister}
         TransitionComponent={Transition}
@@ -390,7 +408,7 @@ function Navbar({ toggleMode, mode }) {
           style: { borderRadius: 20 },
         }}
         fullWidth={true}
-        maxWidth={"lg"}
+        maxWidth={{ xs: "100%" }}
       >
         <DialogContent>
           <Register />
