@@ -39,6 +39,8 @@ import NotificationImportantIcon from "@mui/icons-material/NotificationImportant
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArchiveIcon from "@mui/icons-material/Archive";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/UserReducer";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -98,6 +100,10 @@ const messageExamples = [
 ];
 
 function Navbar({ toggleMode, mode }) {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let user = userLoggedinDetails?.user?.user;
+
   //For Open/Close Login Moda;
   const [openLogin, setOpenLogin] = React.useState(false);
 
@@ -149,6 +155,12 @@ function Navbar({ toggleMode, mode }) {
 
   const handleClickCloseConfirmation = () => {
     setOpenConfirmation(false);
+  };
+
+  //For logout functionality
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   //For Notification Button/Badge
@@ -206,154 +218,147 @@ function Navbar({ toggleMode, mode }) {
         {/* For Dark Mode Toggle Button */}
         <DarkMode toggleMode={toggleMode} mode={mode} />
 
-        <Button
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          onClick={handleClickOpenLogin}
-        >
-          Login
-        </Button>
-        <Box sx={{ flexGrow: 0 }}>
-          <Tooltip title="Open settings">
-            <IconButton
-              aria-label={notificationsLabel(100)}
-              size="large"
-              sx={{ mr: 2 }}
-              variant="contained"
-              onClick={handleOpenNotificationMenu}
-            >
-              <Badge badgeContent={100} color="secondary">
-                <NotificationImportantIcon />
-              </Badge>
-            </IconButton>
-          </Tooltip>
-          <Menu
-            sx={{ mt: "45px" }}
-            id="menu-appbar"
-            anchorEl={anchorElNotification}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={Boolean(anchorElNotification)}
-            onClose={handleCloseNotificationMenu}
+        {userObject === null ? (
+          <Button
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleClickOpenLogin}
           >
-            <MenuItem sx={{ position: "relative", paddingBottom: "64px" }}>
-              <CssBaseline />
-              <List
-                dense
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "25rem",
-                  overflowY: "scroll",
-                  "&::-webkit-scrollbar": {
-                    width: "0.4em",
-                  },
-                  "&::-webkit-scrollbar-thumb": {
-                    backgroundColor: "#888",
-                  },
-                }}
+            Log In
+          </Button>
+        ) : (
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton
+                aria-label={notificationsLabel(100)}
+                size="large"
+                sx={{ mr: 2 }}
+                variant="contained"
+                onClick={handleOpenNotificationMenu}
               >
-                {messages.map(({ primary, secondary, person }, index) => (
-                  <ListItemButton
-                    key={index + person}
-                    onClick={handleCloseNotificationMenu}
-                  >
-                    <ListItemAvatar>
-                      <Avatar alt="Profile Picture" src={person} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={primary.slice(0, 35)}
-                      secondary={secondary.slice(0, 35)}
-                    />
-                  </ListItemButton>
-                ))}
-              </List>
-              <Paper
-                sx={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  width: "100%",
-                }}
-                elevation={3}
-              >
-                <BottomNavigation
-                  showLabels
-                  value={value}
-                  onChange={(event, newValue) => {
-                    setValue(newValue);
+                <Badge badgeContent={100} color="secondary">
+                  <NotificationImportantIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElNotification}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElNotification)}
+              onClose={handleCloseNotificationMenu}
+            >
+              <MenuItem sx={{ position: "relative", paddingBottom: "64px" }}>
+                <CssBaseline />
+                <List
+                  dense
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "25rem",
+                    overflowY: "scroll",
+                    "&::-webkit-scrollbar": {
+                      width: "0.4em",
+                    },
+                    "&::-webkit-scrollbar-thumb": {
+                      backgroundColor: "#888",
+                    },
                   }}
                 >
-                  <BottomNavigationAction
-                    label="Recents"
-                    icon={<RestoreIcon />}
-                  />
-                  <BottomNavigationAction
-                    label="Favorites"
-                    icon={<FavoriteIcon />}
-                  />
-                  <BottomNavigationAction
-                    label="Archive"
-                    icon={<ArchiveIcon />}
-                  />
-                </BottomNavigation>
-              </Paper>
-            </MenuItem>
-          </Menu>
-        </Box>
-
-        <Box sx={{ flexGrow: 0 }}>
-          <Tooltip title="Open settings">
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar
-                alt="Remy Sharp"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
-              />
-            </IconButton>
-          </Tooltip>
-          <Menu
-            sx={{ mt: "45px" }}
-            id="menu-appbar"
-            anchorEl={anchorElUser}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={Boolean(anchorElUser)}
-            onClose={handleCloseUserMenu}
-          >
-            <MenuItem
-              onClick={handleCloseUserMenu}
-              component={Link}
-              to={`/profile`}
-            >
-              <Typography textAlign="center">Profile</Typography>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleCloseUserMenu();
-                handleClickOpenConfirmation();
+                  {messages.map(({ primary, secondary, person }, index) => (
+                    <ListItemButton
+                      key={index + person}
+                      onClick={handleCloseNotificationMenu}
+                    >
+                      <ListItemAvatar>
+                        <Avatar alt="Profile Picture" src={person} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={primary.slice(0, 35)}
+                        secondary={secondary.slice(0, 35)}
+                      />
+                    </ListItemButton>
+                  ))}
+                </List>
+                <Paper
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    width: "100%",
+                  }}
+                  elevation={3}
+                >
+                  <BottomNavigation
+                    showLabels
+                    value={value}
+                    onChange={(event, newValue) => {
+                      setValue(newValue);
+                    }}
+                  >
+                    <BottomNavigationAction
+                      label="Recents"
+                      icon={<RestoreIcon />}
+                    />
+                    <BottomNavigationAction
+                      label="Favorites"
+                      icon={<FavoriteIcon />}
+                    />
+                    <BottomNavigationAction
+                      label="Archive"
+                      icon={<ArchiveIcon />}
+                    />
+                  </BottomNavigation>
+                </Paper>
+              </MenuItem>
+            </Menu>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar
+                  alt="Remy Sharp"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
+                />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
               }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
             >
-              <Typography textAlign="center">Logout</Typography>
-            </MenuItem>
-          </Menu>
-        </Box>
+              <MenuItem
+                onClick={() => {
+                  handleCloseUserMenu();
+                  handleClickOpenConfirmation();
+                }}
+              >
+                <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
+        )}
       </Toolbar>
       {/* For Login */}
       <Dialog
@@ -368,7 +373,7 @@ function Navbar({ toggleMode, mode }) {
         fullWidth={true}
       >
         <DialogContent>
-          <Login />
+          <Login handleCloseLogin={handleCloseLogin} />
           <Container component="main">
             <Grid container>
               <Grid item xs underline="none">
@@ -407,11 +412,20 @@ function Navbar({ toggleMode, mode }) {
         PaperProps={{
           style: { borderRadius: 20 },
         }}
-        fullWidth={true}
+        // fullWidth={true}
         maxWidth={{ xs: "100%" }}
       >
-        <DialogContent>
-          <Register />
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "scroll",
+            "&::-webkit-scrollbar": {
+              width: "0em",
+            },
+          }}
+        >
+          <Register handleCloseRegister={handleCloseRegister} />
           <Grid container>
             <Grid item xs underline="none">
               <Button
@@ -452,7 +466,9 @@ function Navbar({ toggleMode, mode }) {
         maxWidth={"sm"}
       >
         <DialogContent>
-          <ForgotPassword />
+          <ForgotPassword
+            handleCloseForgotPassword={handleCloseForgotPassword}
+          />
           <Grid container>
             <Grid item xs underline="none">
               <Button
@@ -499,8 +515,11 @@ function Navbar({ toggleMode, mode }) {
           <Button
             onClick={() => {
               handleClickCloseConfirmation();
+              handleLogout();
             }}
             autoFocus
+            component={Link}
+            to={`/`}
           >
             Agree
           </Button>

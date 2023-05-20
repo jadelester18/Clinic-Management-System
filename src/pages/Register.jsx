@@ -26,7 +26,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import InfoIcon from "@mui/icons-material/Info";
 
-function Register() {
+function Register({ handleCloseRegister }) {
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
@@ -73,9 +73,10 @@ function Register() {
       <CssBaseline />
       <Box
         sx={{
-          // display: "flex",
+          display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
@@ -515,7 +516,7 @@ function Register() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            // onClick={handleSubmit}
+            onClick={handleCloseRegister}
             // disabled={isFormInvalid()}
           >
             Submit

@@ -3,23 +3,99 @@ import {
   Avatar,
   Box,
   Button,
-  Card,
-  CardContent,
-  CardMedia,
   Container,
   CssBaseline,
-  Grid,
   IconButton,
   InputAdornment,
   TextField,
-  ThemeProvider,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { loginStart, loginFailure, loginSuccess } from "../redux/UserReducer";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
+import Joi from "joi";
 
-function Login() {
+function Login({ handleCloseLogin }) {
+  const [eroor, setErrorMessage] = useState("");
+
+  const login = async (dispatch, user) => {
+    dispatch(loginStart());
+    try {
+      const res = await axios.post(
+        `http://localhost:8080/api/v1/auth/authenticate`,
+        user
+      );
+      dispatch(loginSuccess(res.data));
+    } catch (error) {
+      // setErrorMessage(error.response.data.message);
+      dispatch(loginFailure(eroor));
+    }
+  };
+
+  // JOI
+  const Joi = require("joi");
+  // Define validation schema using Joi
+  const schema = Joi.object({
+    email: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+      .required(),
+    password: Joi.string().min(6).required(),
+  });
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    errors: {},
+  });
+
+  const handleChange = (event) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const userDetails = user.user;
+  var emailPWChecker = "";
+
+  const handleSubmit = (event) => {
+    // event.preventDefault();
+
+    if (userDetails?.noUser) {
+      emailPWChecker = userDetails?.noUser;
+      alert(emailPWChecker);
+    }
+
+    login(dispatch, formData);
+
+    // Validate form data using Joi schema
+    const { error } = schema.validate(formData, { abortEarly: false });
+
+    if (error) {
+      console.log("Validation Error:", error.details);
+      // Update errors state with validation error messages
+      const errors = {};
+      error.details.forEach((err) => {
+        errors[err.path[0]] = err.message;
+      });
+      setFormData((prevState) => ({ ...prevState, errors }));
+      return;
+    }
+
+    // Clear errors state if validation passes
+    setFormData((prevState) => ({ ...prevState, errors: {} }));
+
+    // Submit form data if validation passes
+    console.log("Form Data:", formData);
+  };
+
+  localStorage.setItem("role", user?.role);
+
+  //For Password show to text format
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
@@ -42,18 +118,18 @@ function Login() {
           Log in
         </Typography>
         <Box
-          component="form"
+          component="formData"
           // onSubmit={handleClick}
           noValidate
           sx={{ mt: 1 }}
         >
           <TextField
             margin="normal"
-            // error={!!errors.email}
-            // helperText={errors.email}
+            error={Boolean(formData.errors.email)}
+            helperText={formData.errors.email}
             name="email"
-            // onChange={handleChange}
-            // value={form.email}
+            onChange={handleChange}
+            value={formData.email}
             fullWidth
             // id="email"
             label="Email"
@@ -62,12 +138,12 @@ function Login() {
           <TextField
             fullWidth
             type={showPassword ? "text" : "password"}
-            // error={!!errors.password}
-            // helperText={errors.password}
+            error={Boolean(formData.errors.password)}
+            helperText={formData.errors.password}
             name="password"
             label="Password"
-            // onChange={handleChange}
-            // value={form.password}
+            onChange={handleChange}
+            value={formData.password}
             autoComplete="new-password"
             InputProps={{
               endAdornment: (
@@ -89,7 +165,10 @@ function Login() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            // onClick={handleSubmit}
+            onClick={() => {
+              handleSubmit();
+              handleCloseLogin();
+            }}
             // disabled={isFormInvalid()}
           >
             Submit

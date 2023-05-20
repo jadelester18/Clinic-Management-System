@@ -10,7 +10,7 @@ import {
 import React from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-function ForgotPassword() {
+function ForgotPassword({ handleCloseForgotPassword }) {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -50,7 +50,7 @@ function ForgotPassword() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            // onClick={handleSubmit}
+            onClick={handleCloseForgotPassword}
             // disabled={isFormInvalid()}
           >
             Submit

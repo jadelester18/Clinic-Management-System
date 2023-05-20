@@ -13,7 +13,7 @@ const currentDate = new Date().toLocaleString("en-US", {
 });
 
 const formattedDate = currentDate.replace(",", " |");
-console.log(formattedDate); // Output: "Monday | May 15, 2023"
+// console.log(formattedDate); // Output: "Monday | May 15, 2023"
 
 //Current Time
 const currentTime = new Date().toLocaleTimeString("en-US", {
@@ -21,7 +21,7 @@ const currentTime = new Date().toLocaleTimeString("en-US", {
   minute: "numeric",
   hour12: true,
 });
-console.log(currentTime); // Output: "4:26 PM"
+// console.log(currentTime); // Output: "4:26 PM"
 
 const PatientRightBar = () => {
   return (
