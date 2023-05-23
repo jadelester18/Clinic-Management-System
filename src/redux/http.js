@@ -21,9 +21,12 @@ http.interceptors.response.use(null, (error) => {
 });
 
 http.interceptors.request.use((request) => {
-  const userLoggedinDetails = useSelector((state) => state.user);
-  let userObject = userLoggedinDetails?.user;
-  let accesstoken = userObject?.token;
+  console.log("RAW", localStorage.getItem("persist:root"));
+  let userObject = JSON.parse(localStorage.getItem("persist:root"));
+  const user = JSON.parse(userObject.user);
+  console.log("userObject", userObject);
+  console.log("user", user);
+  let accesstoken = user.token;
   // const accessToken = localStorage.getItem(accessToken);
   console.log(accesstoken);
   if (accesstoken) {

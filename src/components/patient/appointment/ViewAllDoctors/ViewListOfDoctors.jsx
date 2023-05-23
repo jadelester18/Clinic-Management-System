@@ -25,6 +25,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import PropTypes from "prop-types";
 
 import * as patientService from "../../../../redux/patient";
+import * as hmoService from "../../../../redux/hmo";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -108,35 +109,36 @@ const ViewListOfDoctors = () => {
   const [specialization, setSpecialization] = React.useState("");
   const [location, setLocation] = React.useState("");
 
-  //Fetching the HMO list
-  useEffect(() => {
-    const fetchHMOListData = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8080/api/v1/hmos`);
-        setHMOList(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchHMOListData = async () => {
+    try {
+      const response = await hmoService.getHmos();
+      setHMOList(response.data);
+      console.log("HMO LIST ", response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  // Fetching the HMO list
+  useEffect(() => {
     fetchHMOListData();
   }, []);
 
   //Fetching the Specialization list
-  useEffect(() => {
-    const fetchSpecializationListData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/specializations`
-        );
-        setSpecializationList(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchSpecializationListData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:8080/api/v1/specializations`
+  //       );
+  //       setSpecializationList(response.data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    fetchSpecializationListData();
-  }, []);
+  //   fetchSpecializationListData();
+  // }, []);
 
   //For Filter Fields
 
@@ -349,13 +351,14 @@ const ViewListOfDoctors = () => {
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <FormControl fullWidth size="large">
                 <InputLabel id="demo-simple-select-label">
-                  HMO Accredition
+                  HMO Accreditation
                 </InputLabel>
                 <Select
+                  value={HMOAccredited}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="HMO Accredition"
-                  onChange={HMOAccredited}
+                  onChange={handleChangeHMOAccredited}
                 >
                   {HMOList.map((HMOList) => (
                     <MenuItem key={HMOList.id} value={HMOList.id}>
@@ -371,6 +374,7 @@ const ViewListOfDoctors = () => {
                   Specialization
                 </InputLabel>
                 <Select
+                  value={specialization}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   label="Specialization"
