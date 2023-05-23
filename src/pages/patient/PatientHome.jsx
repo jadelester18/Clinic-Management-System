@@ -21,7 +21,7 @@ function PatientHome() {
   return (
     <Box>
       {selectedLink === "Home" && <PatientDashboard />}
-      {selectedLink === "Reminders" && <PatientReminders />}
+      {selectedLink === "Set Appointment" && <PatientReminders />}
       {/* <Box sx={{ height: 320, transform: "translateZ(0px)", flexGrow: 1 }}> */}
       {/* Speed dial component is moved outside of the Box component */}
       <SpeedDial
@@ -49,11 +49,11 @@ function PatientHome() {
           }}
         />
         <SpeedDialAction
-          key="Reminders"
+          key="Set Appointment"
           icon={<BubbleChartIcon />}
-          tooltipTitle="Reminders"
+          tooltipTitle="Set Appointment"
           onClick={() => {
-            handleLinkClick("Reminders");
+            handleLinkClick("Set Appointment");
           }}
           sx={{
             "&:hover": {

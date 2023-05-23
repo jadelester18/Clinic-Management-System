@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -13,59 +14,120 @@ import {
   Select,
   Stack,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import InfoIcon from "@mui/icons-material/Info";
+import { signup } from "../redux/ApiCall";
+import { useDispatch } from "react-redux";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { countries, provinces, cities } from "./addressDb/adress.js";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 function Register({ handleCloseRegister }) {
+  //For Country Code
+  const [code, setCode] = React.useState("");
+  const [phone, setPhone] = React.useState("");
+  const [idTypeIdList, setIdTypeIdList] = React.useState([]);
+
+  //For Register Components
   const [showPassword, setShowPassword] = React.useState(false);
+  const [honorific, setHonorific] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [suffixName, setSuffixName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = React.useState("");
+  const [contactNo, setContactNo] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [country, setCountry] = React.useState([]);
+  const [province, setProvince] = React.useState([]);
+  const [city, setCity] = React.useState([]);
+  const [barangay, setBarangay] = React.useState([]);
+  const [street, setStreet] = React.useState("");
+  const [postalCode, setPostalCode] = React.useState("");
+
+  const [idTypeId, setIdTypeId] = React.useState("");
+  const [idNumber, setIdNumber] = React.useState("");
+  const [idFileUrl, setIdFileUrl] = React.useState("");
+
+  // Update contactNo whenever code or phone change
+  React.useEffect(() => {
+    setContactNo(code + phone);
+  }, [code, phone]);
+
+  //For Form Register
+  const dispatch = useDispatch();
+  const handleClick = (e) => {
+    // e.preventDefault();
+    signup(dispatch, {
+      honorific,
+      firstName,
+      middleName,
+      lastName,
+      suffixName,
+      birthDate,
+      gender,
+      contactNo,
+      email,
+      password,
+      country,
+      province,
+      city,
+      barangay,
+      street,
+      postalCode,
+      idTypeId,
+      idNumber,
+      idFileUrl,
+    });
+  };
+
+  //Fetching the IDs Type
+  useEffect(() => {
+    const fetchIdTypeIdListData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/id-type`
+        );
+        setIdTypeIdList(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchIdTypeIdListData();
+  }, []);
+
+  //For Showing Password
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
-  // For Select/Dropdown Honorific
-  const [honorific, setHonorific] = React.useState("");
+  dayjs.extend(customParseFormat);
 
-  const handleChangeHonorific = (event) => {
-    setHonorific(event.target.value);
-  };
+  const currentUrl = window.location.href;
 
-  // For Select/Dropdown Sex
-  const [sex, setSex] = React.useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [filteredCities, setFilteredCities] = useState([]);
 
-  const handleChangeSex = (event) => {
-    setSex(event.target.value);
-  };
+  const handleProvinceChange = (event) => {
+    setSelectedProvince(event);
 
-  // For Select/Dropdown Country
-  const [country, setCountry] = React.useState("");
-
-  const handleChangeCountry = (event) => {
-    setCountry(event.target.value);
-  };
-
-  //For Toggle New/Old Patient
-  const [newOldPatient, setNewOldPatient] = React.useState("web");
-
-  const handleChangeNewOldPatient = (event, newAlignment) => {
-    setNewOldPatient(newAlignment);
-  };
-
-  //For Toggle New/Old Patient
-  const [idType, setIdType] = React.useState("");
-
-  const handleChangeSetIdType = (event) => {
-    setIdType(event.target.value);
+    const filteredCities = cities.filter(
+      (city) => city.province_code === event
+    );
+    setFilteredCities(filteredCities);
   };
 
   return (
@@ -115,7 +177,7 @@ function Register({ handleCloseRegister }) {
                   id="demo-simple-select-autowidth"
                   value={honorific}
                   label="Honorific"
-                  onChange={handleChangeHonorific}
+                  onChange={(e) => setHonorific(e.target.value)}
                   autoWidth
                 >
                   <MenuItem value={"Mr."}>Mr.</MenuItem>
@@ -128,63 +190,60 @@ function Register({ handleCloseRegister }) {
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
                 name="fname"
-                // onChange={handleChange}
-                // value={form.email}
                 fullWidth
-                // id="email"
                 label="First Name"
                 autoComplete="First Name"
+                onChange={(e) => setFirstName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
                 name="mname"
-                // onChange={handleChange}
-                // value={form.email}
                 fullWidth
-                // id="email"
                 label="Middle Name"
                 autoComplete="Middle Name"
+                onChange={(e) => setMiddleName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
                 name="lname"
-                // onChange={handleChange}
-                // value={form.email}
                 fullWidth
-                // id="email"
                 label="Last Name"
                 autoComplete="Last Name"
+                onChange={(e) => setLastName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
                 name="suffix"
-                // onChange={handleChange}
-                // value={form.email}
-                // fullWidth
-                // id="email"
                 label="Suffix"
                 autoComplete="Suffix"
+                onChange={(e) => setSuffixName(e.target.value)}
               />
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker label="Birthdate" name="birthdate" />
+                <DatePicker
+                  label="BirthDate"
+                  value={birthDate}
+                  onChange={(newValue) =>
+                    setBirthDate(dayjs(newValue).format("YYYY-MM-DD"))
+                  }
+                  renderInput={(props) => (
+                    <TextField
+                      {...props}
+                      value={
+                        birthDate ? dayjs(birthDate).format("YYYY-MM-DD") : ""
+                      }
+                    />
+                  )}
+                />
               </LocalizationProvider>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -195,13 +254,13 @@ function Register({ handleCloseRegister }) {
                 <Select
                   labelId="demo-simple-select-autowidth-label"
                   id="demo-simple-select-autowidth"
-                  value={sex}
-                  label="Sex"
-                  onChange={handleChangeSex}
+                  value={gender}
+                  label="Gender"
                   autoWidth
+                  onChange={(e) => setGender(e.target.value)}
                 >
-                  <MenuItem value={"Male"}>Male</MenuItem>
-                  <MenuItem value={"Female"}>Female</MenuItem>
+                  <MenuItem value={"MALE"}>Male</MenuItem>
+                  <MenuItem value={"FEMALE"}>Female</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -218,43 +277,75 @@ function Register({ handleCloseRegister }) {
             spacing={2}
             mt={2}
           >
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                margin="normal"
-                name="contact"
-                label="Contact Number"
-                autoComplete="contact"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">+63</InputAdornment>
-                  ),
-                }}
-              />
+            <Grid item xs={12} sm={6} md={4}>
+              <Stack direction="row">
+                <Autocomplete
+                  id="country-select-demo"
+                  // sx={{ width: 200 }}
+                  sx={{ mr: 1 }}
+                  options={countries
+                    .sort((a, b) => a.label.localeCompare(b.label))}
+                  autoHighlight
+                  onChange={(event, value) => setCode("+" + value.phone)}
+                  getOptionLabel={(option) => " +" + option.phone}
+                  renderOption={(props, option) => (
+                    <Box
+                      component="li"
+                      sx={{
+                        "& > img": { mr: 2, flexShrink: 0 },
+                        display: "flex",
+                        flexDirection: "column",
+                        textAlign: "center",
+                      }}
+                      {...props}
+                    >
+                      <img
+                        loading="lazy"
+                        width="20"
+                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                        alt=""
+                      />
+                      {/* {option.label} */}({option.code}) +{option.phone}
+                    </Box>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Code"
+                      inputProps={{
+                        ...params.inputProps,
+                        autoComplete: "new-password", // disable autocomplete and autofill
+                      }}
+                    />
+                  )}
+                />
+                <TextField
+                  label="Phone Number"
+                  fullWidth
+                  inputProps={{
+                    maxLength: 10,
+                  }}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </Stack>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
                 name="email"
-                // onChange={handleChange}
-                // value={form.email}
                 fullWidth
-                // id="email"
                 label="Email"
                 autoComplete="email"
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
                 type={showPassword ? "text" : "password"}
-                // error={!!errors.password}
-                // helperText={errors.password}
                 name="password"
                 label="Password"
-                // onChange={handleChange}
-                // value={form.password}
                 autoComplete="new-password"
                 InputProps={{
                   endAdornment: (
@@ -269,18 +360,15 @@ function Register({ handleCloseRegister }) {
                     </InputAdornment>
                   ),
                 }}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 fullWidth
                 type={showPassword ? "text" : "password"}
-                // error={!!errors.password}
-                // helperText={errors.password}
                 name="confirmPassword"
                 label="Confirm Password"
-                // onChange={handleChange}
-                // value={form.password}
                 autoComplete="confirmPassword"
                 InputProps={{
                   endAdornment: (
@@ -311,145 +399,135 @@ function Register({ handleCloseRegister }) {
             mt={2}
           >
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  Country
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  value={country}
-                  label="Country"
-                  onChange={handleChangeCountry}
-                  autoWidth
-                >
-                  <MenuItem value={"Philippines"}>Philippines</MenuItem>
-                  <MenuItem value={"China"}>China</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                id="country-select-demo"
+                autoWidth
+                options={countries.sort((a, b) =>
+                  a.label.localeCompare(b.label)
+                )}
+                autoHighlight
+                onChange={(event, value) => setCountry(value.label)}
+                getOptionLabel={(option) => option.label}
+                renderOption={(props, option) => (
+                  <Box
+                    component="li"
+                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                    {...props}
+                  >
+                    <img
+                      loading="lazy"
+                      width="20"
+                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                      alt=""
+                    />
+                    {option.label}
+                  </Box>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose a country"
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  Province
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  value={country}
-                  label="Country"
-                  onChange={handleChangeCountry}
-                  autoWidth
-                >
-                  <MenuItem value={"Philippines"}>Camarines Sur</MenuItem>
-                  <MenuItem value={"Philippines"}>Camarines Norte</MenuItem>
-                  <MenuItem value={"China"}>National Capital Region</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                id="country-select-demo"
+                autoWidth
+                options={provinces}
+                autoHighlight
+                onChange={(event, value) => {
+                  setProvince(value.name);
+                  handleProvinceChange(value.id);
+                }}
+                getOptionLabel={(option) => option.name}
+                renderOption={(props, option) => (
+                  <Box
+                    component="li"
+                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                    {...props}
+                  >
+                    {option.name}
+                  </Box>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose a province"
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  Municipality/City
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  value={country}
-                  label="Country"
-                  onChange={handleChangeCountry}
-                  autoWidth
-                >
-                  <MenuItem value={"Philippines"}>Iriga City</MenuItem>
-                  <MenuItem value={"China"}>Taguig</MenuItem>
-                  <MenuItem value={"China"}>Makati</MenuItem>
-                  <MenuItem value={"China"}>Pasay</MenuItem>
-                  <MenuItem value={"China"}>Pasig</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  Barangay
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  value={country}
-                  label="Country"
-                  onChange={handleChangeCountry}
-                  autoWidth
-                >
-                  <MenuItem value={"Philippines"}>Salvacion</MenuItem>
-                  <MenuItem value={"China"}>Snta. Cruz</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                id="country-select-demo"
+                autoWidth
+                options={filteredCities}
+                autoHighlight
+                onChange={(event, value) => setCity(value.name)}
+                getOptionLabel={(option) => option.name}
+                renderOption={(props, option) => (
+                  <Box
+                    component="li"
+                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                    {...props}
+                  >
+                    {option.name}
+                  </Box>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose a city"
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
-                name="zonestreet"
-                // onChange={handleChange}
-                // value={form.email}
+                name="Barangay"
                 fullWidth
-                // id="email"
+                label="Barangay"
+                autoComplete="barangay"
+                onChange={(e) => setBarangay(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                margin="normal"
+                name="Street"
+                fullWidth
                 label="Zone/Street"
-                autoComplete="zonestreet"
+                autoComplete="Street"
+                onChange={(e) => setStreet(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
-                name="houseno"
-                // onChange={handleChange}
-                // value={form.email}
+                name="postalCode"
                 fullWidth
-                // id="email"
-                label="House Number"
-                autoComplete="House Number"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
-                name="postal"
-                // onChange={handleChange}
-                // value={form.email}
-                fullWidth
-                // id="email"
-                label="Postal Code"
-                autoComplete="Postal Code"
+                label="postal Code"
+                autoComplete="postalCode"
+                onChange={(e) => setPostalCode(e.target.value)}
               />
             </Grid>
           </Grid>
-          <Typography variant="body1" marginTop={1}>
-            <InfoIcon fontSize="sx" />
-            Are you a new patient or an existing patient?
-          </Typography>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-evenly"
-            alignItems="center"
-          >
-            <ToggleButtonGroup
-              color="primary"
-              value={newOldPatient}
-              exclusive
-              onChange={handleChangeNewOldPatient}
-              aria-label="Platform"
-              fullWidth
-            >
-              <ToggleButton value="web">New Patient</ToggleButton>
-              <ToggleButton value="android">Existing Patient</ToggleButton>
-            </ToggleButtonGroup>
-          </Stack>
           <Typography variant="body1" marginTop={1}>
             <InfoIcon fontSize="sx" />
             ID Information
@@ -468,35 +546,32 @@ function Register({ handleCloseRegister }) {
             mt={2}
           >
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  ID Type
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  value={idType}
-                  label="ID Type"
-                  onChange={handleChangeSetIdType}
-                  autoWidth
-                >
-                  <MenuItem value={"Drivers"}>Driver's License</MenuItem>
-                  <MenuItem value={"Postal"}>Postal ID</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                id="id-type-select"
+                options={idTypeIdList} // Pass idTypeId as options
+                autoHighlight
+                onChange={(event, value) => setIdTypeId(value?.id)} // Update the state with the selected value
+                getOptionLabel={(option) => option?.type}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="ID Type"
+                    inputProps={{
+                      ...params.inputProps,
+                      autoComplete: "new-password",
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
                 margin="normal"
-                // error={!!errors.email}
-                // helperText={errors.email}
                 name="idNumber"
-                // onChange={handleChange}
-                // value={form.email}
                 fullWidth
-                // id="email"
                 label="ID Number"
                 autoComplete="idNumber"
+                onChange={(e) => setIdNumber(e.target.value)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -507,7 +582,12 @@ function Register({ handleCloseRegister }) {
                 fullWidth
               >
                 Upload ID
-                <input hidden accept="image/*" multiple type="file" />
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={(e) => setIdFileUrl(e.target.value)}
+                />
               </Button>
             </Grid>
           </Grid>
@@ -516,8 +596,10 @@ function Register({ handleCloseRegister }) {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={handleCloseRegister}
-            // disabled={isFormInvalid()}
+            onClick={() => {
+              currentUrl === "http://localhost:3000/" && handleCloseRegister();
+              handleClick();
+            }}
           >
             Submit
           </Button>

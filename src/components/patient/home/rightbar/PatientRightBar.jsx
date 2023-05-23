@@ -1,8 +1,10 @@
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PatientMedication from "./medication/PatientMedication";
 import LabReports from "./reports/LabReports";
 import PatientCompilation from "./activities/PatientCompilation";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 //Getting the current date
 const currentDate = new Date().toLocaleString("en-US", {
@@ -24,6 +26,35 @@ const currentTime = new Date().toLocaleTimeString("en-US", {
 // console.log(currentTime); // Output: "4:26 PM"
 
 const PatientRightBar = () => {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let user = userLoggedinDetails?.user?.user;
+  let accesstoken = userObject?.token;
+
+  //Get the user post
+  const [userPatientDetails, setUserPatientDetails] = useState();
+  console.log(userPatientDetails);
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/patients/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${accesstoken}`, // Use the 'Authorization' header
+            },
+          }
+        );
+        setUserPatientDetails(res.data);
+        console.log(res.data); // Log the response data
+      } catch (error) {
+        console.log("Post details have an issue.");
+      }
+    };
+    getUserDetails();
+  }, []);
+
   return (
     <Box>
       <Grid container spacing={0}>
@@ -42,7 +73,9 @@ const PatientRightBar = () => {
                 spacing={2}
               >
                 <Grid item lg={6}>
-                  <Typography variant="h3">Hello, Jade!</Typography>
+                  <Typography variant="h3">
+                    Hello, {userPatientDetails?.firstName}!
+                  </Typography>
                   <Typography variant="h6" color="text.secondary">
                     How are you feeling today?
                   </Typography>

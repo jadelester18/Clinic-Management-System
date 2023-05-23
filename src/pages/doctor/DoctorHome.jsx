@@ -44,6 +44,8 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import { Link } from "react-router-dom";
 import DarkMode from "../../components/theme/DarkMode";
 import DoctorViewAppointmentQueue from "../doctor/Viewing/DoctorViewAppointmentQueue";
+import { useDispatch } from "react-redux";
+import { logout } from "../../redux/UserReducer";
 
 const drawerWidth = 240;
 
@@ -209,6 +211,12 @@ function DoctorHome({ toggleMode, mode }) {
 
   const handleClickCloseConfirmation = () => {
     setOpenConfirmation(false);
+  };
+
+  //For logout functionality
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   //For Notification Button/Badge
@@ -428,8 +436,11 @@ function DoctorHome({ toggleMode, mode }) {
               <Button
                 onClick={() => {
                   handleClickCloseConfirmation();
+                  handleLogout();
                 }}
                 autoFocus
+                component={Link}
+                to={`/`}
               >
                 Agree
               </Button>

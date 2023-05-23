@@ -42,11 +42,11 @@ function App() {
             path="/"
             element={
               user?.enabled === true ? (
-                user?.role === "DOCTOR" ? (
+                user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />
-                ) : user?.role === "NURSE" ? (
+                ) : user?.role === "ROLE_NURSE" ? (
                   <Navigate to={"/nurse"} replace={true} />
-                ) : user?.role === "PATIENT" ? (
+                ) : user?.role === "ROLE_PATIENT" ? (
                   <Navigate to={"/patient"} replace={true} />
                 ) : (
                   <Navigate to={"/"} />
@@ -60,7 +60,7 @@ function App() {
             path="/nurse"
             element={
               user?.enabled === true ? (
-                user?.role === "NURSE" ? (
+                user?.role === "ROLE_NURSE" ? (
                   <NurseHome toggleMode={toggleMode} mode={mode} />
                 ) : (
                   <Navigate to={"/"} replace={true} />
@@ -74,7 +74,7 @@ function App() {
             path="/doctor"
             element={
               user?.enabled === true ? (
-                user?.role === "DOCTOR" ? (
+                user?.role === "ROLE_DOCTOR" ? (
                   <DoctorHome toggleMode={toggleMode} mode={mode} />
                 ) : (
                   <Navigate to={"/"} replace={true} />
@@ -88,7 +88,7 @@ function App() {
             path="/patient"
             element={
               user?.enabled === true ? (
-                user?.role === "PATIENT" ? (
+                user?.role === "ROLE_PATIENT" ? (
                   <PatientHome toggleMode={toggleMode} mode={mode} />
                 ) : (
                   <Navigate to={"/"} replace={true} />
@@ -102,11 +102,11 @@ function App() {
             path="/login"
             element={
               user?.enabled === true ? (
-                user?.role === "DOCTOR" ? (
+                user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />
-                ) : user?.role === "NURSE" ? (
+                ) : user?.role === "ROLE_NURSE" ? (
                   <Navigate to={"/nurse"} replace={true} />
-                ) : user?.role === "PATIENT" ? (
+                ) : user?.role === "ROLE_PATIENT" ? (
                   <Navigate to={"/patient"} replace={true} />
                 ) : (
                   <Navigate to={"/"} />
@@ -120,11 +120,11 @@ function App() {
             path="/register"
             element={
               user?.enabled === true ? (
-                user?.role === "DOCTOR" ? (
+                user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />
-                ) : user?.role === "NURSE" ? (
+                ) : user?.role === "ROLE_NURSE" ? (
                   <Navigate to={"/nurse"} replace={true} />
-                ) : user?.role === "PATIENT" ? (
+                ) : user?.role === "ROLE_PATIENT" ? (
                   <Navigate to={"/patient"} replace={true} />
                 ) : (
                   <Navigate to={"/"} replace={true} />
@@ -140,11 +140,11 @@ function App() {
               userObject === null ? (
                 <ForgetPassword />
               ) : user?.enabled === true ? (
-                user?.role === "DOCTOR" ? (
+                user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />
-                ) : user?.role === "NURSE" ? (
+                ) : user?.role === "ROLE_NURSE" ? (
                   <Navigate to={"/nurse"} replace={true} />
-                ) : user?.role === "PATIENT" ? (
+                ) : user?.role === "ROLE_PATIENT" ? (
                   <Navigate to={"/patient"} replace={true} />
                 ) : (
                   <Navigate to={"/"} />
@@ -160,11 +160,11 @@ function App() {
               userObject === null ? (
                 <ChangePassword />
               ) : user?.enabled === true ? (
-                user?.role === "DOCTOR" ? (
+                user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />
-                ) : user?.role === "NURSE" ? (
+                ) : user?.role === "ROLE_NURSE" ? (
                   <Navigate to={"/nurse"} replace={true} />
-                ) : user?.role === "PATIENT" ? (
+                ) : user?.role === "ROLE_PATIENT" ? (
                   <Navigate to={"/patient"} replace={true} />
                 ) : (
                   <Navigate to={"/"} />
@@ -180,12 +180,11 @@ function App() {
               user?.enabled === true ? <Profile /> : <Navigate to={"/"} />
             }
           />
-          <Route path="/book-appointment" element={<BookAppointment />} />
           <Route
-            path="/book-appointment"
+            path="/book-appointment/:id"
             element={
               user?.enabled === true ? (
-                user?.role === "PATIENT" ? (
+                user?.role === "ROLE_PATIENT" ? (
                   <BookAppointment />
                 ) : (
                   <Navigate to={"/"} />

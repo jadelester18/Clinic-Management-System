@@ -24,6 +24,8 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import PropTypes from "prop-types";
 
+import * as patientService from "../../../../redux/patient";
+
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -146,34 +148,52 @@ const ViewListOfDoctors = () => {
     setSurName(event.target.value);
   };
 
-  //Fetching the Doctors list
+  // TEST
+  const searchDoctors = async () => {
+    const { data } = await patientService.searchDoctors({
+      firstName: firstName,
+      lastName: surName,
+      hmoId: HMOAccredited,
+      specId: specialization,
+      days: selectedDays,
+      pageNo: 0,
+      pageSize: 10,
+    });
+    console.log(data);
+  };
 
   useEffect(() => {
-    // Make the API call to fetch the list of doctors
-    fetch("http://localhost:8080/api/v1/doctors/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName: surName,
-        hmoId: HMOAccredited,
-        specId: specialization,
-        days: selectedDays,
-        pageNo: 0,
-        pageSize: 10,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Update the state with the fetched list of doctors
-        setDoctors(data.content);
-      })
-      .catch((error) => {
-        console.error("Error fetching doctors:", error);
-      });
+    searchDoctors();
   }, [HMOAccredited, firstName, selectedDays, specialization, surName]);
+
+  //Fetching the Doctors list
+
+  // useEffect(() => {
+  //   // Make the API call to fetch the list of doctors
+  //   fetch("http://localhost:8080/api/v1/doctors/search", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       firstName: firstName,
+  //       lastName: surName,
+  //       hmoId: HMOAccredited,
+  //       specId: specialization,
+  //       days: selectedDays,
+  //       pageNo: 0,
+  //       pageSize: 10,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // Update the state with the fetched list of doctors
+  //       setDoctors(data.content);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching doctors:", error);
+  //     });
+  // }, [HMOAccredited, firstName, selectedDays, specialization, surName]);
 
   //For Pagination
 

@@ -1,12 +1,36 @@
 import { Box, Button, Rating, Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TtyIcon from "@mui/icons-material/Tty";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 const LeftBarProfile = () => {
+  //Show Profile Data of Specific User
+  let location = useLocation();
+  let id = location.pathname.split("/")[2];
+
+  //Fetching the Profile info
+  const [profile, setProfile] = React.useState("");
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/doctors/${id}`
+        );
+        setProfile(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
   return (
     <Box flex={2} p={2}>
       <Stack
@@ -16,15 +40,16 @@ const LeftBarProfile = () => {
         spacing={2}
       >
         <Typography variant="caption">
-          <LocationOnIcon /> Camarines Sur, Iriga City
+          <LocationOnIcon />{" "}
+          {profile?.address?.city + " " + profile?.address?.country + " "}
         </Typography>
         <Typography variant="caption">
           <TtyIcon />
-          +63 9051438786
+          {profile?.contactNo}
         </Typography>
         <Typography variant="caption">
           <AlternateEmailIcon />
-          jadelesterballester@gmail.com
+          {profile?.email}
         </Typography>
         <Button
           variant="contained"

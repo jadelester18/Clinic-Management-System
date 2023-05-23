@@ -12,10 +12,42 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import dayjs from "dayjs";
 
 const PatientLeftBar = () => {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let user = userLoggedinDetails?.user?.user;
+  let accesstoken = userObject?.token;
+
+  //Get the user post
+  const [userPatientDetails, setUserPatientDetails] = useState();
+  console.log(userPatientDetails);
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/patients/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${accesstoken}`, // Use the 'Authorization' header
+            },
+          }
+        );
+        setUserPatientDetails(res.data);
+        console.log(res.data); // Log the response data
+      } catch (error) {
+        console.log("Post details have an issue.");
+      }
+    };
+    getUserDetails();
+  }, []);
+
   return (
     <Card
       sx={{
@@ -47,34 +79,43 @@ const PatientLeftBar = () => {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Lizard
+            {userPatientDetails?.firstName +
+              " " +
+              userPatientDetails?.middleName +
+              " " +
+              userPatientDetails?.lastName}
+            {userPatientDetails?.suffixName !== "" || null
+              ? userPatientDetails?.suffixName
+              : ""}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            10 April, 1999
+            {dayjs(userPatientDetails?.birthDate).format("DD MMMM, YYYY")}
           </Typography>
           <Stack
-            direction={{ xs: "row", md: "row" }}
-            justifyContent={{ xs: "center", md: "flex-start" }}
-            alignItems={{ xs: "center", md: "flex-start" }}
+            direction={{ xs: "column" }}
+            justifyContent={{ xs: "center" }}
+            alignItems={{ xs: "center" }}
             spacing={2}
             mt={2}
           >
             <Typography variant="body2" color="text.secondary">
-              Weight
-              <Typography variant="body1" color="text.primary">
-                60 kg
+              Registered At
+              <Typography variant="subtitle2" color="text.primary">
+                {dayjs(userPatientDetails?.registeredAt).format(
+                  "DD MMMM, YYYY"
+                )}
               </Typography>
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Height
-              <Typography variant="body1" color="text.primary">
-                1.72 m
+              Contact
+              <Typography variant="subtitle2" color="text.primary">
+                {userPatientDetails?.contactNo}
               </Typography>
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Blood
-              <Typography variant="body1" color="text.primary">
-                A+
+              Email
+              <Typography variant="subtitle2" color="text.primary">
+                {userPatientDetails?.email}
               </Typography>
             </Typography>
           </Stack>
@@ -93,31 +134,6 @@ const PatientLeftBar = () => {
       </Stack>
       <Stack direction={{ xs: "column" }}>
         <CardContent>
-          <Typography
-            gutterBottom
-            variant="subtitle2"
-            component="div"
-            color="text.primary"
-          >
-            Health Care Professional
-          </Typography>
-          {/* <Typography variant="body2" color="text.secondary">
-              10 April, 1999
-            </Typography> */}
-          <List sx={{ width: "100%", maxWidth: 360 }} dense>
-            <ListItem disablePadding>
-              {/* <ListItemButton> */}
-              <ListItemAvatar>
-                <Avatar
-                  src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
-                />
-              </ListItemAvatar>
-              <ListItemText variant="subtitle1" primary="Dr. Strange" />
-              {/* </ListItemButton> */}
-            </ListItem>
-            <Divider variant="inset" component="li" />
-          </List>
-
           <Typography
             gutterBottom
             variant="subtitle2"
@@ -143,7 +159,7 @@ const PatientLeftBar = () => {
             <Divider variant="inset" component="li" />
           </List>
 
-          <Typography
+          {/* <Typography
             gutterBottom
             variant="subtitle2"
             component="div"
@@ -151,33 +167,26 @@ const PatientLeftBar = () => {
           >
             Dependent
           </Typography>
-          {/* <Typography variant="body2" color="text.secondary">
-              10 April, 1999
-            </Typography> */}
           <List sx={{ width: "100%", maxWidth: 360 }} dense>
             <ListItem disablePadding>
-              {/* <ListItemButton> */}
               <ListItemAvatar>
                 <Avatar
                   src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
                 />
               </ListItemAvatar>
               <ListItemText variant="subtitle1" primary="Senku Ishigami" />
-              {/* </ListItemButton> */}
             </ListItem>
             <Divider variant="inset" component="li" />
             <ListItem disablePadding>
-              {/* <ListItemButton> */}
               <ListItemAvatar>
                 <Avatar
                   src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
                 />
               </ListItemAvatar>
               <ListItemText variant="subtitle1" primary="Senku Ishigami" />
-              {/* </ListItemButton> */}
             </ListItem>
             <Divider variant="inset" component="li" />
-          </List>
+          </List> */}
         </CardContent>
       </Stack>
     </Card>

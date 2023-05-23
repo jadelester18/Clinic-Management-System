@@ -17,7 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
 import {
   DateCalendar,
@@ -28,8 +28,91 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import CalendarSettings from "./calendarConfig/CalendarSettings";
+import ClockSettings from "./clockConfig/ClockSettings";
 
 const BookAppointment = () => {
+  //Show Profile Data of Specific User
+  let location = useLocation();
+  let id = location.pathname.split("/")[2];
+
+  //Fetching the Profile info
+  const [doctorDetails, setDoctorDetails] = React.useState("");
+
+  useEffect(() => {
+    const fetchDoctorDetailsData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/doctors/${id}`
+        );
+        setDoctorDetails(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchDoctorDetailsData();
+  }, []);
+
+  //For Showing the schedule
+  // Function to convert time format
+  const formatTime = (time) => {
+    const [hours, minutes, seconds] = time.split(":");
+    let suffix = "am";
+
+    // Convert hours to 12-hour format
+    let formattedHours = parseInt(hours);
+    if (formattedHours >= 12) {
+      formattedHours -= 12;
+      suffix = "pm";
+    }
+    if (formattedHours === 0) {
+      formattedHours = 12;
+    }
+
+    // Add leading zeros to minutes and seconds
+    const formattedMinutes = minutes.padStart(2, "0");
+    const formattedSeconds = seconds.padStart(2, "0");
+
+    // Return formatted time string
+    return `${formattedHours}:${formattedMinutes} ${suffix}`;
+  };
+  const scheduleInfo = {};
+
+  doctorDetails?.schedules?.forEach((day) => {
+    const morningStartTimes = [];
+    const afternoonStartTimes = [];
+    let morningEndTime = "";
+    let afternoonEndTime = "";
+
+    day?.timeSlots?.forEach((time) => {
+      const startTime = formatTime(time.startTime);
+      const endTime = formatTime(time.endTime);
+
+      // Check if the start time is in the morning or afternoon
+      const startHour = parseInt(time.startTime.split(":")[0]);
+      if (startHour >= 9 && startHour < 12) {
+        morningStartTimes.push(startTime);
+        morningEndTime = endTime;
+      } else if (startHour >= 13 && startHour <= 15) {
+        afternoonStartTimes.push(startTime);
+        afternoonEndTime = endTime;
+      }
+    });
+
+    const dayOfWeek = day.day;
+
+    scheduleInfo[dayOfWeek] = {
+      morningStart: morningStartTimes.length > 0 ? morningStartTimes[0] : "",
+      morningEnd: morningEndTime,
+      afternoonStart:
+        afternoonStartTimes.length > 0 ? afternoonStartTimes[0] : "",
+      afternoonEnd: afternoonEndTime,
+    };
+  });
+
   return (
     <Box p={2}>
       <Grid container spacing={2}>
@@ -64,34 +147,45 @@ const BookAppointment = () => {
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  Lizard
+                  {doctorDetails?.honorific +
+                    " " +
+                    doctorDetails?.firstName +
+                    " " +
+                    doctorDetails?.middleName +
+                    " " +
+                    doctorDetails?.lastName}{" "}
+                  {doctorDetails?.suffixName !== "" || null
+                    ? doctorDetails?.suffixName
+                    : ""}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  10 April, 1999
+                  {dayjs(doctorDetails?.birthDate).format("MMM DD, YYYY")}
                 </Typography>
                 <Stack
                   direction={{ xs: "row", md: "row" }}
-                  justifyContent={{ xs: "center", md: "flex-start" }}
-                  alignItems={{ xs: "center", md: "flex-start" }}
+                  justifyContent={{ xs: "center" }}
+                  alignItems={{ xs: "center" }}
                   spacing={2}
                   mt={2}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    Weight
+                    Title
                     <Typography variant="body1" color="text.primary">
-                      60 kg
+                      {doctorDetails?.suffixTitle}
                     </Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Height
+                    license No.
                     <Typography variant="body1" color="text.primary">
-                      1.72 m
+                      {doctorDetails?.licenseNo}
                     </Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Blood
+                    Presence
                     <Typography variant="body1" color="text.primary">
-                      A+
+                      {doctorDetails?.content?.isIn === false
+                        ? "Present"
+                        : "Absent/Leave"}
                     </Typography>
                   </Typography>
                 </Stack>
@@ -114,23 +208,28 @@ const BookAppointment = () => {
                   gutterBottom
                   variant="subtitle2"
                   component="div"
-                  color="text.primary"
+                  color="text.secondary"
                 >
-                  Health Care Professional
+                  HMO Accreditation
                 </Typography>
                 {/* <Typography variant="body2" color="text.secondary">
               10 April, 1999
             </Typography> */}
                 <List sx={{ width: "100%", maxWidth: 360 }} dense>
-                  <ListItem disablePadding>
-                    {/* <ListItemButton> */}
-                    <ListItemAvatar>
-                      <Avatar
-                        src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText variant="subtitle1" primary="Dr. Strange" />
-                    {/* </ListItemButton> */}
+                  <ListItem>
+                    <ListItem disablePadding>
+                      {doctorDetails?.hmoAccreditation?.map((hmo) => (
+                        <Typography
+                          variant="subtitle2"
+                          color="text.primary"
+                          key={hmo?.id}
+                        >
+                          {hmo?.title.length > 25
+                            ? hmo?.title.substring(0, 25) + "... "
+                            : hmo?.title}
+                        </Typography>
+                      ))}
+                    </ListItem>
                   </ListItem>
                   <Divider variant="inset" component="li" />
                 </List>
@@ -139,24 +238,55 @@ const BookAppointment = () => {
                   gutterBottom
                   variant="subtitle2"
                   component="div"
-                  color="text.primary"
+                  color="text.secondary"
                 >
-                  Health Plan
+                  Clinic Schedule
                 </Typography>
                 {/* <Typography variant="body2" color="text.secondary">
               10 April, 1999
             </Typography> */}
                 <List sx={{ width: "100%", maxWidth: 360 }} dense>
-                  <ListItem disablePadding>
-                    {/* <ListItemButton> */}
-                    <ListItemAvatar>
-                      <Avatar
-                        src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText variant="subtitle1" primary="Intellicare" />
-                    {/* </ListItemButton> */}
-                  </ListItem>
+                  {Object.entries(scheduleInfo).map(([dayOfWeek, schedule]) => (
+                    <ListItem>
+                      <ListItem disablePadding>
+                        <Typography
+                          variant="subtitle2"
+                          color="text.primary"
+                          key={dayOfWeek}
+                        >
+                          {dayOfWeek}
+                          <Typography
+                            variant="subtitle2"
+                            color="text.primary"
+                            sx={
+                              schedule.morningStart
+                                ? { display: "block" }
+                                : { display: "none" }
+                            }
+                          >
+                            Morning:{" "}
+                            {schedule.morningStart
+                              ? `${schedule.morningStart} - ${schedule.morningEnd}`
+                              : " "}
+                          </Typography>
+                          <Typography
+                            variant="subtitle2"
+                            color="text.primary"
+                            sx={
+                              schedule.afternoonStart
+                                ? { display: "block" }
+                                : { display: "none" }
+                            }
+                          >
+                            Afternoon:{" "}
+                            {schedule.afternoonStart
+                              ? `${schedule.afternoonStart} - ${schedule.afternoonEnd}`
+                              : " "}
+                          </Typography>
+                        </Typography>
+                      </ListItem>
+                    </ListItem>
+                  ))}
                   <Divider variant="inset" component="li" />
                 </List>
 
@@ -164,40 +294,27 @@ const BookAppointment = () => {
                   gutterBottom
                   variant="subtitle2"
                   component="div"
-                  color="text.primary"
+                  color="text.secondary"
                 >
-                  Dependent
+                  Contact Details
                 </Typography>
                 {/* <Typography variant="body2" color="text.secondary">
               10 April, 1999
             </Typography> */}
                 <List sx={{ width: "100%", maxWidth: 360 }} dense>
-                  <ListItem disablePadding>
-                    {/* <ListItemButton> */}
-                    <ListItemAvatar>
-                      <Avatar
-                        src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      variant="subtitle1"
-                      primary="Senku Ishigami"
-                    />
-                    {/* </ListItemButton> */}
+                  <ListItem>
+                    <ListItem disablePadding>
+                      <Typography variant="subtitle2" color="text.primary">
+                        {doctorDetails?.contactNo}
+                      </Typography>
+                    </ListItem>
                   </ListItem>
-                  <Divider variant="inset" component="li" />
-                  <ListItem disablePadding>
-                    {/* <ListItemButton> */}
-                    <ListItemAvatar>
-                      <Avatar
-                        src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      variant="subtitle1"
-                      primary="Senku Ishigami"
-                    />
-                    {/* </ListItemButton> */}
+                  <ListItem>
+                    <ListItem disablePadding>
+                      <Typography variant="subtitle2" color="text.primary">
+                        {doctorDetails?.email}
+                      </Typography>
+                    </ListItem>
                   </ListItem>
                   <Divider variant="inset" component="li" />
                 </List>
@@ -210,45 +327,14 @@ const BookAppointment = () => {
             <Grid item xs={12} sm={6} md={12} lg={6}>
               <Card sx={{ height: "100%" }}>
                 <CardContent>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer
-                      components={[
-                        "DateCalendar",
-                        "DateCalendar",
-                        "DateCalendar",
-                      ]}
-                    >
-                      <DemoItem>
-                        <DateCalendar defaultValue={dayjs("2022-04-17")} />
-                      </DemoItem>
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  <CalendarSettings />
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={12} lg={6}>
               <Card>
                 <CardContent>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer
-                      components={[
-                        "TimePicker",
-                        "MobileTimePicker",
-                        "DesktopTimePicker",
-                        "StaticTimePicker",
-                      ]}
-                    >
-                      <DemoItem>
-                        <StaticTimePicker
-                          defaultValue={dayjs("2022-04-17T15:30")}
-                          // orientation="landscape"
-                          slotProps={{
-                            actionBar: { actions: [] },
-                          }}
-                        />
-                      </DemoItem>
-                    </DemoContainer>
-                  </LocalizationProvider>
+                  <ClockSettings />
                 </CardContent>
               </Card>
             </Grid>

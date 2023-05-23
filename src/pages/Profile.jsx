@@ -17,8 +17,6 @@ import EditProfile from "../components/profile/EditProfile";
 import LeftBarProfile from "../components/profile/LeftBarProfile";
 import VideoProfileContent from "../components/profile/VideoProfileContent";
 import styled from "@mui/system/styled";
-import LooksOneIcon from "@mui/icons-material/LooksOne";
-import LooksTwoIcon from "@mui/icons-material/LooksTwo";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -187,7 +185,9 @@ function Profile() {
                       <Grid md={9}>
                         <Item>
                           <Typography gutterBottom variant="h5" component="div">
-                            {profile?.firstName +
+                            {profile?.honorific +
+                              " " +
+                              profile?.firstName +
                               " " +
                               profile?.middleName +
                               " " +
@@ -213,7 +213,7 @@ function Profile() {
                               variant="contained"
                               sx={{ borderRadius: 10 }}
                               component={Link}
-                              to={`/book-appointment`}
+                              to={`/book-appointment/${profile?.id}`}
                             >
                               Book An Appointment
                             </Button>
@@ -235,7 +235,14 @@ function Profile() {
                         <Typography variant="caption">Primary : </Typography>
                         {profile?.specialization?.description}
                       </Typography>
-                      <Typography variant="subtitle2">
+                      <Typography
+                        variant="subtitle2"
+                        sx={
+                          profile?.subspecialization?.description
+                            ? { display: "block" }
+                            : { display: "none" }
+                        }
+                      >
                         {/* <LooksTwoIcon /> */}
                         <Typography variant="caption">Secondary : </Typography>
                         {profile?.subspecialization?.description}

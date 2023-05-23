@@ -99,7 +99,14 @@ const DoctorsCardInfo = ({ doctor }) => {
         />
         <CardContent>
           <Typography variant="h6">
-            {doctor?.firstName + " " + doctor?.lastName}
+            {doctor?.honorific +
+              " " +
+              doctor?.firstName +
+              " " +
+              doctor?.middleName +
+              " " +
+              doctor?.lastName}{" "}
+            {doctor?.suffixName !== "" || null ? doctor?.suffixName : ""}
           </Typography>
         </CardContent>
         <CardContent>
