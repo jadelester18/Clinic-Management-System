@@ -385,7 +385,7 @@ function Navbar({ toggleMode, mode }) {
             <Login handleCloseLogin={handleCloseLogin} />
             <Container component="main">
               <Grid container>
-                <Grid item xs underline="none">
+                <Grid item underline="none">
                   <Button
                     sx={{ fontSize: ".8rem" }}
                     onClick={() => {
@@ -421,8 +421,8 @@ function Navbar({ toggleMode, mode }) {
           PaperProps={{
             style: { borderRadius: 20 },
           }}
-          // fullWidth={true}
-          maxWidth={{ xs: "100%" }}
+          fullWidth={true}
+          maxWidth={"lg"}
         >
           <DialogContent
             sx={{
@@ -436,7 +436,7 @@ function Navbar({ toggleMode, mode }) {
           >
             <Register handleCloseRegister={handleCloseRegister} />
             <Grid container>
-              <Grid item xs underline="none">
+              <Grid item underline="none">
                 <Button
                   sx={{ fontSize: ".8rem" }}
                   onClick={() => {
@@ -472,14 +472,13 @@ function Navbar({ toggleMode, mode }) {
             style: { borderRadius: 20 },
           }}
           fullWidth={true}
-          maxWidth={"sm"}
         >
           <DialogContent>
             <ForgotPassword
               handleCloseForgotPassword={handleCloseForgotPassword}
             />
             <Grid container>
-              <Grid item xs underline="none">
+              <Grid item underline="none">
                 <Button
                   sx={{ fontSize: ".8rem" }}
                   onClick={() => {

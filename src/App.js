@@ -8,7 +8,13 @@ import DoctorHome from "./pages/doctor/DoctorHome";
 import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage";
 import PageNotFound from "./pages/PageNotFound";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { themeSettings } from "./components/theme/Theme";
 import Navbar from "./components/navbar/Navbar";
@@ -16,6 +22,7 @@ import { useEffect, useState } from "react";
 import PatientHome from "./pages/patient/PatientHome";
 import BookAppointment from "./components/patient/appointment/SetAppointment/BookAppointment";
 import { useSelector } from "react-redux";
+import VerifyUser from "./pages/VerifyUser";
 
 function App() {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -159,6 +166,26 @@ function App() {
             element={
               userObject === null ? (
                 <ChangePassword />
+              ) : user?.enabled === true ? (
+                user?.role === "ROLE_DOCTOR" ? (
+                  <Navigate to={"/doctor"} replace={true} />
+                ) : user?.role === "ROLE_NURSE" ? (
+                  <Navigate to={"/nurse"} replace={true} />
+                ) : user?.role === "ROLE_PATIENT" ? (
+                  <Navigate to={"/patient"} replace={true} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              ) : (
+                <Navigate to={"/"} />
+              )
+            }
+          />
+          <Route
+            path="/verify/:token"
+            element={
+              userObject !== null ? (
+                <VerifyUser />
               ) : user?.enabled === true ? (
                 user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />

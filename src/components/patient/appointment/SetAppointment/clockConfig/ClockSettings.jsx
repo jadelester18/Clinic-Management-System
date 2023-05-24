@@ -1,17 +1,69 @@
 import { LocalizationProvider, StaticTimePicker } from "@mui/x-date-pickers";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import React from "react";
+import React, { useEffect } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { TextField } from "@mui/material";
 
-const ClockSettings = () => {
-  const disableTime = (time) => {
-    const selectedTime = dayjs(time);
-    const disabledStartTime = dayjs(selectedTime).hour(8).minute(0);
-    const disabledEndTime = dayjs(selectedTime).hour(9).minute(0);
+const ClockSettings = ({ selectedDateInCalendar, onSelectedTimeChange }) => {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let token = userObject.token;
 
-    return selectedTime.isBetween(disabledStartTime, disabledEndTime);
+  let location = useLocation();
+  let id = location.pathname.split("/")[2];
+
+  // Fetching the Doctor Available Time
+  const [profile, setProfile] = React.useState([]);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/doctors/${id}/schedules/available-slots/${selectedDateInCalendar}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Use the 'Authorization' header
+            },
+          }
+        );
+        setProfile(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchProfileData();
+  }, [token, selectedDateInCalendar, id]);
+
+  const isTimeDisabled = (time) => {
+    const formattedTime = dayjs(time).format("HH:mm:ss");
+
+    return !profile.some((slot) => {
+      const startTime = slot.startTime;
+      const endTime = slot.endTime;
+      return formattedTime >= startTime && formattedTime < endTime;
+    });
   };
+
+  const [selectedTime, setSelectedTime] = React.useState("");
+
+  const handleTimeChange = (time) => {
+    const formattedDate = dayjs(time).format("HH:mm:ss");
+    setSelectedTime(formattedDate);
+    onSelectedTimeChange(formattedDate); // Pass the selected date to the callback
+
+    const matchedTime = getMatchTime();
+    console.log("Matched Time:", matchedTime?.id);
+  };
+
+  console.log("Selected Time:", selectedTime);
+
+  function getMatchTime() {
+    return profile.find((timeMatch) => timeMatch.startTime === selectedTime);
+  }
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -27,11 +79,12 @@ const ClockSettings = () => {
           <StaticTimePicker
             defaultValue={dayjs("2022-04-17T15:30")}
             minutesStep={15}
-            shouldDisableTime={disableTime}
-            // orientation="landscape"
             slotProps={{
               actionBar: { actions: [] },
             }}
+            renderInput={(params) => <TextField {...params} />}
+            shouldDisableTime={isTimeDisabled}
+            onChange={handleTimeChange}
           />
         </DemoItem>
       </DemoContainer>

@@ -21,6 +21,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import * as profileData from "../redux/GetApiCalls/profile";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -51,25 +52,20 @@ function Profile() {
     setOpenEditProfile(false);
   };
 
-  //Show Profile Data of Specific User
-  let location = useLocation();
-  let id = location.pathname.split("/")[2];
-
   //Fetching the Profile info
   const [profile, setProfile] = React.useState("");
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/doctors/${id}`
-        );
-        setProfile(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchProfileData = async () => {
+    try {
+      const response = await profileData.getDoctorProfile();
+      setProfile(response.data);
+      console.log("Specialization LIST ", response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     fetchProfileData();
   }, []);
 

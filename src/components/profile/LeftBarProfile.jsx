@@ -7,6 +7,7 @@ import TtyIcon from "@mui/icons-material/Tty";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import * as profileData from "../../redux/GetApiCalls/profile";
 
 const LeftBarProfile = () => {
   //Show Profile Data of Specific User
@@ -16,18 +17,17 @@ const LeftBarProfile = () => {
   //Fetching the Profile info
   const [profile, setProfile] = React.useState("");
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/doctors/${id}`
-        );
-        setProfile(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchProfileData = async () => {
+    try {
+      const response = await profileData.getProfileLeftBar();
+      setProfile(response.data);
+      console.log("Specialization LIST ", response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     fetchProfileData();
   }, []);
 

@@ -17,15 +17,18 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import DoctorsCardInfo from "./doctorsCard/DoctorsCardInfo";
-import axios from "axios";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import PropTypes from "prop-types";
+import { http } from "../../../../redux/http";
 
-import * as patientService from "../../../../redux/patient";
-import * as hmoService from "../../../../redux/hmo";
+import * as patientService from "../../../../redux/PostApiCalls/patient";
+import * as hmoService from "../../../../redux/GetApiCalls/hmo";
+import * as specializationService from "../../../../redux/GetApiCalls/specialization";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -97,6 +100,11 @@ TablePaginationActions.propTypes = {
 };
 
 const ViewListOfDoctors = () => {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let token = userObject.token;
+  let user = userLoggedinDetails?.user?.user;
+
   const [HMOList, setHMOList] = useState([]);
   const [SpecializationList, setSpecializationList] = useState([]);
   const [firstName, setfirstName] = useState("");
@@ -109,39 +117,46 @@ const ViewListOfDoctors = () => {
   const [specialization, setSpecialization] = React.useState("");
   const [location, setLocation] = React.useState("");
 
-  const fetchHMOListData = async () => {
-    try {
-      const response = await hmoService.getHmos();
-      setHMOList(response.data);
-      console.log("HMO LIST ", response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   // Fetching the HMO list
+
   useEffect(() => {
+    const fetchHMOListData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/api/v1/hmos`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Use the 'Authorization' header
+          },
+        });
+        setHMOList(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
     fetchHMOListData();
-  }, []);
+  }, [token]);
 
-  //Fetching the Specialization list
-  // useEffect(() => {
-  //   const fetchSpecializationListData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `http://localhost:8080/api/v1/specializations`
-  //       );
-  //       setSpecializationList(response.data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
+  // Fetching the Specialization list
 
-  //   fetchSpecializationListData();
-  // }, []);
+  useEffect(() => {
+    const fetchSpecializationListData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/v1/specializations`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Use the 'Authorization' header
+            },
+          }
+        );
+        setSpecializationList(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchSpecializationListData();
+  }, [token]);
 
   //For Filter Fields
-
   const handleChangeFirstName = (event) => {
     setfirstName(event.target.value);
   };
@@ -150,55 +165,36 @@ const ViewListOfDoctors = () => {
     setSurName(event.target.value);
   };
 
-  // TEST
-  const searchDoctors = async () => {
-    const { data } = await patientService.searchDoctors({
-      firstName: firstName,
-      lastName: surName,
-      hmoId: HMOAccredited,
-      specId: specialization,
-      days: selectedDays,
-      pageNo: 0,
-      pageSize: 10,
-    });
-    console.log(data);
-  };
-
+  // Fetching the Doctors list
   useEffect(() => {
-    searchDoctors();
+    // Make the API call to fetch the list of doctors
+    fetch("http://localhost:8080/api/v1/doctors/search", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: surName,
+        hmoId: HMOAccredited,
+        specId: specialization,
+        days: selectedDays,
+        pageNo: 0,
+        pageSize: 10,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Update the state with the fetched list of doctors
+        setDoctors(data.content);
+      })
+      .catch((error) => {
+        console.error("Error fetching doctors:", error);
+      });
   }, [HMOAccredited, firstName, selectedDays, specialization, surName]);
 
-  //Fetching the Doctors list
-
-  // useEffect(() => {
-  //   // Make the API call to fetch the list of doctors
-  //   fetch("http://localhost:8080/api/v1/doctors/search", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       firstName: firstName,
-  //       lastName: surName,
-  //       hmoId: HMOAccredited,
-  //       specId: specialization,
-  //       days: selectedDays,
-  //       pageNo: 0,
-  //       pageSize: 10,
-  //     }),
-  //   })
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       // Update the state with the fetched list of doctors
-  //       setDoctors(data.content);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching doctors:", error);
-  //     });
-  // }, [HMOAccredited, firstName, selectedDays, specialization, surName]);
-
   //For Pagination
-
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - doctors.length) : 0;
@@ -413,7 +409,7 @@ const ViewListOfDoctors = () => {
           </Grid>
         ))}
         {emptyRows > 0 && (
-          <Grid style={{ height: 53 * emptyRows }}>
+          <Grid item sx={{ height: 53 * emptyRows }}>
             <Typography variant="body2">No Content</Typography>
           </Grid>
         )}

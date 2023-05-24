@@ -7,53 +7,56 @@ import {
   CardContent,
   Checkbox,
   Divider,
-  FormControlLabel,
   Grid,
   List,
   ListItem,
-  ListItemAvatar,
-  ListItemText,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import {
-  DateCalendar,
-  LocalizationProvider,
-  StaticTimePicker,
-} from "@mui/x-date-pickers";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
 import CalendarSettings from "./calendarConfig/CalendarSettings";
 import ClockSettings from "./clockConfig/ClockSettings";
+import * as profileData from "../../../../redux/GetApiCalls/profile";
+import * as bookAppointment from "../../../../redux/PostApiCalls/patientAppointment";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import app from "../../../../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 
 const BookAppointment = () => {
-  //Show Profile Data of Specific User
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let token = userObject.token;
+  let user = userLoggedinDetails?.user?.user;
+
   let location = useLocation();
   let id = location.pathname.split("/")[2];
 
   //Fetching the Profile info
-  const [doctorDetails, setDoctorDetails] = React.useState("");
+  const [profile, setProfile] = React.useState("");
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await profileData.getDoctorProfile();
+      setProfile(response.data);
+      console.log("Specialization LIST ", response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    const fetchDoctorDetailsData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/doctors/${id}`
-        );
-        setDoctorDetails(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchDoctorDetailsData();
+    fetchProfileData();
   }, []);
 
   //For Showing the schedule
@@ -81,7 +84,7 @@ const BookAppointment = () => {
   };
   const scheduleInfo = {};
 
-  doctorDetails?.schedules?.forEach((day) => {
+  profile?.schedules?.forEach((day) => {
     const morningStartTimes = [];
     const afternoonStartTimes = [];
     let morningEndTime = "";
@@ -112,6 +115,100 @@ const BookAppointment = () => {
       afternoonEnd: afternoonEndTime,
     };
   });
+
+  //For Uploading docs and saving the other data
+  const [date, setDate] = useState("");
+  const [timeSlotId, setTimeSlotId] = useState("");
+  const [remark, setRemark] = useState("");
+  const [doctorId, setDoctorId] = useState("");
+  const [selectedFile, setSelectedFile] = useState([]);
+
+  const handlePost = (e) => {
+    e.preventDefault();
+    if (selectedFile !== null) {
+      const fileName = new Date().getTime() + selectedFile?.name;
+      const storage = getStorage(app);
+      const storageRef = ref(storage, fileName);
+
+      const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+      // Listen for state changes, errors, and completion of the upload.
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          // setUploadPercent(progress);
+          // console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          // A full list of error codes is available at
+          // https://firebase.google.com/docs/storage/web/handle-errors
+          switch (error.code) {
+            case "storage/unauthorized":
+              // User doesn't have permission to access the object
+              break;
+            case "storage/canceled":
+              // User canceled the upload
+              break;
+
+            // ...
+
+            case "storage/unknown":
+              // Unknown error occurred, inspect error.serverResponse
+              break;
+          }
+        },
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            // console.log("Image File available at", downloadURL);
+            fetch(`http://localhost:8080/api/v1/appointments`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/JSON",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                date: date,
+                timeSlotId: timeSlotId,
+                remark: remark,
+                doctorId: doctorId,
+                attachmentUrls: downloadURL,
+              }),
+              // handleNewPost()
+            }).then((data) => {
+              // setUploadPercent(0);
+              setSelectedFile(null);
+              // alert("Your Post was upload successfully");
+              // window.location.reload(true);
+            });
+          });
+        }
+      );
+    }
+  };
+
+  //Geting the date from calendar pass it to time/clock
+  const handleSelectedDateChange = (date) => {
+    setDate(date);
+  };
+
+  //Geting the time from Clock
+  const handleSelectedTimeChange = (time) => {
+    setTimeSlotId(time);
+  };
+
+  console.log(date);
+  console.log(timeSlotId);
 
   return (
     <Box p={2}>
@@ -147,19 +244,19 @@ const BookAppointment = () => {
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  {doctorDetails?.honorific +
+                  {profile?.honorific +
                     " " +
-                    doctorDetails?.firstName +
+                    profile?.firstName +
                     " " +
-                    doctorDetails?.middleName +
+                    profile?.middleName +
                     " " +
-                    doctorDetails?.lastName}{" "}
-                  {doctorDetails?.suffixName !== "" || null
-                    ? doctorDetails?.suffixName
+                    profile?.lastName}{" "}
+                  {profile?.suffixName !== "" || null
+                    ? profile?.suffixName
                     : ""}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {dayjs(doctorDetails?.birthDate).format("MMM DD, YYYY")}
+                  {dayjs(profile?.birthDate).format("MMM DD, YYYY")}
                 </Typography>
                 <Stack
                   direction={{ xs: "row", md: "row" }}
@@ -171,19 +268,19 @@ const BookAppointment = () => {
                   <Typography variant="body2" color="text.secondary">
                     Title
                     <Typography variant="body1" color="text.primary">
-                      {doctorDetails?.suffixTitle}
+                      {profile?.suffixTitle}
                     </Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     license No.
                     <Typography variant="body1" color="text.primary">
-                      {doctorDetails?.licenseNo}
+                      {profile?.licenseNo}
                     </Typography>
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Presence
                     <Typography variant="body1" color="text.primary">
-                      {doctorDetails?.content?.isIn === false
+                      {profile?.content?.isIn === false
                         ? "Present"
                         : "Absent/Leave"}
                     </Typography>
@@ -218,7 +315,7 @@ const BookAppointment = () => {
                 <List sx={{ width: "100%", maxWidth: 360 }} dense>
                   <ListItem>
                     <ListItem disablePadding>
-                      {doctorDetails?.hmoAccreditation?.map((hmo) => (
+                      {profile?.hmoAccreditation?.map((hmo) => (
                         <Typography
                           variant="subtitle2"
                           color="text.primary"
@@ -305,14 +402,14 @@ const BookAppointment = () => {
                   <ListItem>
                     <ListItem disablePadding>
                       <Typography variant="subtitle2" color="text.primary">
-                        {doctorDetails?.contactNo}
+                        {profile?.contactNo}
                       </Typography>
                     </ListItem>
                   </ListItem>
                   <ListItem>
                     <ListItem disablePadding>
                       <Typography variant="subtitle2" color="text.primary">
-                        {doctorDetails?.email}
+                        {profile?.email}
                       </Typography>
                     </ListItem>
                   </ListItem>
@@ -327,14 +424,20 @@ const BookAppointment = () => {
             <Grid item xs={12} sm={6} md={12} lg={6}>
               <Card sx={{ height: "100%" }}>
                 <CardContent>
-                  <CalendarSettings />
+                  <CalendarSettings
+                    onSelectedDateChange={handleSelectedDateChange}
+                    date={date}
+                  />
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12} sm={6} md={12} lg={6}>
               <Card>
                 <CardContent>
-                  <ClockSettings />
+                  <ClockSettings
+                    selectedDateInCalendar={date}
+                    onSelectedTimeChange={handleSelectedTimeChange}
+                  />
                 </CardContent>
               </Card>
             </Grid>
@@ -350,6 +453,7 @@ const BookAppointment = () => {
                         autoComplete="cheifComplaint"
                         fullWidth
                         multiline
+                        onChange={(e) => setRemark(e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -364,7 +468,13 @@ const BookAppointment = () => {
                         startIcon={<CloudUploadIcon />}
                       >
                         Upload File
-                        <input hidden accept="image/*" multiple type="file" />
+                        <input
+                          hidden
+                          accept="image/*"
+                          multiple
+                          type="file"
+                          onChange={(e) => setRemark(e.target.files[0])}
+                        />
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
@@ -381,7 +491,11 @@ const BookAppointment = () => {
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Button variant="contained" sx={{ mr: 2 }}>
+                      <Button
+                        variant="contained"
+                        sx={{ mr: 2 }}
+                        onClick={handlePost}
+                      >
                         Book Now
                       </Button>
                       <Button variant="outlined">Cancel</Button>
