@@ -2,12 +2,18 @@ import {
   Avatar,
   CardContent,
   Divider,
+  FormControl,
   FormControlLabel,
+  Grid,
   IconButton,
+  InputLabel,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  MenuItem,
+  Select,
+  Stack,
   Switch,
   Typography,
   styled,
@@ -49,14 +55,14 @@ const Android12Switch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const NurseConsultation = ({
+const QueueScheduled = ({
   handleClickOpenViewPatientProfile,
   handleClickOpenCreateAppointment,
 }) => {
   return (
     <CardContent>
       <Typography variant="body2" p={2}>
-        Consulting Patient:
+        Scheduled Patient:
       </Typography>
       <List
         sx={{
@@ -85,24 +91,57 @@ const NurseConsultation = ({
               </React.Fragment>
             }
           />
-          <IconButton
-            color="secondary"
-            aria-label="upload picture"
-            component="label"
-            onClick={handleClickOpenViewPatientProfile}
-          >
-            {/* <input hidden accept="image/*" type="file" /> */}
-            <ViewInArIcon />
-          </IconButton>
-          <IconButton
-            color="success"
-            aria-label="upload picture"
-            component="label"
-            onClick={handleClickOpenCreateAppointment}
-          >
-            <DrawIcon />
-          </IconButton>
-          <FormControlLabel control={<Android12Switch defaultChecked />} />
+          <Grid container spacing={2} justifyContent={"right"}>
+            <Grid item>
+              <Typography variant="h6">1: 45 pm</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">-</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6">32 min</Typography>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} justifyContent={"right"}>
+            <Grid item>
+              <IconButton
+                color="secondary"
+                aria-label="upload picture"
+                component="label"
+                onClick={handleClickOpenViewPatientProfile}
+              >
+                {/* <input hidden accept="image/*" type="file" /> */}
+                <ViewInArIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <IconButton
+                color="success"
+                aria-label="upload picture"
+                component="label"
+                onClick={handleClickOpenCreateAppointment}
+              >
+                <DrawIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <FormControl sx={{ minWidth: 120 }} size="small">
+                <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Age"
+                >
+                  <MenuItem value={10}>Schedule</MenuItem>
+                  <MenuItem value={20}>For Assessment</MenuItem>
+                  <MenuItem value={30}>On Going Assessment</MenuItem>
+                  <MenuItem value={20}>For Consultation</MenuItem>
+                  <MenuItem value={30}>On Going Consultation</MenuItem>
+                  <MenuItem value={30}>Finish</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
         </ListItem>
         <Divider variant="inset" component="li" />
       </List>
@@ -110,4 +149,4 @@ const NurseConsultation = ({
   );
 };
 
-export default NurseConsultation;
+export default QueueScheduled;

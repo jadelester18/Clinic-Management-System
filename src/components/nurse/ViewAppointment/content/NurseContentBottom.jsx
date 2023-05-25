@@ -19,8 +19,15 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { StaticDateTimePicker } from "@mui/x-date-pickers";
 import axios from "axios";
-import NurseAssessment from "./Assessment/NurseAssessment";
-import NurseConsultation from "./Consultation/NurseConsultation";
+import NurseAssessment from "./Assessment/QueueAssessment";
+import NurseConsultation from "./Consultation/QueueConsultation";
+import QueueScheduled from "./Scheduled/QueueScheduled";
+import QueueForAssessment from "./ForAssessment/QueueForAssessment";
+import QueueAssessment from "./Assessment/QueueAssessment";
+import QueueForConsultation from "./ForConsultation/QueueForConsultation";
+import QueueConsultation from "./Consultation/QueueConsultation";
+import QueueFinished from "./Finished/QueueFinished";
+import ApprovedAppointment from "../AppointmentList/ApprovedAppointment";
 
 const NurseContentBottom = () => {
   //Fetching the list of IDs
@@ -82,80 +89,109 @@ const NurseContentBottom = () => {
   };
 
   //For Option Assessment and Consultation List
-  const [menuData, setMenuData] = useState("Assessment");
+  const [procedureType, setProcedureType] = useState("Appointment");
+
+  //For Option Assessment and Consultation List
+  const [menuData, setMenuData] = useState("SCHEDULED");
   return (
-    <Box
-      flex={2}
-      p={2}
-      sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
-    >
+    <Box flex={2} p={2}>
       <Card sx={{ height: 440, borderRadius: 10 }} elevation={3}>
-        <CardContent>
-          <Stack direction="row" spacing={2}>
-            <Typography>Type :</Typography>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              Queue
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              Appointment
-            </Button>
-            </Stack>
+        <CardContent mt={6}>
+          <Grid container spacing={2} ml={4}>
+            <Grid item>
+              <Typography>Type :</Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="outlined"
+                onClick={() => setProcedureType("Appointment")}
+                sx={{ borderRadius: 10 }}
+              >
+                Appointment
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                variant="outlined"
+                onClick={() => setProcedureType("Queue")}
+                sx={{ borderRadius: 10 }}
+              >
+                Queue
+              </Button>
+            </Grid>
+          </Grid>
         </CardContent>
         <CardContent>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              SCHEDULED
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              FOR ASSESSMENT
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Assessment")}
-              sx={{ borderRadius: 10 }}
-            >
-              ONGOING ASSESSMENT
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Assessment")}
-              sx={{ borderRadius: 10 }}
-            >
-              FOR CONSULTATION
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              ONGOING CONSULTATION
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              FINISHED
-            </Button>
-          </Stack>
-          {menuData === "Assessment" && (
-            <NurseAssessment
+          {procedureType === "Queue" && (
+            <Grid container spacing={2} ml={4}>
+              <Grid item>
+                <Typography>Status :</Typography>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => setMenuData("SCHEDULED")}
+                  sx={{ borderRadius: 10 }}
+                  size="small"
+                >
+                  SCHEDULED
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => setMenuData("FOR ASSESSMENT")}
+                  sx={{ borderRadius: 10 }}
+                  size="small"
+                >
+                  FOR ASSESSMENT
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => setMenuData("ONGOING ASSESSMENT")}
+                  sx={{ borderRadius: 10 }}
+                  size="small"
+                >
+                  ONGOING ASSESSMENT
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => setMenuData("FOR CONSULTATION")}
+                  sx={{ borderRadius: 10 }}
+                  size="small"
+                >
+                  FOR CONSULTATION
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => setMenuData("ONGOING CONSULTATION")}
+                  sx={{ borderRadius: 10 }}
+                  size="small"
+                >
+                  ONGOING CONSULTATION
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  onClick={() => setMenuData("FINISHED")}
+                  sx={{ borderRadius: 10 }}
+                  size="small"
+                >
+                  FINISHED
+                </Button>
+              </Grid>
+            </Grid>
+          )}
+
+          {procedureType === "Appointment" && (
+            <ApprovedAppointment
               handleClickOpenViewPatientProfile={
                 handleClickOpenViewPatientProfile
               }
@@ -164,15 +200,70 @@ const NurseContentBottom = () => {
               }
             />
           )}
-          {menuData === "Consultation" && (
-            <NurseConsultation
-              handleClickOpenViewPatientProfile={
-                handleClickOpenViewPatientProfile
-              }
-              handleClickOpenCreateAppointment={
-                handleClickOpenCreateAppointment
-              }
-            />
+
+          {procedureType === "Queue" && (
+            <>
+              {menuData === "SCHEDULED" && (
+                <QueueScheduled
+                  handleClickOpenViewPatientProfile={
+                    handleClickOpenViewPatientProfile
+                  }
+                  handleClickOpenCreateAppointment={
+                    handleClickOpenCreateAppointment
+                  }
+                />
+              )}
+              {menuData === "FOR ASSESSMENT" && (
+                <QueueForAssessment
+                  handleClickOpenViewPatientProfile={
+                    handleClickOpenViewPatientProfile
+                  }
+                  handleClickOpenCreateAppointment={
+                    handleClickOpenCreateAppointment
+                  }
+                />
+              )}
+              {menuData === "ONGOING ASSESSMENT" && (
+                <QueueAssessment
+                  handleClickOpenViewPatientProfile={
+                    handleClickOpenViewPatientProfile
+                  }
+                  handleClickOpenCreateAppointment={
+                    handleClickOpenCreateAppointment
+                  }
+                />
+              )}
+              {menuData === "FOR CONSULTATION" && (
+                <QueueForConsultation
+                  handleClickOpenViewPatientProfile={
+                    handleClickOpenViewPatientProfile
+                  }
+                  handleClickOpenCreateAppointment={
+                    handleClickOpenCreateAppointment
+                  }
+                />
+              )}
+              {menuData === "ONGOING CONSULTATION" && (
+                <QueueConsultation
+                  handleClickOpenViewPatientProfile={
+                    handleClickOpenViewPatientProfile
+                  }
+                  handleClickOpenCreateAppointment={
+                    handleClickOpenCreateAppointment
+                  }
+                />
+              )}
+              {menuData === "FINISHED" && (
+                <QueueFinished
+                  handleClickOpenViewPatientProfile={
+                    handleClickOpenViewPatientProfile
+                  }
+                  handleClickOpenCreateAppointment={
+                    handleClickOpenCreateAppointment
+                  }
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>

@@ -23,6 +23,7 @@ import PatientHome from "./pages/patient/PatientHome";
 import BookAppointment from "./components/patient/appointment/SetAppointment/BookAppointment";
 import { useSelector } from "react-redux";
 import VerifyUser from "./pages/VerifyUser";
+import { CssBaseline } from "@mui/material";
 
 function App() {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -41,8 +42,9 @@ function App() {
 
   const theme = createTheme(themeSettings(mode));
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <Navbar toggleMode={toggleMode} mode={mode} />
         <Routes>
           <Route
@@ -223,8 +225,8 @@ function App() {
           />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 

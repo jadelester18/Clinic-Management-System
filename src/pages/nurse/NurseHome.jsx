@@ -50,7 +50,6 @@ import NurseDashboard from "./dashboard/NurseDashboard";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import StreetviewIcon from "@mui/icons-material/Streetview";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
-import NurseQueue from "../../components/nurse/ViewAppointment/content/Queue/NurseQueue";
 
 const drawerWidth = 240;
 
@@ -619,8 +618,6 @@ function NurseHome({ toggleMode, mode }) {
           {menuData === "Dashboard" && <NurseDashboard />}
           {menuData === "New Appointment" && <NurseViewNewAppointment />}
           {menuData === "Appointments" && <NurseViewAppointmentQueue />}
-          {/* {menuData === "Appointments" && <NurseQueue />} */}
-          {/* {menuData === "Queu" && <NurseViewAppointmentQueue />} */}
         </Box>
       </Box>
     </>

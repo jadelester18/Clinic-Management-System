@@ -7,15 +7,11 @@ function NurseViewNewAppointment() {
   return (
     <Box>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} lg={4}>
-              <NurseLeftBar />
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <NurseRightBar />
-            </Grid>
-          </Grid>
+        <Grid item xs={12} lg={4}>
+          <NurseLeftBar />
+        </Grid>
+        <Grid item xs={12} lg={8}>
+          <NurseRightBar />
         </Grid>
       </Grid>
     </Box>

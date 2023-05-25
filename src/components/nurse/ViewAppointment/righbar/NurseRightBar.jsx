@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,9 +17,12 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
+  Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import DrawIcon from "@mui/icons-material/Draw";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -87,6 +91,7 @@ function NurseRightBar() {
   const handleClickCloseViewPatientProfile = () => {
     setOpenViewPatientProfile(false);
   };
+
   return (
     <Box flex={2} p={2}>
       <Card sx={{ height: 440, borderRadius: 10 }} elevation={3}>
@@ -101,7 +106,7 @@ function NurseRightBar() {
               borderRadius: 10,
             }}
           >
-            <ListItem alignItems="flex-start">
+            <ListItemButton alignItems="flex-start">
               <ListItemAvatar>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
               </ListItemAvatar>
@@ -121,48 +126,30 @@ function NurseRightBar() {
                   </React.Fragment>
                 }
               />
-              <IconButton
-                color="secondary"
-                aria-label="upload picture"
-                component="label"
-                onClick={handleClickOpenViewPatientProfile}
+
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                // justifyContent="center"
+                // alignItems="center"
+                spacing={2}
               >
-                {/* <input hidden accept="image/*" type="file" /> */}
-                <ViewInArIcon />
-              </IconButton>
-            </ListItem>
+                <Chip label="1" color="primary" />
+                <Chip
+                  label="5"
+                  sx={{ backgroundColor: "orange", color: "black" }}
+                />
+                <Typography sx={{ color: "green" }} variant="body1">
+                  Available
+                </Typography>
+                <Typography sx={{ color: "red" }} variant="body1">
+                  With Patient
+                </Typography>
+              </Stack>
+            </ListItemButton>
             <Divider variant="inset" component="li" />
           </List>
         </CardContent>
       </Card>
-
-      {/* Checking profile of the patient with history */}
-      <Dialog
-        open={openViewPatientProfile}
-        onClose={handleClickCloseViewPatientProfile}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Are you sure you want to update this appointment?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            This will reflect to that date.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClickCloseViewPatientProfile}>Disagree</Button>
-          <Button
-            onClick={() => {
-              handleClickCloseViewPatientProfile();
-            }}
-            autoFocus
-          >
-            Agree
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }

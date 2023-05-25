@@ -146,7 +146,7 @@ function NurseLeftBar() {
   };
 
   return (
-    <Box flex={1} p={2} sx={{ display: { xs: "block" } }}>
+    <Box flex={1} p={2}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ position: "relative" }}>
           <StaticDatePicker

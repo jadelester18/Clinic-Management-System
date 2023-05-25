@@ -3,7 +3,6 @@ import React from "react";
 import NurseLeftBar from "../../../components/nurse/ViewAppointment/leftbar/NurseLeftBar";
 import NurseRightBar from "../../../components/nurse/ViewAppointment/righbar/NurseRightBar";
 import NurseContentBottom from "../../../components/nurse/ViewAppointment/content/NurseContentBottom";
-import NurseQueue from "../../../components/nurse/ViewAppointment/content/Queue/NurseQueue";
 
 function NurseViewAppointmentQueue() {
   return (
@@ -21,9 +20,6 @@ function NurseViewAppointmentQueue() {
         </Grid>
         <Grid item xs={12}>
           <NurseContentBottom />
-        </Grid>
-        <Grid item xs={12}>
-          <NurseQueue />
         </Grid>
       </Grid>
     </Box>
