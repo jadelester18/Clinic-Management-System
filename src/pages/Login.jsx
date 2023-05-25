@@ -28,6 +28,9 @@ function Login({ handleCloseLogin }) {
         user
       );
       dispatch(loginSuccess(res.data));
+
+      // put accessToken in localStorage
+      localStorage.setItem("accessToken", res.data.token);
     } catch (error) {
       // setErrorMessage(error.response.data.message);
       dispatch(loginFailure(eroor));

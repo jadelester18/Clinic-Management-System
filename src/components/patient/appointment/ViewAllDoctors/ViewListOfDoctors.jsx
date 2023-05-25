@@ -214,7 +214,7 @@ const ViewListOfDoctors = () => {
     setSelectedDays([]);
     setSelectedHmo(null);
     setSpecialization(null);
-    setLocation("");
+    // setLocation("");
   };
 
   //Checking if screen is extra small
