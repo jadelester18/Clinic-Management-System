@@ -1,4 +1,6 @@
 import {
+  Autocomplete,
+  Avatar,
   Box,
   Button,
   Card,
@@ -8,21 +10,62 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
+  FormControlLabel,
   Grid,
-  Stack,
+  IconButton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Switch,
   TextField,
+  Tooltip,
   Typography,
+  styled,
 } from "@mui/material";
-
-import React, { useEffect, useState } from "react";
+import DrawIcon from "@mui/icons-material/Draw";
+import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import React, { useEffect } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { StaticDateTimePicker } from "@mui/x-date-pickers";
 import axios from "axios";
-import NurseAssessment from "./Assessment/NurseAssessment";
-import NurseConsultation from "./Consultation/NurseConsultation";
 
-const NurseContentBottom = () => {
+const Android12Switch = styled(Switch)(({ theme }) => ({
+  padding: 8,
+  "& .MuiSwitch-track": {
+    borderRadius: 22 / 2,
+    "&:before, &:after": {
+      content: '""',
+      position: "absolute",
+      top: "50%",
+      transform: "translateY(-50%)",
+      width: 16,
+      height: 16,
+    },
+    "&:before": {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main)
+      )}" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/></svg>')`,
+      left: 12,
+    },
+    "&:after": {
+      backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24"><path fill="${encodeURIComponent(
+        theme.palette.getContrastText(theme.palette.primary.main)
+      )}" d="M19,13H5V11H19V13Z" /></svg>')`,
+      right: 12,
+    },
+  },
+  "& .MuiSwitch-thumb": {
+    boxShadow: "none",
+    width: 16,
+    height: 16,
+    margin: 2,
+  },
+}));
+
+function NurseRightBar() {
   //Fetching the list of IDs
   const [idTypeIdList, setIdTypeIdList] = React.useState([]);
 
@@ -80,100 +123,66 @@ const NurseContentBottom = () => {
   const handleClickCloseViewPatientProfile = () => {
     setOpenViewPatientProfile(false);
   };
-
-  //For Option Assessment and Consultation List
-  const [menuData, setMenuData] = useState("Assessment");
   return (
-    <Box
-      flex={2}
-      p={2}
-      sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
-    >
+    <Box flex={2} p={2}>
       <Card sx={{ height: 440, borderRadius: 10 }} elevation={3}>
         <CardContent>
-          <Stack direction="row" spacing={2}>
-            <Typography>Type :</Typography>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              Queue
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              Appointment
-            </Button>
-            </Stack>
-        </CardContent>
-        <CardContent>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              SCHEDULED
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              FOR ASSESSMENT
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Assessment")}
-              sx={{ borderRadius: 10 }}
-            >
-              ONGOING ASSESSMENT
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Assessment")}
-              sx={{ borderRadius: 10 }}
-            >
-              FOR CONSULTATION
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              ONGOING CONSULTATION
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => setMenuData("Consultation")}
-              sx={{ borderRadius: 10 }}
-            >
-              FINISHED
-            </Button>
-          </Stack>
-          {menuData === "Assessment" && (
-            <NurseAssessment
-              handleClickOpenViewPatientProfile={
-                handleClickOpenViewPatientProfile
-              }
-              handleClickOpenCreateAppointment={
-                handleClickOpenCreateAppointment
-              }
-            />
-          )}
-          {menuData === "Consultation" && (
-            <NurseConsultation
-              handleClickOpenViewPatientProfile={
-                handleClickOpenViewPatientProfile
-              }
-              handleClickOpenCreateAppointment={
-                handleClickOpenCreateAppointment
-              }
-            />
-          )}
+          <List
+            sx={{
+              width: "100%",
+              bgcolor: "background.paper",
+              borderRadius: 10,
+            }}
+          >
+            <ListItem alignItems="flex-start">
+              <ListItemAvatar>
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+              </ListItemAvatar>
+              <ListItemText
+                primary="Ballester, Jade Lester C."
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      sx={{ display: "inline" }}
+                      component="span"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      Dr. Stone
+                    </Typography>
+                    {" — 1:00 pm to 1:15 pm"}
+                  </React.Fragment>
+                }
+              />
+              <Tooltip title="View Patient Information">
+                <IconButton
+                  color="secondary"
+                  aria-label="upload picture"
+                  component="label"
+                  onClick={handleClickOpenViewPatientProfile}
+                >
+                  {/* <input hidden accept="image/*" type="file" /> */}
+                  <ViewInArIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Update Appointment">
+                <IconButton
+                  color="success"
+                  aria-label="upload picture"
+                  component="label"
+                  onClick={handleClickOpenCreateAppointment}
+                >
+                  <DrawIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Approve Appointment">
+                <FormControlLabel
+                  control={<Android12Switch defaultChecked />}
+                />
+              </Tooltip>
+            </ListItem>
+            <Divider variant="inset" component="li" />
+          </List>
         </CardContent>
       </Card>
 
@@ -183,16 +192,11 @@ const NurseContentBottom = () => {
         open={openCreateAppointment}
         onClose={handleCloseCreateAppointment}
       >
-        <DialogTitle>Patient Name Here</DialogTitle>
+        <DialogTitle>Ballester, Jade Lester C.</DialogTitle>
+        <DialogTitle variant="subtitle2">
+          Dr. Ballester, Jade Lester C.
+        </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <DialogContentText>
-                Updating Appointment must be correct, and all information
-                supplied must be true.
-              </DialogContentText>
-            </Grid>
-          </Grid>
           <Grid
             container
             spacing={2}
@@ -242,10 +246,22 @@ const NurseContentBottom = () => {
                   <TextField
                     name="idNumber"
                     fullWidth
-                    label="Reason of Updating Appointment"
+                    label="Reason Of Update"
                     autoComplete="idNumber"
                     onChange={(e) => setIdNumber(e.target.value)}
                   />
+                </Grid>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <DialogContentText
+                    variant="caption"
+                    sx={{ color: "red" }}
+                    mt={2}
+                  >
+                    Note: Changes to the appointment must be coordinated with
+                    the patient.
+                  </DialogContentText>
                 </Grid>
               </Grid>
             </Grid>
@@ -333,10 +349,10 @@ const NurseContentBottom = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="subtitle2">
-                      Paient Information :
+                      Patient Information :
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                       id="outlined-basic"
                       label="First Name"
@@ -345,7 +361,7 @@ const NurseContentBottom = () => {
                       disabled
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                       id="outlined-basic"
                       label="Middle Name"
@@ -354,10 +370,19 @@ const NurseContentBottom = () => {
                       disabled
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid item xs={12} md={3}>
                     <TextField
                       id="outlined-basic"
                       label="Last Name"
+                      variant="outlined"
+                      fullWidth
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      id="outlined-basic"
+                      label="Suffix"
                       variant="outlined"
                       fullWidth
                       disabled
@@ -399,24 +424,6 @@ const NurseContentBottom = () => {
                       disabled
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Patient ID Type"
-                      variant="outlined"
-                      fullWidth
-                      disabled
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Patient ID Number"
-                      variant="outlined"
-                      fullWidth
-                      disabled
-                    />
-                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -441,6 +448,6 @@ const NurseContentBottom = () => {
       </Dialog>
     </Box>
   );
-};
+}
 
-export default NurseContentBottom;
+export default NurseRightBar;

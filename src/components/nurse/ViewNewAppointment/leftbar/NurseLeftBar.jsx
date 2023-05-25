@@ -11,6 +11,10 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   TextField,
   Typography,
 } from "@mui/material";
@@ -27,7 +31,7 @@ import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Fab from "@mui/material/Fab";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { Add } from "@mui/icons-material";
+import { Add, Inbox } from "@mui/icons-material";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import axios from "axios";
 
@@ -110,29 +114,6 @@ function NurseLeftBar() {
     return () => requestAbortController.current?.abort();
   }, []);
 
-  //Fetching the list of IDs
-  const [idTypeIdList, setIdTypeIdList] = React.useState([]);
-
-  useEffect(() => {
-    const fetchIdTypeIdListData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/id-type`
-        );
-        setIdTypeIdList(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchIdTypeIdListData();
-  }, []);
-
-  //Storing the ID Number, Type, Path
-  const [idTypeId, setIdTypeId] = React.useState("");
-  const [idNumber, setIdNumber] = React.useState("");
-  const [idFileUrl, setIdFileUrl] = React.useState("");
-
   //For Creating Appointment Modal
   const [openCreateAppointment, setOpenCreateAppointment] =
     React.useState(false);
@@ -202,6 +183,81 @@ function NurseLeftBar() {
               </DialogContentText>
             </Grid>
           </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Birth Date"
+                fullWidth
+                variant="standard"
+                multiline
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="First Name"
+                fullWidth
+                variant="standard"
+                multiline
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Last Name"
+                fullWidth
+                variant="standard"
+                multiline
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={2} mt={2}>
+            <List component="nav" aria-label="main mailbox folders">
+              <ListItemButton
+                // selected={selectedIndex === 0}
+                // onClick={(event) => handleListItemClick(event, 0)}
+                fullWidth
+              >
+                <ListItemIcon>
+                  <Inbox />
+                </ListItemIcon>
+                <ListItemText primary="Inbox" />
+              </ListItemButton>
+              <ListItemButton
+                // selected={selectedIndex === 0}
+                // onClick={(event) => handleListItemClick(event, 0)}
+                fullWidth
+              >
+                <ListItemIcon>
+                  <Inbox />
+                </ListItemIcon>
+                <ListItemText primary="Inbox" />
+              </ListItemButton>
+              <ListItemButton
+                // selected={selectedIndex === 0}
+                // onClick={(event) => handleListItemClick(event, 0)}
+                fullWidth
+              >
+                <ListItemIcon>
+                  <Inbox />
+                </ListItemIcon>
+                <ListItemText primary="Inbox" />
+              </ListItemButton>
+              {/* <ListItemButton
+                selected={selectedIndex === 1}
+                onClick={(event) => handleListItemClick(event, 1)}
+              >
+                <ListItemIcon>
+                  <DraftsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Drafts" />
+              </ListItemButton> */}
+            </List>
+          </Grid>
           <Grid
             container
             spacing={2}
@@ -236,6 +292,46 @@ function NurseLeftBar() {
                 alignItems="center"
                 spacing={2}
               >
+                <Grid item xs={3}>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="First Name"
+                    fullWidth
+                    variant="standard"
+                    multiline
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Middle Name"
+                    fullWidth
+                    variant="standard"
+                    multiline
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Last Name"
+                    fullWidth
+                    variant="standard"
+                    multiline
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Suffix"
+                    fullWidth
+                    variant="standard"
+                    multiline
+                  />
+                </Grid>
                 <Grid item xs={12}>
                   <TextField
                     autoFocus
@@ -244,35 +340,6 @@ function NurseLeftBar() {
                     fullWidth
                     variant="standard"
                     multiline
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Autocomplete
-                    // margin="dense"
-                    id="id-type-select"
-                    options={idTypeIdList} // Pass idTypeId as options
-                    autoHighlight
-                    onChange={(event, value) => setIdTypeId(value?.id)} // Update the state with the selected value
-                    getOptionLabel={(option) => option?.type}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="ID Type"
-                        inputProps={{
-                          ...params.inputProps,
-                          autoComplete: "new-password",
-                        }}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    name="idNumber"
-                    fullWidth
-                    label="ID Number"
-                    autoComplete="idNumber"
-                    onChange={(e) => setIdNumber(e.target.value)}
                   />
                 </Grid>
               </Grid>

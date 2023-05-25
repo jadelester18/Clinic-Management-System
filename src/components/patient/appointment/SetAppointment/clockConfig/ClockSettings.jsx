@@ -53,10 +53,10 @@ const ClockSettings = ({ selectedDateInCalendar, onSelectedTimeChange }) => {
   const handleTimeChange = (time) => {
     const formattedDate = dayjs(time).format("HH:mm:ss");
     setSelectedTime(formattedDate);
-    onSelectedTimeChange(formattedDate); // Pass the selected date to the callback
 
     const matchedTime = getMatchTime();
     console.log("Matched Time:", matchedTime?.id);
+    onSelectedTimeChange(matchedTime?.id); // Pass the selected date to the callback
   };
 
   console.log("Selected Time:", selectedTime);

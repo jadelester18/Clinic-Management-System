@@ -42,16 +42,12 @@ function CalendarSettings({ onSelectedDateChange, date }) {
     return true;
   };
 
-  // const [selectedDate, setSelectedDate] = React.useState("");
+  const currentDate = date ? dayjs(date) : dayjs(); // Set to current date if date is null or empty
 
   const handleDateChange = (date) => {
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
-    // setSelectedDate(formattedDate);
     onSelectedDateChange(formattedDate); // Pass the selected date to the callback
   };
-
-  console.log("Selected Date:", date);
-  console.log("Selected Dateasd:", dayjs().date(date));
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -60,8 +56,7 @@ function CalendarSettings({ onSelectedDateChange, date }) {
       >
         <DemoItem>
           <DateCalendar
-            // defaultValue={dayjs()}
-            value={dayjs().date(date)}
+            value={currentDate}
             shouldDisableDate={shouldDisableDate}
             onChange={handleDateChange}
           />

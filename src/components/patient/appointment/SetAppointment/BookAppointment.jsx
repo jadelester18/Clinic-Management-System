@@ -24,7 +24,7 @@ import * as profileData from "../../../../redux/GetApiCalls/profile";
 import * as bookAppointment from "../../../../redux/PostApiCalls/patientAppointment";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import app from "../../../../firebase";
 import {
   getStorage,
@@ -49,7 +49,6 @@ const BookAppointment = () => {
     try {
       const response = await profileData.getDoctorProfile();
       setProfile(response.data);
-      console.log("Specialization LIST ", response.data);
     } catch (error) {
       console.error(error);
     }
@@ -120,80 +119,90 @@ const BookAppointment = () => {
   const [date, setDate] = useState("");
   const [timeSlotId, setTimeSlotId] = useState("");
   const [remark, setRemark] = useState("");
-  const [doctorId, setDoctorId] = useState("");
-  const [selectedFile, setSelectedFile] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleFileSelect = (event) => {
+    const files = event.target.files;
+    setSelectedFiles(files);
+  };
+
+  const navigate = useNavigate();
 
   const handlePost = (e) => {
     e.preventDefault();
-    if (selectedFile !== null) {
-      const fileName = new Date().getTime() + selectedFile?.name;
-      const storage = getStorage(app);
-      const storageRef = ref(storage, fileName);
+    if (selectedFiles.length > 0) {
+      const uploadPromises = [];
+      const fileUrls = [];
 
-      const uploadTask = uploadBytesResumable(storageRef, selectedFile);
-      // Listen for state changes, errors, and completion of the upload.
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          // setUploadPercent(progress);
-          // console.log("Upload is " + progress + "% done");
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-          }
-        },
-        (error) => {
-          // A full list of error codes is available at
-          // https://firebase.google.com/docs/storage/web/handle-errors
-          switch (error.code) {
-            case "storage/unauthorized":
-              // User doesn't have permission to access the object
-              break;
-            case "storage/canceled":
-              // User canceled the upload
-              break;
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const fileName = new Date().getTime() + file.name;
+        const storage = getStorage(app);
+        const storageRef = ref(storage, fileName);
 
-            // ...
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        const uploadPromise = new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              // Handle upload progress if needed
+            },
+            (error) => {
+              // Handle upload error if needed
+              reject(error);
+            },
+            () => {
+              // Upload completed successfully
+              getDownloadURL(uploadTask.snapshot.ref)
+                .then((downloadURL) => {
+                  fileUrls.push(downloadURL);
+                  resolve();
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+            }
+          );
+        });
 
-            case "storage/unknown":
-              // Unknown error occurred, inspect error.serverResponse
-              break;
-          }
-        },
-        () => {
-          // Upload completed successfully, now we can get the download URL
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            // console.log("Image File available at", downloadURL);
-            fetch(`http://localhost:8080/api/v1/appointments`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/JSON",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                date: date,
-                timeSlotId: timeSlotId,
-                remark: remark,
-                doctorId: doctorId,
-                attachmentUrls: downloadURL,
-              }),
-              // handleNewPost()
-            }).then((data) => {
-              // setUploadPercent(0);
-              setSelectedFile(null);
-              // alert("Your Post was upload successfully");
-              // window.location.reload(true);
+        uploadPromises.push(uploadPromise);
+      }
+
+      Promise.all(uploadPromises)
+        .then(() => {
+          // All files have been uploaded, make the API request
+          fetch(`http://localhost:8080/api/v1/appointments`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              date: date,
+              timeSlotId: timeSlotId,
+              remark: remark,
+              doctorId: id,
+              attachmentUrls: fileUrls,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Handle API response
+              setSelectedFiles([]); // Clear the selected files
+              // alert("Your Post was uploaded successfully");
+              navigate("/patient");
+            })
+            .catch((error) => {
+              // Handle API error
+              console.error(error);
             });
-          });
-        }
-      );
+        })
+        .catch((error) => {
+          // Handle file upload error
+          console.error(error);
+        });
+    } else {
+      // No files selected, handle this case accordingly
     }
   };
 
@@ -473,7 +482,7 @@ const BookAppointment = () => {
                           accept="image/*"
                           multiple
                           type="file"
-                          onChange={(e) => setRemark(e.target.files[0])}
+                          onChange={handleFileSelect}
                         />
                       </Button>
                     </Grid>
@@ -491,6 +500,12 @@ const BookAppointment = () => {
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
+                      <Typography variant="caption" sx={{ color: "red" }}>
+                        Note: Cancellation and changes of schedule must be made
+                        atleast a day before the appointment.
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
                       <Button
                         variant="contained"
                         sx={{ mr: 2 }}
@@ -498,7 +513,13 @@ const BookAppointment = () => {
                       >
                         Book Now
                       </Button>
-                      <Button variant="outlined">Cancel</Button>
+                      <Button
+                        variant="outlined"
+                        component={Link}
+                        to={"/patient"}
+                      >
+                        Cancel
+                      </Button>
                     </Grid>
                   </Grid>
                 </CardContent>

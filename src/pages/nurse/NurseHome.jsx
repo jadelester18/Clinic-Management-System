@@ -42,9 +42,15 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import { Link } from "react-router-dom";
 import DarkMode from "../../components/theme/DarkMode";
-import NurseViewAppointmentQueue from "./Viewing/NurseViewAppointmentQueue";
+import NurseViewAppointmentQueue from "./viewAppointment/NurseViewAppointmentQueue";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/UserReducer";
+import NurseViewNewAppointment from "./viewNewAppointment/NurseViewNewAppointment";
+import NurseDashboard from "./dashboard/NurseDashboard";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import StreetviewIcon from "@mui/icons-material/Streetview";
+import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import NurseQueue from "../../components/nurse/ViewAppointment/content/Queue/NurseQueue";
 
 const drawerWidth = 240;
 
@@ -170,8 +176,7 @@ const messageExamples = [
 function NurseHome({ toggleMode, mode }) {
   const theme = useTheme();
   //For Drawer
-  const isScreenMdOrUp = useMediaQuery((theme) => theme.breakpoints.up("md"));
-  const [open, setOpen] = React.useState(isScreenMdOrUp);
+  const [open, setOpen] = React.useState(false);
   // const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
@@ -183,7 +188,11 @@ function NurseHome({ toggleMode, mode }) {
   };
 
   //For Menu Item
-  const [menuData, setMenuData] = useState("Home");
+  const [menuData, setMenuData] = useState("Dashboard");
+
+  console.log("Selected menu" + menuData);
+
+  //Highlight the current selected list item
 
   //For Open Tree/Sub Category Dropdown
   const [openAppointmentTree, setOpenAppointmentTree] = React.useState(
@@ -463,7 +472,7 @@ function NurseHome({ toggleMode, mode }) {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() => setMenuData("Home")}
+              onClick={() => setMenuData("Dashboard")}
             >
               <ListItemButton
                 sx={{
@@ -479,10 +488,41 @@ function NurseHome({ toggleMode, mode }) {
                     justifyContent: "center",
                   }}
                 >
-                  <MailIcon />
+                  <DashboardIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Dashboard"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("New Appointment")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <StreetviewIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="New Appointment"
+                  secondary="for approval"
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
@@ -509,17 +549,18 @@ function NurseHome({ toggleMode, mode }) {
                     justifyContent: "center",
                   }}
                 >
-                  <MailIcon />
+                  <ViewInArIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Appointments"
+                  secondary="approved schedules"
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
             </ListItem>
           </List>
-          {/* <Divider /> */}
-          <List>
+          <Divider />
+          {/* <List>
             <ListItem
               disablePadding
               sx={{ display: "block" }}
@@ -572,12 +613,14 @@ function NurseHome({ toggleMode, mode }) {
               </List>
             </Collapse>
           </List>
-          <Divider />
+          <Divider /> */}
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {menuData === "Home" && <NurseViewAppointmentQueue />}
+          {menuData === "Dashboard" && <NurseDashboard />}
+          {menuData === "New Appointment" && <NurseViewNewAppointment />}
           {menuData === "Appointments" && <NurseViewAppointmentQueue />}
-          {menuData === "Queu" && <NurseViewAppointmentQueue />}
+          {/* {menuData === "Appointments" && <NurseQueue />} */}
+          {/* {menuData === "Queu" && <NurseViewAppointmentQueue />} */}
         </Box>
       </Box>
     </>

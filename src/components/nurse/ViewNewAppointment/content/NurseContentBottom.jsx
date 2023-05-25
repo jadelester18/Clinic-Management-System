@@ -1,5 +1,4 @@
 import {
-  Autocomplete,
   Avatar,
   Box,
   Button,
@@ -11,7 +10,6 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
-  Grid,
   IconButton,
   List,
   ListItem,
@@ -22,51 +20,22 @@ import {
 } from "@mui/material";
 import DrawIcon from "@mui/icons-material/Draw";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
-import React, { useEffect } from "react";
+import React from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { StaticDateTimePicker } from "@mui/x-date-pickers";
-import axios from "axios";
 
-function NurseRightBar() {
-  //Fetching the list of IDs
-  const [idTypeIdList, setIdTypeIdList] = React.useState([]);
-
-  useEffect(() => {
-    const fetchIdTypeIdListData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/id-type`
-        );
-        setIdTypeIdList(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchIdTypeIdListData();
-  }, []);
-
-  //Storing the ID Number, Type, Path
-  const [idTypeId, setIdTypeId] = React.useState("");
-  const [idNumber, setIdNumber] = React.useState("");
-  const [idFileUrl, setIdFileUrl] = React.useState("");
-
-  //For Creating Appointment Modal
-  const [openCreateAppointment, setOpenCreateAppointment] =
-    React.useState(false);
-
-  const handleClickOpenCreateAppointment = () => {
-    setOpenCreateAppointment(true);
-  };
-
-  const handleCloseCreateAppointment = () => {
-    setOpenCreateAppointment(false);
-  };
-
-  //For Creating Appointment Confirmation
+const NurseContentBottom = () => {
+  const [open, setOpen] = React.useState(false);
   const [openConfirmation, setOpenConfirmation] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClickClose = () => {
+    setOpen(false);
+  };
 
   const handleClickOpenConfirmation = () => {
     setOpenConfirmation(true);
@@ -75,25 +44,14 @@ function NurseRightBar() {
   const handleClickCloseConfirmation = () => {
     setOpenConfirmation(false);
   };
-
-  //Open view patient profile
-  const [openViewPatientProfile, setOpenViewPatientProfile] =
-    React.useState(false);
-
-  const handleClickOpenViewPatientProfile = () => {
-    setOpenViewPatientProfile(true);
-  };
-
-  const handleClickCloseViewPatientProfile = () => {
-    setOpenViewPatientProfile(false);
-  };
   return (
-    <Box flex={2} p={2}>
+    <Box
+      flex={2}
+      p={2}
+      sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
+    >
       <Card sx={{ height: 440, borderRadius: 10 }} elevation={3}>
         <CardContent>
-          <Typography variant="body2" p={2}>
-            Doctors Available:
-          </Typography>
           <List
             sx={{
               width: "100%",
@@ -122,13 +80,21 @@ function NurseRightBar() {
                 }
               />
               <IconButton
+                color="success"
+                aria-label="upload picture"
+                component="label"
+                onClick={handleClickOpen}
+              >
+                {/* <input hidden accept="image/*" type="file" /> */}
+                <DrawIcon />
+              </IconButton>
+              <IconButton
                 color="secondary"
                 aria-label="upload picture"
                 component="label"
-                onClick={handleClickOpenViewPatientProfile}
               >
                 {/* <input hidden accept="image/*" type="file" /> */}
-                <ViewInArIcon />
+                <DeleteForeverIcon />
               </IconButton>
             </ListItem>
             <Divider variant="inset" component="li" />
@@ -136,10 +102,48 @@ function NurseRightBar() {
         </CardContent>
       </Card>
 
-      {/* Checking profile of the patient with history */}
+      {/* Updating appointment */}
       <Dialog
-        open={openViewPatientProfile}
-        onClose={handleClickCloseViewPatientProfile}
+        open={open}
+        onClose={handleClickClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle>Patient 101</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please be sure that you're updating the correct patient.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email Address"
+            type="email"
+            fullWidth
+            variant="standard"
+            value="jadelesterballester@gmail.com"
+            disabled
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <StaticDateTimePicker
+              orientation="landscape"
+              //   componentsProps={{
+              //     actionBar: { actions: ["today", "accept", "cancel", "clear"] },
+              //   }}
+              slotProps={{ actionBar: { actions: [] } }}
+            />
+          </LocalizationProvider>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClickClose}>Cancel</Button>
+          <Button onClick={handleClickOpenConfirmation}>Save</Button>
+        </DialogActions>
+      </Dialog>
+      {/* Cofirmation Dialog */}
+      <Dialog
+        open={openConfirmation}
+        onClose={handleClickCloseConfirmation}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -152,10 +156,11 @@ function NurseRightBar() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClickCloseViewPatientProfile}>Disagree</Button>
+          <Button onClick={handleClickCloseConfirmation}>Disagree</Button>
           <Button
             onClick={() => {
-              handleClickCloseViewPatientProfile();
+              handleClickCloseConfirmation();
+              handleClickClose();
             }}
             autoFocus
           >
@@ -165,6 +170,6 @@ function NurseRightBar() {
       </Dialog>
     </Box>
   );
-}
+};
 
-export default NurseRightBar;
+export default NurseContentBottom;

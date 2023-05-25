@@ -67,12 +67,12 @@ function App() {
             path="/nurse"
             element={
               user?.enabled === true ? (
-                user?.role === "ROLE_NURSE" ? (
-                  <NurseHome toggleMode={toggleMode} mode={mode} />
-                ) : (
-                  <Navigate to={"/"} replace={true} />
-                )
+                // user?.role === "ROLE_NURSE" ? (
+                <NurseHome toggleMode={toggleMode} mode={mode} />
               ) : (
+                //   ) : (
+                //     <Navigate to={"/"} replace={true} />
+                //   )
                 <Navigate to={"/"} replace={true} />
               )
             }
@@ -81,12 +81,12 @@ function App() {
             path="/doctor"
             element={
               user?.enabled === true ? (
-                user?.role === "ROLE_DOCTOR" ? (
-                  <DoctorHome toggleMode={toggleMode} mode={mode} />
-                ) : (
-                  <Navigate to={"/"} replace={true} />
-                )
+                // user?.role === "ROLE_DOCTOR" ? (
+                <DoctorHome toggleMode={toggleMode} mode={mode} />
               ) : (
+                // <Navigate to={"/"} replace={true} />
+                // )
+                // ) : (
                 <Navigate to={"/"} replace={true} />
               )
             }
