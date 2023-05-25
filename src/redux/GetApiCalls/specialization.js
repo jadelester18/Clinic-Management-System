@@ -1,5 +1,5 @@
 import { http } from "../http";
 
-export function getSpecialization() {
+export function getSpecializations() {
   return http.get("/specializations");
 }
