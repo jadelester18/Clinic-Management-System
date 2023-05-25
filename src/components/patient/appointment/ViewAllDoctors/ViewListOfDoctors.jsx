@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -15,7 +16,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DoctorsCardInfo from "./doctorsCard/DoctorsCardInfo";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
@@ -24,7 +25,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import PropTypes from "prop-types";
 import { http } from "../../../../redux/http";
 
-import * as patientService from "../../../../redux/PostApiCalls/patient";
+import * as doctorService from "../../../../redux/PostApiCalls/doctor";
 import * as hmoService from "../../../../redux/GetApiCalls/hmo";
 import * as specializationService from "../../../../redux/GetApiCalls/specialization";
 import { useSelector } from "react-redux";
@@ -105,94 +106,76 @@ const ViewListOfDoctors = () => {
   let token = userObject.token;
   let user = userLoggedinDetails?.user?.user;
 
-  const [HMOList, setHMOList] = useState([]);
-  const [SpecializationList, setSpecializationList] = useState([]);
+  const [selectedHmo, setSelectedHmo] = useState(null);
+  const [specialization, setSpecialization] = React.useState(null);
   const [firstName, setfirstName] = useState("");
-  const [surName, setSurName] = useState("");
-  const [doctors, setDoctors] = useState([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(6);
+  const [surname, setSurname] = useState("");
   const [selectedDays, setSelectedDays] = useState([]);
-  const [HMOAccredited, setHMOAccredited] = React.useState("");
-  const [specialization, setSpecialization] = React.useState("");
-  const [location, setLocation] = React.useState("");
 
-  // Fetching the HMO list
+  const [doctors, setDoctors] = useState([]);
+  const [count, setCount] = useState(0);
 
-  useEffect(() => {
-    const fetchHMOListData = async () => {
-      try {
-        const res = await axios.get(`http://localhost:8080/api/v1/hmos`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Use the 'Authorization' header
-          },
-        });
-        setHMOList(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchHMOListData();
-  }, [token]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Fetching the Specialization list
-
-  useEffect(() => {
-    const fetchSpecializationListData = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:8080/api/v1/specializations`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Use the 'Authorization' header
-            },
-          }
-        );
-        setSpecializationList(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchSpecializationListData();
-  }, [token]);
+  // const [location, setLocation] = React.useState("");
 
   //For Filter Fields
   const handleChangeFirstName = (event) => {
     setfirstName(event.target.value);
   };
 
-  const handleChangeSurName = (event) => {
-    setSurName(event.target.value);
+  const handleChangeSurname = (event) => {
+    setSurname(event.target.value);
+  };
+
+  const handleSelect = (value, origin) => {
+    switch (origin) {
+      case "specialization":
+        setSpecialization(value);
+        break;
+      case "hmo":
+        setSelectedHmo(value);
+        break;
+      default:
+        throw new Error("Invalid input");
+    }
+    setPage(0);
+    setRowsPerPage(5);
+  };
+
+  const searchDoctors = async () => {
+    try {
+      const { data: doctorsPage } = await doctorService.searchDoctors({
+        firstName: firstName ? firstName : null,
+        lastName: surname ? surname : null,
+        hmoId: selectedHmo ? selectedHmo.id : null,
+        specId: specialization ? specialization.id : null,
+        days: selectedDays,
+        pageNo: page,
+        pageSize: rowsPerPage,
+      });
+      console.log("Search Doctors Result", doctorsPage);
+      setDoctors(doctorsPage.content);
+      setCount(doctorsPage.totalElements);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Fetching the Doctors list
   useEffect(() => {
     // Make the API call to fetch the list of doctors
-    fetch("http://localhost:8080/api/v1/doctors/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        firstName: firstName,
-        lastName: surName,
-        hmoId: HMOAccredited,
-        specId: specialization,
-        days: selectedDays,
-        pageNo: 0,
-        pageSize: 10,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Update the state with the fetched list of doctors
-        setDoctors(data.content);
-      })
-      .catch((error) => {
-        console.error("Error fetching doctors:", error);
-      });
-  }, [HMOAccredited, firstName, selectedDays, specialization, surName]);
+    searchDoctors();
+  }, [
+    selectedHmo,
+    firstName,
+    selectedDays,
+    specialization,
+    surname,
+    page,
+    rowsPerPage,
+  ]);
 
   //For Pagination
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -222,32 +205,15 @@ const ViewListOfDoctors = () => {
 
   const isDaySelected = (day) => selectedDays.includes(day);
 
-  //For HMO Accredted
-  const handleChangeHMOAccredited = (event) => {
-    setHMOAccredited(event.target.value);
-  };
-
-  //For Specialization
-
-  const handleChangeSpecialization = (event) => {
-    setSpecialization(event.target.value);
-  };
-
-  //For Location
-
-  const handleChangeLocation = (event) => {
-    setLocation(event.target.value);
-  };
-
   // Reset filters handler
   const handleResetFilters = () => {
     setfirstName("");
-    setSurName("");
+    setSurname("");
     setDoctors([]);
     setPage(0);
     setSelectedDays([]);
-    setHMOAccredited("");
-    setSpecialization("");
+    setSelectedHmo(null);
+    setSpecialization(null);
     setLocation("");
   };
 
@@ -331,7 +297,8 @@ const ViewListOfDoctors = () => {
                 variant="outlined"
                 size="large"
                 fullWidth
-                onChange={handleChangeSurName}
+                value={surname}
+                onChange={handleChangeSurname}
               />
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
@@ -341,51 +308,23 @@ const ViewListOfDoctors = () => {
                 variant="outlined"
                 size="large"
                 fullWidth
+                value={firstName}
                 onChange={handleChangeFirstName}
               />
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
-              <FormControl fullWidth size="large">
-                <InputLabel id="demo-simple-select-label">
-                  HMO Accreditation
-                </InputLabel>
-                <Select
-                  value={HMOAccredited}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="HMO Accredition"
-                  onChange={handleChangeHMOAccredited}
-                >
-                  {HMOList.map((HMOList) => (
-                    <MenuItem key={HMOList.id} value={HMOList.id}>
-                      {HMOList.title}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <SelectHmo
+                value={selectedHmo}
+                onSelect={(event, newValue) => handleSelect(newValue, "hmo")}
+              />
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
-              <FormControl fullWidth size="large">
-                <InputLabel id="demo-simple-select-label">
-                  Specialization
-                </InputLabel>
-                <Select
-                  value={specialization}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Specialization"
-                  onChange={handleChangeSpecialization}
-                >
-                  {SpecializationList.map((SpecializationList) => (
-                    <MenuItem
-                      key={SpecializationList.id}
-                      value={SpecializationList.id}
-                    >
-                      {SpecializationList.description}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <SelectSpecialization
+                value={specialization}
+                onSelect={(event, newValue) =>
+                  handleSelect(newValue, "specialization")
+                }
+              />
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <Button
@@ -400,7 +339,12 @@ const ViewListOfDoctors = () => {
         </CardContent>
       </Card>
       <Grid container spacing={2} sx={{ mt: 2 }}>
-        {(rowsPerPage > 0
+        {doctors.map((doctor) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={doctor.id}>
+            <DoctorsCardInfo doctor={doctor} />
+          </Grid>
+        ))}
+        {/* {(rowsPerPage > 0
           ? doctors.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
           : doctors
         ).map((doctor) => (
@@ -412,26 +356,26 @@ const ViewListOfDoctors = () => {
           <Grid item sx={{ height: 53 * emptyRows }}>
             <Typography variant="body2">No Content</Typography>
           </Grid>
-        )}
+        )} */}
       </Grid>
       <Grid container justifyContent="center" mt={2}>
         <Grid item xs={12}>
           <Card>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+              rowsPerPageOptions={[5, 10, 25]}
               colSpan={3}
-              count={doctors.length}
+              count={count}
               rowsPerPage={rowsPerPage}
               page={page}
-              SelectProps={{
-                inputProps: {
-                  "aria-label": "rows per page",
-                },
-                native: true,
-              }}
+              // SelectProps={{
+              //   inputProps: {
+              //     "aria-label": "rows per page",
+              //   },
+              //   native: true,
+              // }}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
+              // ActionsComponent={TablePaginationActions}
             />
           </Card>
         </Grid>
@@ -441,3 +385,62 @@ const ViewListOfDoctors = () => {
 };
 
 export default ViewListOfDoctors;
+
+function SelectHmo({ value, onSelect }) {
+  const [hmoList, setHmoList] = useState([]);
+
+  async function fetchHmoList() {
+    try {
+      const { data } = await hmoService.getHmos();
+      setHmoList(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchHmoList();
+  }, []);
+
+  return (
+    <Autocomplete
+      options={hmoList}
+      getOptionLabel={(option) => option.title}
+      value={value}
+      renderInput={(params) => (
+        <TextField {...params} label="HMO Accreditation" />
+      )}
+      onChange={onSelect}
+      fullWidth
+    />
+  );
+}
+
+function SelectSpecialization({ value, onSelect }) {
+  const [specializations, setSpecializations] = useState([]);
+
+  async function fetchSpecializationList() {
+    try {
+      const { data } = await specializationService.getSpecializations();
+      setSpecializations(data);
+      console.log("specializations", specializations);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchSpecializationList();
+  }, []);
+
+  return (
+    <Autocomplete
+      options={specializations}
+      getOptionLabel={(option) => option.description}
+      value={value}
+      renderInput={(params) => <TextField {...params} label="Specialization" />}
+      onChange={onSelect}
+      fullWidth
+    />
+  );
+}
