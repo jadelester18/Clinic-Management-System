@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import DrawIcon from "@mui/icons-material/Draw";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import PersonIcon from "@mui/icons-material/Person";
 
 const Android12Switch = styled(Switch)(({ theme }) => ({
   padding: 8,
@@ -97,7 +97,7 @@ const QueueAssessment = ({
             onClick={handleClickOpenViewPatientProfile}
           >
             {/* <input hidden accept="image/*" type="file" /> */}
-            <ViewInArIcon />
+            <PersonIcon />
           </IconButton>
           <IconButton
             color="success"
@@ -126,8 +126,7 @@ const QueueAssessment = ({
                 component="label"
                 onClick={handleClickOpenViewPatientProfile}
               >
-                {/* <input hidden accept="image/*" type="file" /> */}
-                <ViewInArIcon />
+                <PersonIcon />
               </IconButton>
             </Grid>
             <Grid item>

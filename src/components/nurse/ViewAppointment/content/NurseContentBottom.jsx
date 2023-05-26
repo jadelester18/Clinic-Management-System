@@ -403,21 +403,6 @@ const NurseContentBottom = () => {
                       Report Title
                     </Button>
                   </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Button variant="contained" fullWidth>
-                      Report Title
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Button variant="contained" fullWidth>
-                      Report Title
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Button variant="contained" fullWidth>
-                      Report Title
-                    </Button>
-                  </Grid>
                 </Grid>
               </Grid>
               <Grid item xs={8}>
