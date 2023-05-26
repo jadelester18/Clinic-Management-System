@@ -116,7 +116,7 @@ const ViewListOfDoctors = () => {
   const [count, setCount] = useState(0);
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
 
   // const [location, setLocation] = React.useState("");
 
