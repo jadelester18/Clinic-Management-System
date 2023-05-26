@@ -109,7 +109,7 @@ const CreatingNewWalkIn = ({
             />
           </Grid>
         </Grid>
-        <Grid container spacing={2} mt={2}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <List
               sx={{
@@ -117,6 +117,7 @@ const CreatingNewWalkIn = ({
                 display: "flex",
                 flexDirection: "column",
                 overflowY: "scroll",
+                height: "15rem",
                 "&::-webkit-scrollbar": {
                   width: "0.4em",
                 },
@@ -125,6 +126,50 @@ const CreatingNewWalkIn = ({
                 },
               }}
             >
+              <ListItemButton alignItems="flex-start" fullWidth>
+                <ListItemAvatar>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+                <ListItemText
+                  primary="Brunch this weekend?"
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        sx={{ display: "inline" }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
+                      >
+                        Ali Connors
+                      </Typography>
+                      {" — I'll be in your neighborhood doing errands this…"}
+                    </React.Fragment>
+                  }
+                />
+              </ListItemButton>
+              <Divider variant="inset" component="li" />
+              <ListItemButton alignItems="flex-start" fullWidth>
+                <ListItemAvatar>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+                <ListItemText
+                  primary="Brunch this weekend?"
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        sx={{ display: "inline" }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
+                      >
+                        Ali Connors
+                      </Typography>
+                      {" — I'll be in your neighborhood doing errands this…"}
+                    </React.Fragment>
+                  }
+                />
+              </ListItemButton>
+              <Divider variant="inset" component="li" />
               <ListItemButton alignItems="flex-start" fullWidth>
                 <ListItemAvatar>
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
@@ -384,6 +429,45 @@ const CreatingNewWalkIn = ({
                   variant="outlined"
                   multiline
                   size="small"
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Autocomplete
+                  id="country-select-demo"
+                  autoWidth
+                  size="small"
+                  options={countries.sort((a, b) =>
+                    a.label.localeCompare(b.label)
+                  )}
+                  autoHighlight
+                  onChange={(event, value) => setCountry(value.label)}
+                  getOptionLabel={(option) => option.label}
+                  renderOption={(props, option) => (
+                    <Box
+                      component="li"
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      {...props}
+                    >
+                      <img
+                        loading="lazy"
+                        width="20"
+                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                        alt=""
+                      />
+                      {option.label}
+                    </Box>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Choose a country"
+                      inputProps={{
+                        ...params.inputProps,
+                        autoComplete: "new-password",
+                      }}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={4}>
