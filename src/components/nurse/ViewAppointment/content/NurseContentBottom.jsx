@@ -9,6 +9,9 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  List,
+  ListItemButton,
+  ListItemText,
   Stack,
   TextField,
   Typography,
@@ -393,19 +396,53 @@ const NurseContentBottom = () => {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="subtitle2">Old Records :</Typography>
                   </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Button variant="contained" fullWidth>
-                      Report Title
-                    </Button>
-                  </Grid>
+                  <List
+                    sx={{
+                      width: "100%",
+                      bgcolor: "background.paper",
+                      display: "grid",
+                      gridTemplateColumns: "repeat(2, 1fr)",
+                      gap: "16px",
+                      marginLeft: "15px",
+                      height: "25rem",
+                      flexDirection: "column",
+                      overflowY: "scroll",
+                      "&::-webkit-scrollbar": {
+                        width: "0em",
+                      },
+                    }}
+                  >
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                        maxHeight: "20%",
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                  </List>
                 </Grid>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={12} md={8}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="subtitle2">
