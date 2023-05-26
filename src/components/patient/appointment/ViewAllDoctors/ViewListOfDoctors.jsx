@@ -116,7 +116,7 @@ const ViewListOfDoctors = () => {
   const [count, setCount] = useState(0);
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
 
   // const [location, setLocation] = React.useState("");
 
@@ -141,7 +141,7 @@ const ViewListOfDoctors = () => {
         throw new Error("Invalid input");
     }
     setPage(0);
-    setRowsPerPage(5);
+    setRowsPerPage(6);
   };
 
   const searchDoctors = async () => {
@@ -201,6 +201,8 @@ const ViewListOfDoctors = () => {
     } else {
       setSelectedDays([...selectedDays, day]);
     }
+    setPage(0);
+    setRowsPerPage(6);
   };
 
   const isDaySelected = (day) => selectedDays.includes(day);
@@ -362,7 +364,7 @@ const ViewListOfDoctors = () => {
         <Grid item xs={12}>
           <Card>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[6, 12, 30]}
               colSpan={3}
               count={count}
               rowsPerPage={rowsPerPage}
