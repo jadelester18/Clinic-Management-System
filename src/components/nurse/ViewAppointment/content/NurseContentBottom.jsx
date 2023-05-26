@@ -425,7 +425,195 @@ const NurseContentBottom = () => {
                         backgroundColor: "#03a9f4",
                         boxShadow: 6,
                         borderRadius: 3,
-                        maxHeight: "20%",
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography variant="h6" fontWeight="bold">
+                            Main Title
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="subtitle1">Subtitle</Typography>
+                        }
+                      />
+                    </ListItemButton>
+                    <ListItemButton
+                      component="a"
+                      href="#simple-list"
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#03a9f4",
+                        boxShadow: 6,
+                        borderRadius: 3,
                       }}
                     >
                       <ListItemText
