@@ -362,7 +362,7 @@ const ViewListOfDoctors = () => {
         <Grid item xs={12}>
           <Card>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[6, 12, 24]}
               colSpan={3}
               count={count}
               rowsPerPage={rowsPerPage}

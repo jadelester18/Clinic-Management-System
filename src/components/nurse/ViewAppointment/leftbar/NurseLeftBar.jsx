@@ -30,6 +30,7 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { Add } from "@mui/icons-material";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import axios from "axios";
+import CreatingNewWalkIn from "./CreatingNewWalkIn";
 
 function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -187,103 +188,10 @@ function NurseLeftBar() {
         </Box>
       </LocalizationProvider>
       {/* For Creating New Appointment For Walk In */}
-      <Dialog
-        open={openCreateAppointment}
-        onClose={handleCloseCreateAppointment}
-        maxWidth={"lg"}
-      >
-        <DialogTitle>New Appointment For Walk In</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <DialogContentText>
-                Walk-in registration must be correct, and all information
-                supplied by the patient must be true.
-              </DialogContentText>
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            spacing={2}
-            mt={2}
-            direction={{ xs: "column", sm: "row" }}
-          >
-            <Grid item xs={12} lg={6}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-evenly"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item xs={12}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <StaticDateTimePicker
-                      orientation="landscape"
-                      slotProps={{
-                        actionBar: { actions: [] },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} lg={6}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-evenly"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item xs={12}>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Chief Complaint"
-                    fullWidth
-                    variant="standard"
-                    multiline
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <Autocomplete
-                    // margin="dense"
-                    id="id-type-select"
-                    options={idTypeIdList} // Pass idTypeId as options
-                    autoHighlight
-                    onChange={(event, value) => setIdTypeId(value?.id)} // Update the state with the selected value
-                    getOptionLabel={(option) => option?.type}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="ID Type"
-                        inputProps={{
-                          ...params.inputProps,
-                          autoComplete: "new-password",
-                        }}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    name="idNumber"
-                    fullWidth
-                    label="ID Number"
-                    autoComplete="idNumber"
-                    onChange={(e) => setIdNumber(e.target.value)}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCreateAppointment}>Cancel</Button>
-          <Button onClick={handleCloseCreateAppointment}>Subscribe</Button>
-        </DialogActions>
-      </Dialog>
+      <CreatingNewWalkIn
+        openCreateAppointment={openCreateAppointment}
+        handleCloseCreateAppointment={handleCloseCreateAppointment}
+      />
     </Box>
   );
 }

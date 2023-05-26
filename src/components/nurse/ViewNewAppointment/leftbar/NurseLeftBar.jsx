@@ -1,5 +1,6 @@
 import {
   Autocomplete,
+  Avatar,
   Badge,
   Box,
   Button,
@@ -10,11 +11,19 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
+  FormControl,
   Grid,
+  InputLabel,
   List,
+  ListItem,
+  ListItemAvatar,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  MenuItem,
+  Select,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -24,16 +33,22 @@ import {
   PickersDay,
   StaticDateTimePicker,
   LocalizationProvider,
+  DatePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Fab from "@mui/material/Fab";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { Add, Inbox } from "@mui/icons-material";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import axios from "axios";
+import {
+  countries,
+  provinces,
+  cities,
+} from "../../../../pages/addressDb/adress";
 
 function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -126,6 +141,21 @@ function NurseLeftBar() {
     setOpenCreateAppointment(false);
   };
 
+  const [country, setCountry] = React.useState([]);
+  const [province, setProvince] = React.useState([]);
+  const [city, setCity] = React.useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [filteredCities, setFilteredCities] = useState([]);
+
+  const handleProvinceChange = (event) => {
+    setSelectedProvince(event);
+
+    const filteredCities = cities.filter(
+      (city) => city.province_code === event
+    );
+    setFilteredCities(filteredCities);
+  };
+
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "block" } }}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -150,207 +180,9 @@ function NurseLeftBar() {
             }}
             sx={{ boxShadow: 10, borderRadius: 10 }}
           />
-          <Button
-            variant="contained"
-            sx={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              zIndex: 1,
-              margin: "1rem",
-              borderRadius: "100%",
-              height: 60,
-            }}
-            onClick={handleClickOpenCreateAppointment}
-          >
-            <EditCalendarIcon />
-          </Button>
         </Box>
       </LocalizationProvider>
       {/* For Creating New Appointment For Walk In */}
-      <Dialog
-        open={openCreateAppointment}
-        onClose={handleCloseCreateAppointment}
-        maxWidth={"lg"}
-      >
-        <DialogTitle>New Appointment For Walk In</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <DialogContentText>
-                Walk-in registration must be correct, and all information
-                supplied by the patient must be true.
-              </DialogContentText>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Birth Date"
-                fullWidth
-                variant="standard"
-                multiline
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="First Name"
-                fullWidth
-                variant="standard"
-                multiline
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Last Name"
-                fullWidth
-                variant="standard"
-                multiline
-              />
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} mt={2}>
-            <List component="nav" aria-label="main mailbox folders">
-              <ListItemButton
-                // selected={selectedIndex === 0}
-                // onClick={(event) => handleListItemClick(event, 0)}
-                fullWidth
-              >
-                <ListItemIcon>
-                  <Inbox />
-                </ListItemIcon>
-                <ListItemText primary="Inbox" />
-              </ListItemButton>
-              <ListItemButton
-                // selected={selectedIndex === 0}
-                // onClick={(event) => handleListItemClick(event, 0)}
-                fullWidth
-              >
-                <ListItemIcon>
-                  <Inbox />
-                </ListItemIcon>
-                <ListItemText primary="Inbox" />
-              </ListItemButton>
-              <ListItemButton
-                // selected={selectedIndex === 0}
-                // onClick={(event) => handleListItemClick(event, 0)}
-                fullWidth
-              >
-                <ListItemIcon>
-                  <Inbox />
-                </ListItemIcon>
-                <ListItemText primary="Inbox" />
-              </ListItemButton>
-              {/* <ListItemButton
-                selected={selectedIndex === 1}
-                onClick={(event) => handleListItemClick(event, 1)}
-              >
-                <ListItemIcon>
-                  <DraftsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Drafts" />
-              </ListItemButton> */}
-            </List>
-          </Grid>
-          <Grid
-            container
-            spacing={2}
-            mt={2}
-            direction={{ xs: "column", sm: "row" }}
-          >
-            <Grid item xs={12} lg={6}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-evenly"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item xs={12}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <StaticDateTimePicker
-                      orientation="landscape"
-                      slotProps={{
-                        actionBar: { actions: [] },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} lg={6}>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-evenly"
-                alignItems="center"
-                spacing={2}
-              >
-                <Grid item xs={3}>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="First Name"
-                    fullWidth
-                    variant="standard"
-                    multiline
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Middle Name"
-                    fullWidth
-                    variant="standard"
-                    multiline
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Last Name"
-                    fullWidth
-                    variant="standard"
-                    multiline
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Suffix"
-                    fullWidth
-                    variant="standard"
-                    multiline
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Chief Complaint"
-                    fullWidth
-                    variant="standard"
-                    multiline
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCreateAppointment}>Cancel</Button>
-          <Button onClick={handleCloseCreateAppointment}>Subscribe</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }
