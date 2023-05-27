@@ -30,36 +30,10 @@ import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { Add } from "@mui/icons-material";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import axios from "axios";
-import CreatingNewWalkIn from "./CreatingNewWalkIn";
+import CreatingNewWalkIn from "./SettingUpWalkIn/SetFormForWalkIn/CreatingNewWalkIn";
+import SetUpWalkInPatient from "./SettingUpWalkIn/SetUpWalkInPatient";
 
 function NurseLeftBar() {
-  const requestAbortController = React.useRef(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
-
-  //Fetching the list of IDs
-  const [idTypeIdList, setIdTypeIdList] = React.useState([]);
-
-  useEffect(() => {
-    const fetchIdTypeIdListData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/id-type`
-        );
-        setIdTypeIdList(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchIdTypeIdListData();
-  }, []);
-
-  //Storing the ID Number, Type, Path
-  const [idTypeId, setIdTypeId] = React.useState("");
-  const [idNumber, setIdNumber] = React.useState("");
-  const [idFileUrl, setIdFileUrl] = React.useState("");
-
   //For Creating Appointment Modal
   const [openCreateAppointment, setOpenCreateAppointment] =
     React.useState(false);
@@ -108,7 +82,7 @@ function NurseLeftBar() {
         </Box>
       </LocalizationProvider>
       {/* For Creating New Appointment For Walk In */}
-      <CreatingNewWalkIn
+      <SetUpWalkInPatient
         openCreateAppointment={openCreateAppointment}
         handleCloseCreateAppointment={handleCloseCreateAppointment}
       />

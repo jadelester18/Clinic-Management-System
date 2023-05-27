@@ -26,30 +26,6 @@ import QueueScheduled from "./Scheduled/QueueScheduled";
 import ApprovedAppointment from "../AppointmentList/ApprovedAppointment";
 
 const NurseContentBottom = () => {
-  //Fetching the list of IDs
-  const [idTypeIdList, setIdTypeIdList] = React.useState([]);
-
-  useEffect(() => {
-    const fetchIdTypeIdListData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/id-type`
-        );
-        setIdTypeIdList(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchIdTypeIdListData();
-  }, []);
-
-  //Storing the ID Number, Type, Path
-  const [idTypeId, setIdTypeId] = React.useState("");
-  const [idNumber, setIdNumber] = React.useState("");
-  const [idFileUrl, setIdFileUrl] = React.useState("");
-
-  //For Creating Appointment Modal
   const [openCreateAppointment, setOpenCreateAppointment] =
     React.useState(false);
 

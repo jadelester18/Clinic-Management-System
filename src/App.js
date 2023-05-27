@@ -97,12 +97,12 @@ function App() {
             path="/patient"
             element={
               user?.enabled === true ? (
-                user?.role === "ROLE_PATIENT" ? (
-                  <PatientHome toggleMode={toggleMode} mode={mode} />
-                ) : (
-                  <Navigate to={"/"} replace={true} />
-                )
+                // user?.role === "ROLE_PATIENT" ? (
+                <PatientHome toggleMode={toggleMode} mode={mode} />
               ) : (
+                // ) : (
+                // <Navigate to={"/"} replace={true} />
+                // )
                 <Navigate to={"/"} replace={true} />
               )
             }

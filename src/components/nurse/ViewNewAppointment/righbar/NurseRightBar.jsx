@@ -166,7 +166,7 @@ function NurseRightBar() {
               justifyContent="space-around"
               columns={{ xs: 4, sm: 8, md: 12 }}
               fontWeight="bold"
-              sx={{ paddingTop: "8px" }}
+              sx={{ paddingTop: "8px", borderRadius: 10 }}
               position="sticky"
               top={0}
               bgcolor="background.paper"
