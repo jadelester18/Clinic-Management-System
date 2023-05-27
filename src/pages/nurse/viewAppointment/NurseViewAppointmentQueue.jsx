@@ -2,7 +2,7 @@ import { Box, Grid, Stack } from "@mui/material";
 import React from "react";
 import NurseLeftBar from "../../../components/nurse/ViewAppointment/leftbar/NurseLeftBar";
 import NurseRightBar from "../../../components/nurse/ViewAppointment/righbar/NurseRightBar";
-import NurseContentBottom from "../../../components/nurse/ViewAppointment/content/NurseContentBottom";
+import NurseContentBottom from "../../../components/nurse/ViewAppointment/QueueList/NurseContentBottom";
 
 function NurseViewAppointmentQueue() {
   return (
