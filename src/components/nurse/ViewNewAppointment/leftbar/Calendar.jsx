@@ -37,7 +37,7 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Fab from "@mui/material/Fab";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -99,10 +99,10 @@ function ServerDay(props) {
   );
 }
 
-function NurseLeftBar() {
-  const requestAbortController = React.useRef(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
+function Calendar({ date, onDateChange }) {
+  const requestAbortController = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
 
   const fetchHighlightedDays = (date) => {
     const controller = new AbortController();
@@ -129,38 +129,12 @@ function NurseLeftBar() {
     return () => requestAbortController.current?.abort();
   }, []);
 
-  //For Creating Appointment Modal
-  const [openCreateAppointment, setOpenCreateAppointment] =
-    React.useState(false);
-
-  const handleClickOpenCreateAppointment = () => {
-    setOpenCreateAppointment(true);
-  };
-
-  const handleCloseCreateAppointment = () => {
-    setOpenCreateAppointment(false);
-  };
-
-  const [country, setCountry] = React.useState([]);
-  const [province, setProvince] = React.useState([]);
-  const [city, setCity] = React.useState([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [filteredCities, setFilteredCities] = useState([]);
-
-  const handleProvinceChange = (event) => {
-    setSelectedProvince(event);
-
-    const filteredCities = cities.filter(
-      (city) => city.province_code === event
-    );
-    setFilteredCities(filteredCities);
-  };
-
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "block" } }}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ position: "relative" }}>
           <StaticDatePicker
+            value={date}
             orientation="portrait"
             showDaysOutsideCurrentMonth
             //   fixedWeekNumber={6}
@@ -168,7 +142,7 @@ function NurseLeftBar() {
             //   loading={isLoading}
             //   onMonthChange={handleMonthChange}
             //   renderLoading={() => <DayCalendarSkeleton />}\
-
+            onChange={onDateChange}
             slots={{
               day: ServerDay,
             }}
@@ -182,9 +156,8 @@ function NurseLeftBar() {
           />
         </Box>
       </LocalizationProvider>
-      {/* For Creating New Appointment For Walk In */}
     </Box>
   );
 }
 
-export default NurseLeftBar;
+export default Calendar;

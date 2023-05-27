@@ -1,7 +1,7 @@
 import { http } from "../http";
 
-export function createAppointment(doctors) {
-  return http.post("/appointments", doctors);
+export function searchAppointments(searchAppointmentDto) {
+  return http.post(`/appointments/search`, searchAppointmentDto);
 }
 
 export function updateAppointment(appointmentId, updateAppointmentDto) {
