@@ -315,7 +315,7 @@ function NurseHome({ toggleMode, mode }) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Mini variant drawer
+              Grand Budapest Clinic
             </Typography>
             {/* For Dark Mode Toggle Button */}
             <Box sx={{ flexGrow: 1 }} />
