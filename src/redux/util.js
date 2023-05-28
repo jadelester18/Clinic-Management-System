@@ -63,3 +63,37 @@ export function getDayjsFromDateAndTimeString(dateString, timeString) {
     return dayjs(`${dateString}T${timeString.substring(0, 5)}`);
   }
 }
+
+export function morningSchedule(timeSlots) {
+  if (timeSlots) {
+    const morningSlots = timeSlots.filter((slot) => {
+      const hour = slot.startTime.substring(0, 2);
+      return hour < 12;
+    });
+
+    if (morningSlots.length > 0) {
+      const startTime = formatTime(morningSlots[0].startTime);
+      const endTime = formatTime(morningSlots[morningSlots.length - 1].endTime);
+
+      return `${startTime} - ${endTime}`;
+    }
+  }
+}
+
+export function afternoonSchedule(timeSlots) {
+  if (timeSlots) {
+    const afternoonSlots = timeSlots.filter((slot) => {
+      const hour = slot.startTime.substring(0, 2);
+      return hour >= 12;
+    });
+
+    if (afternoonSlots.length > 0) {
+      const startTime = formatTime(afternoonSlots[0].startTime);
+      const endTime = formatTime(
+        afternoonSlots[afternoonSlots.length - 1].endTime
+      );
+
+      return `${startTime} - ${endTime}`;
+    }
+  }
+}

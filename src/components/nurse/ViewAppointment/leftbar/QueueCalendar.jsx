@@ -33,32 +33,28 @@ import axios from "axios";
 import CreatingNewWalkIn from "./SettingUpWalkIn/SetFormForWalkIn/CreatingNewWalkIn";
 import SetUpWalkInPatient from "./SettingUpWalkIn/SetUpWalkInPatient";
 
-function NurseLeftBar() {
+function QueueCalendar({ date, onDateChange, onCreateWalkIn }) {
   //For Creating Appointment Modal
-  const [openCreateAppointment, setOpenCreateAppointment] =
-    React.useState(false);
+  // const [openCreateAppointment, setOpenCreateAppointment] =
+  //   React.useState(false);
 
-  const handleClickOpenCreateAppointment = () => {
-    setOpenCreateAppointment(true);
-  };
+  // const handleClickOpenCreateAppointment = () => {
+  //   setOpenCreateAppointment(true);
+  // };
 
-  const handleCloseCreateAppointment = () => {
-    setOpenCreateAppointment(false);
-  };
+  // const handleCloseCreateAppointment = () => {
+  //   setOpenCreateAppointment(false);
+  // };
 
   return (
     <Box flex={1} p={2}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ position: "relative" }}>
           <StaticDatePicker
+            value={date}
+            onChange={onDateChange}
             orientation="portrait"
             showDaysOutsideCurrentMonth
-            //   fixedWeekNumber={6}
-            //   defaultValue={initialValue}
-            //   loading={isLoading}
-            //   onMonthChange={handleMonthChange}
-            //   renderLoading={() => <DayCalendarSkeleton />}\
-
             slotProps={{
               actionBar: { actions: [] },
             }}
@@ -75,19 +71,19 @@ function NurseLeftBar() {
               borderRadius: "100%",
               height: 60,
             }}
-            onClick={handleClickOpenCreateAppointment}
+            onClick={onCreateWalkIn}
           >
             <EditCalendarIcon />
           </Button>
         </Box>
       </LocalizationProvider>
       {/* For Creating New Appointment For Walk In */}
-      <SetUpWalkInPatient
+      {/* <SetUpWalkInPatient
         openCreateAppointment={openCreateAppointment}
         handleCloseCreateAppointment={handleCloseCreateAppointment}
-      />
+      /> */}
     </Box>
   );
 }
 
-export default NurseLeftBar;
+export default QueueCalendar;
