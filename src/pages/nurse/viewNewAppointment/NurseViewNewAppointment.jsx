@@ -14,11 +14,7 @@ import dayjs from "dayjs";
 import { DEFAULT_DATE_FORMAT, UNEXPECTED_ERROR } from "../../../redux/default";
 import LoadingScreen from "../../../components/LoadingScreen";
 import { SnackBarContext } from "../../../context/SnackBarContext";
-
-const DEFAULT_PAGINATION = {
-  pageNo: 0,
-  pageSize: 5,
-};
+import ConfirmDialog from "../../../components/ConfirmDialog";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -35,17 +31,19 @@ function NurseViewNewAppointment() {
 
   async function fetchAppointments(dateString) {
     try {
-      const { data: page } = await appointmentSvc.searchAppointments({
-        patientId: null,
-        date: dateString,
-        doctorId: null,
-        status: null,
-        pageNo: pageNo - 1,
-        pageSize: DEFAULT_PAGE_SIZE,
-      });
-      setAppointments(page.content);
-      // setCount(page.totalElements);
-      setTotalPages(page.totalPages);
+      if (dateString) {
+        const { data: page } = await appointmentSvc.searchAppointments({
+          patientId: null,
+          date: dateString,
+          doctorId: null,
+          status: null,
+          pageNo: pageNo - 1,
+          pageSize: DEFAULT_PAGE_SIZE,
+        });
+        setAppointments(page.content);
+        // setCount(page.totalElements);
+        setTotalPages(page.totalPages);
+      }
     } catch (error) {
       console.error(error);
       onShowFail(UNEXPECTED_ERROR);
@@ -60,7 +58,7 @@ function NurseViewNewAppointment() {
   async function handleUpdate(appointmentId, updateAppointmentDto) {
     setIsLoading(true);
     try {
-      const { _data } = await appointmentSvc.updateAppointment(
+      const { data } = await appointmentSvc.updateAppointment(
         appointmentId,
         updateAppointmentDto
       );
@@ -74,17 +72,49 @@ function NurseViewNewAppointment() {
     }
   }
 
+  async function handleStatusChange(appointmentId, newStatus) {
+    setIsLoading(true);
+    try {
+      const { data } = await appointmentSvc.changeAppointmentStatus(
+        appointmentId,
+        { status: newStatus }
+      );
+      console.log("updated appointment", data);
+      fetchAppointments(date.format(DEFAULT_DATE_FORMAT));
+      let message;
+      switch (newStatus) {
+        case "PENDING_APPROVAL":
+          message = "Approval withdrawn";
+          break;
+        case "APPROVED":
+          message = "Appointment approved!";
+          break;
+        case "CANCELLED":
+          message = "Appointment cancelled";
+          break;
+        default:
+          throw new Error("Invalid status");
+      }
+      onShowSuccess(message);
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   function handlePageChange(event, value) {
     setPageNo(value);
   }
-
-  console.log("pageNo", pageNo);
 
   useEffect(() => {
     const today = dayjs();
     setDate(today);
     fetchAppointments(today.format(DEFAULT_DATE_FORMAT));
   }, []);
+
+  // useEffect
 
   useEffect(() => {
     fetchAppointments(date?.format(DEFAULT_DATE_FORMAT));
@@ -104,6 +134,7 @@ function NurseViewNewAppointment() {
                   <AppointmentsApprovalList
                     appointments={appointments}
                     onUpdate={handleUpdate}
+                    onStatusChange={handleStatusChange}
                   />
                 </CardContent>
                 <CardActions sx={{ justifyContent: "center" }}>

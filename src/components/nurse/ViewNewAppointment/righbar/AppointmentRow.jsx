@@ -19,49 +19,25 @@ import * as util from "../../../../redux/util";
 import PatientInfoDialog from "./PatientInfoDialog";
 import UpdateAppointmentDialog from "./UpdateAppointmentDialog";
 
-export default function AppointmentRow({ appointment, onUpdate }) {
-  const { patient, doctor, timeSlot, date, remark } = appointment;
+export default function AppointmentRow({
+  appointment,
+  onUpdate,
+  onApprove,
+  onRevert,
+}) {
+  const { id, patient, doctor, timeSlot, date, remark, status } = appointment;
 
   const [isPatientInfoOpen, setIsPatientInfoOpen] = useState(false);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false);
 
-  //For Cofirmation in saving enable or canceling appointment
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
-  const handleToggle = () => {
-    if (isChecked) {
-      setIsChecked(false);
-      setConfirmationMessage(
-        "Are you sure you want to cancel the appointment?"
-      );
+  function handleToggle(event) {
+    if (event.target.checked) {
+      onApprove(id);
     } else {
-      setIsChecked(true);
-      setConfirmationMessage(
-        "Are you sure you want to approve the appointment?"
-      );
+      onRevert(id);
     }
-    setConfirmationOpen(true);
-  };
+  }
 
-  const handleConfirmationClose = (confirmed) => {
-    setConfirmationOpen(false);
-    if (confirmed) {
-      setIsChecked(!isChecked);
-    }
-  };
-
-  //Open view patient profile
-  const [openViewPatientProfile, setOpenViewPatientProfile] =
-    React.useState(false);
-
-  const handleClickOpenViewPatientProfile = () => {
-    setOpenViewPatientProfile(true);
-  };
-
-  const handleClickCloseViewPatientProfile = () => {
-    setOpenViewPatientProfile(false);
-  };
   return (
     <>
       <ListItem alignItems="flex-start">
@@ -125,7 +101,7 @@ export default function AppointmentRow({ appointment, onUpdate }) {
                 <FormControlLabel
                   control={
                     <Android12Switch
-                      checked={isChecked}
+                      checked={status === "APPROVED"}
                       onChange={handleToggle}
                     />
                   }

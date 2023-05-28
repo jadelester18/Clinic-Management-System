@@ -21,8 +21,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CalendarSettings from "./calendarConfig/CalendarSettings";
 import ClockSettings from "./clockConfig/ClockSettings";
 import * as profileData from "../../../../redux/GetApiCalls/profile";
-import * as bookAppointment from "../../../../redux/PostApiCalls/patientAppointment";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import app from "../../../../firebase";

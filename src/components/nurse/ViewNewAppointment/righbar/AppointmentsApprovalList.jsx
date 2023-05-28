@@ -35,34 +35,26 @@ import { StaticDateTimePicker } from "@mui/x-date-pickers";
 import axios from "axios";
 import AppointmentRow from "./AppointmentRow";
 import * as appointmentSvc from "../../../../redux/PostApiCalls/patientAppointment";
+import ConfirmDialog from "../../../ConfirmDialog";
 
-function AppointmentsApprovalList({ appointments, onUpdate }) {
-  //For Cofirmation in saving enable or canceling appointment
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [confirmationMessage, setConfirmationMessage] = useState("");
+const DEFAULT_DIALOG = {
+  appointmentId: 0,
+  open: false,
+};
 
-  const handleToggle = () => {
-    if (isChecked) {
-      setIsChecked(false);
-      setConfirmationMessage(
-        "Are you sure you want to cancel the appointment?"
-      );
-    } else {
-      setIsChecked(true);
-      setConfirmationMessage(
-        "Are you sure you want to approve the appointment?"
-      );
-    }
-    setConfirmationOpen(true);
-  };
+function AppointmentsApprovalList({ appointments, onUpdate, onStatusChange }) {
+  const [approvalDialog, setApprovalDialog] = useState(DEFAULT_DIALOG);
+  const [revertDialog, setRevertDialog] = useState(DEFAULT_DIALOG);
 
-  const handleConfirmationClose = (confirmed) => {
-    setConfirmationOpen(false);
-    if (confirmed) {
-      setIsChecked(!isChecked);
-    }
-  };
+  function handleApprove(appointmentId) {
+    onStatusChange(appointmentId, "APPROVED");
+    setApprovalDialog(DEFAULT_DIALOG);
+  }
+
+  function handleRevert(appointmentId) {
+    onStatusChange(appointmentId, "PENDING_APPROVAL");
+    setRevertDialog(DEFAULT_DIALOG);
+  }
 
   return (
     <>
@@ -106,14 +98,18 @@ function AppointmentsApprovalList({ appointments, onUpdate }) {
         }}
         dense={true}
       >
-        {/* <Divider variant="inset" component="li" /> */}
         {appointments.length > 0 ? (
           appointments?.map((appointment) => (
             <Fragment key={appointment.id}>
               <AppointmentRow
                 appointment={appointment}
                 onUpdate={onUpdate}
-                onApprove={() => {}}
+                onApprove={(appointmentId) =>
+                  setApprovalDialog({ appointmentId, open: true })
+                }
+                onRevert={(appointmentId) =>
+                  setRevertDialog({ appointmentId, open: true })
+                }
                 onCancel={() => {}}
               />
               <Divider variant="inset" component="li" />
@@ -123,54 +119,23 @@ function AppointmentsApprovalList({ appointments, onUpdate }) {
           <Typography variant="body1">No appointments to show</Typography>
         )}
       </List>
-      {/* Updating appointment */}
-      {/* For Creating New Appointment For Walk In */}
-
-      {/* Cofirmation in saving update of appointment */}
-      {confirmationOpen && (
-        <Dialog
-          open={confirmationOpen}
-          // onClose={handleClickCloseConfirmation}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Are you sure you want to update this appointment?"}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              This will reflect to that date.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button>Disagree</Button>
-            <Button
-              // onClick={() => {
-              //   handleCloseCreateAppointment();
-              //   handleClickCloseConfirmation();
-              // }}
-              autoFocus
-            >
-              Agree
-            </Button>
-          </DialogActions>
-        </Dialog>
+      {approvalDialog.open && (
+        <ConfirmDialog
+          title="Approve appointment?"
+          subtitle="The patient will be notified. A queue will be created on the appointment date."
+          open={approvalDialog.open}
+          onConfirm={() => handleApprove(approvalDialog.appointmentId)}
+          onClose={() => setApprovalDialog(DEFAULT_DIALOG)}
+        />
       )}
-      {/* Checking profile of the patient with history */}
-
-      {/* Cofirmation in saving enable or canceling appointment */}
-      {confirmationOpen && (
-        <Dialog
-          open={confirmationOpen}
-          onClose={() => handleConfirmationClose(false)}
-        >
-          <DialogTitle>Confirmation</DialogTitle>
-          <DialogContent>{confirmationMessage}</DialogContent>
-          <DialogActions>
-            <Button onClick={() => handleConfirmationClose(true)}>No</Button>
-            <Button onClick={() => handleConfirmationClose(false)}>Yes</Button>
-          </DialogActions>
-        </Dialog>
+      {revertDialog.open && (
+        <ConfirmDialog
+          title="Withdraw appointment approval?"
+          subtitle="The patient will be notified. The queue will be removed from the appointment date."
+          open={revertDialog.open}
+          onConfirm={() => handleRevert(revertDialog.appointmentId)}
+          onClose={() => setRevertDialog(DEFAULT_DIALOG)}
+        />
       )}
     </>
   );

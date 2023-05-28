@@ -7,3 +7,7 @@ export function searchAppointments(searchAppointmentDto) {
 export function updateAppointment(appointmentId, updateAppointmentDto) {
   return http.put(`/appointments/${appointmentId}`, updateAppointmentDto);
 }
+
+export function changeAppointmentStatus(appointmentId, dto) {
+  return http.put(`/appointments/${appointmentId}/status`, dto);
+}
