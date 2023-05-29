@@ -12,20 +12,15 @@ import {
   List,
   ListItemButton,
   ListItemText,
-  Stack,
   TextField,
   Typography,
 } from "@mui/material";
 
-import React, { useEffect, useState } from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { StaticDateTimePicker } from "@mui/x-date-pickers";
-import axios from "axios";
-import QueueScheduled from "./Scheduled/QueueScheduled";
-import ApprovedAppointment from "../AppointmentList/ApprovedAppointment";
+import React, { useState } from "react";
+import QueueList from "./Scheduled/QueueList";
+import ApprovedAppointments from "../AppointmentList/ApprovedAppointments";
 
-const NurseContentBottom = () => {
+const NurseContentBottom = ({ activeTab }) => {
   const [openCreateAppointment, setOpenCreateAppointment] =
     React.useState(false);
 
@@ -75,7 +70,9 @@ const NurseContentBottom = () => {
             </Grid>
             <Grid item>
               <Button
-                variant="outlined"
+                variant={
+                  procedureType === "Appointment" ? "contained" : "outlined"
+                }
                 onClick={() => setProcedureType("Appointment")}
                 sx={{ borderRadius: 10 }}
               >
@@ -163,7 +160,7 @@ const NurseContentBottom = () => {
           </CardContent>
         )}
         {procedureType === "Appointment" && (
-          <ApprovedAppointment
+          <ApprovedAppointments
             handleClickOpenViewPatientProfile={
               handleClickOpenViewPatientProfile
             }
@@ -174,7 +171,7 @@ const NurseContentBottom = () => {
         {procedureType === "Queue" && (
           <>
             {menuData === "SCHEDULED" && (
-              <QueueScheduled
+              <QueueList
                 handleClickOpenViewPatientProfile={
                   handleClickOpenViewPatientProfile
                 }
@@ -184,7 +181,7 @@ const NurseContentBottom = () => {
               />
             )}
             {menuData === "FOR ASSESSMENT" && (
-              <QueueScheduled
+              <QueueList
                 handleClickOpenViewPatientProfile={
                   handleClickOpenViewPatientProfile
                 }
@@ -194,7 +191,7 @@ const NurseContentBottom = () => {
               />
             )}
             {menuData === "ONGOING ASSESSMENT" && (
-              <QueueScheduled
+              <QueueList
                 handleClickOpenViewPatientProfile={
                   handleClickOpenViewPatientProfile
                 }
@@ -204,7 +201,7 @@ const NurseContentBottom = () => {
               />
             )}
             {menuData === "FOR CONSULTATION" && (
-              <QueueScheduled
+              <QueueList
                 handleClickOpenViewPatientProfile={
                   handleClickOpenViewPatientProfile
                 }
@@ -214,7 +211,7 @@ const NurseContentBottom = () => {
               />
             )}
             {menuData === "ONGOING CONSULTATION" && (
-              <QueueScheduled
+              <QueueList
                 handleClickOpenViewPatientProfile={
                   handleClickOpenViewPatientProfile
                 }
@@ -224,7 +221,7 @@ const NurseContentBottom = () => {
               />
             )}
             {menuData === "FINISHED" && (
-              <QueueScheduled
+              <QueueList
                 handleClickOpenViewPatientProfile={
                   handleClickOpenViewPatientProfile
                 }

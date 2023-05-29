@@ -28,8 +28,8 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
         sx={{ borderRadius: 10 }}
         onClick={() => onSelect(doctor)}
       >
-        <Grid container alignItems="stretch">
-          <Grid item xs={12} md={4}>
+        <Grid container alignItems="stretch" spacing={1}>
+          <Grid item xs={12} md={5}>
             <Stack
               direction={{ xs: "column", md: "row" }}
               alignItems="center"
@@ -55,7 +55,7 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
               />
             </Stack>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3.5}>
             <Stack justifyContent="center" alignItems="center" height="100%">
               <Typography variant="subtitle2">
                 {util.morningSchedule(schedule?.timeSlots)}
@@ -65,7 +65,7 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
               </Typography>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={3.5}>
             <Stack
               direction={{ xs: "column", md: "row" }}
               justifyContent="center"
