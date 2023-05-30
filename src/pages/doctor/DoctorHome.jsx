@@ -23,20 +23,25 @@ import {
   Badge,
   BottomNavigation,
   BottomNavigationAction,
+  Breadcrumbs,
   Button,
+  Chip,
   Collapse,
   Dialog,
   DialogActions,
   DialogTitle,
+  Grid,
   ListItemAvatar,
   Menu,
   MenuItem,
   Paper,
   Tooltip,
+  emphasize,
 } from "@mui/material";
+import HomeIcon from "@mui/icons-material/Home";
 import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
-import TodayIcon from "@mui/icons-material/Today";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -46,6 +51,7 @@ import DarkMode from "../../components/theme/DarkMode";
 import DoctorViewAppointmentQueue from "../doctor/Viewing/DoctorViewAppointmentQueue";
 import { useDispatch } from "react-redux";
 import { logout } from "../../redux/UserReducer";
+import DoctorDashboard from "./Dashboard/DoctorDashboard";
 
 const drawerWidth = 240;
 
@@ -171,7 +177,7 @@ const messageExamples = [
 function DoctorHome({ toggleMode, mode }) {
   const theme = useTheme();
   //For Drawer
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -182,7 +188,7 @@ function DoctorHome({ toggleMode, mode }) {
   };
 
   //For Menu Item
-  const [menuData, setMenuData] = useState("Home");
+  const [menuData, setMenuData] = useState("Dashboard");
 
   //For Open Tree/Sub Category Dropdown
   const [openAppointmentTree, setOpenAppointmentTree] = React.useState(
@@ -276,7 +282,7 @@ function DoctorHome({ toggleMode, mode }) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Mini variant drawer
+              Grand Budapest Clinic
             </Typography>
             {/* For Dark Mode Toggle Button */}
             <Box sx={{ flexGrow: 1 }} />
@@ -462,7 +468,7 @@ function DoctorHome({ toggleMode, mode }) {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() => setMenuData("Home")}
+              onClick={() => setMenuData("Dashboard")}
             >
               <ListItemButton
                 sx={{
@@ -478,7 +484,7 @@ function DoctorHome({ toggleMode, mode }) {
                     justifyContent: "center",
                   }}
                 >
-                  <MailIcon />
+                  <DashboardIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Dashboard"
@@ -508,7 +514,7 @@ function DoctorHome({ toggleMode, mode }) {
                     justifyContent: "center",
                   }}
                 >
-                  <MailIcon />
+                  <MedicalInformationIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary="Appointments"
@@ -518,65 +524,52 @@ function DoctorHome({ toggleMode, mode }) {
             </ListItem>
           </List>
           {/* <Divider /> */}
-          <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("Queu")}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-                onClick={() => {
-                  setOpen(open ? open : !open);
-                  handleClickOpenAppointmentTree();
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MailIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Queu"
-                  sx={{
-                    opacity: open ? 1 : 0,
-                  }}
-                />
-                {openAppointmentTree ? (
-                  <ExpandLess sx={{ display: open ? "block" : "none" }} />
-                ) : (
-                  <ExpandMore sx={{ display: open ? "block" : "none" }} />
-                )}
-              </ListItemButton>
-            </ListItem>
-            <Collapse in={openAppointmentTree} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemIcon>
-                    <StarBorder />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Starred"
-                    sx={{ opacity: open ? 1 : 0 }}
-                  />
-                </ListItemButton>
-              </List>
-            </Collapse>
-          </List>
-          <Divider />
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {menuData === "Home" && <DoctorViewAppointmentQueue />}
-          {menuData === "Appointments" && <DoctorViewAppointmentQueue />}
-          {menuData === "Queu" && <DoctorViewAppointmentQueue />}
+          <Grid container ml={2}>
+            <Grid item xs={12}>
+              {menuData === "Dashboard" ? (
+                <Typography variant="h4">Dashboard</Typography>
+              ) : (
+                ""
+              )}
+              {menuData === "Appointments" ? (
+                <Typography variant="h4">Patient Reports</Typography>
+              ) : (
+                ""
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <div role="presentation" onClick={handleClick}>
+                <Breadcrumbs aria-label="breadcrumb">
+                  <StyledBreadcrumb
+                    component="a"
+                    onClick={() => {
+                      setMenuData("Dashboard");
+                    }}
+                    label="Dashboard"
+                    icon={<HomeIcon fontSize="small" />}
+                  />
+
+                  {menuData === "Appointments" ? (
+                    <StyledBreadcrumb
+                      component="a"
+                      onClick={() => {
+                        setMenuData("Appointments");
+                      }}
+                      label="Patient Reports"
+                    />
+                  ) : (
+                    ""
+                  )}
+                </Breadcrumbs>
+              </div>
+            </Grid>
+          </Grid>
+          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            {menuData === "Dashboard" && <DoctorDashboard />}
+            {menuData === "Appointments" && <DoctorViewAppointmentQueue />}
+          </Box>
         </Box>
       </Box>
     </>
@@ -584,3 +577,28 @@ function DoctorHome({ toggleMode, mode }) {
 }
 
 export default DoctorHome;
+
+const StyledBreadcrumb = styled(Chip)(({ theme }) => {
+  const backgroundColor =
+    theme.palette.mode === "light"
+      ? theme.palette.grey[100]
+      : theme.palette.grey[800];
+  return {
+    backgroundColor,
+    height: theme.spacing(3),
+    color: theme.palette.text.primary,
+    fontWeight: theme.typography.fontWeightRegular,
+    "&:hover, &:focus": {
+      backgroundColor: emphasize(backgroundColor, 0.06),
+    },
+    "&:active": {
+      boxShadow: theme.shadows[1],
+      backgroundColor: emphasize(backgroundColor, 0.12),
+    },
+  };
+});
+
+function handleClick(event) {
+  event.preventDefault();
+  console.info("You clicked a breadcrumb.");
+}

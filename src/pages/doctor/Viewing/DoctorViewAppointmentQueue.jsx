@@ -3,6 +3,7 @@ import React from "react";
 import DoctorLeftBar from "../../../components/doctor/ViewAppointment/leftbar/DoctorLeftBar";
 import DoctorRightBar from "../../../components/doctor/ViewAppointment/righbar/DoctorRightBar";
 import DoctorContentBottom from "../../../components/doctor/ViewAppointment/content/DoctorContentBottom";
+import PatientReport from "../../PatientReportForm";
 
 function DoctorViewAppointmentQueue() {
   return (
@@ -14,24 +15,24 @@ function DoctorViewAppointmentQueue() {
         // spacing={2}
       >
         <Grid container spacing={0}>
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Stack
               direction={{ xs: "column", sm: "column", md: "row" }}
               justifyContent={{ xs: "center", md: "flex-start" }}
               alignItems={{ xs: "center", md: "flex-start" }}
-              spacing={1}
+              spacing={4}
             >
-              <Grid lg={3}>
+              <Grid item lg={3}>
                 <DoctorLeftBar />
               </Grid>
-              <Grid lg={9}>
-                <DoctorRightBar />
+              <Grid item lg={9}>
+                <PatientReport />
               </Grid>
             </Stack>
           </Grid>
-          <Grid xs={12}>
+          {/* <Grid xs={12}>
             <DoctorContentBottom />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Stack>
     </Box>
