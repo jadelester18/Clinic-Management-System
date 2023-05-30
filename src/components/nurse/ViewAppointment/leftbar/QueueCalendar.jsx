@@ -12,6 +12,7 @@ import {
   DialogTitle,
   Grid,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -46,6 +47,18 @@ function QueueCalendar({ date, onDateChange, onCreateWalkIn }) {
   //   setOpenCreateAppointment(false);
   // };
 
+  const styles = {
+    button: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      zIndex: 1,
+      margin: "1rem",
+      borderRadius: "100%",
+      height: 60,
+    },
+  };
+
   return (
     <Box flex={1} p={2}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -60,28 +73,17 @@ function QueueCalendar({ date, onDateChange, onCreateWalkIn }) {
             }}
             sx={{ boxShadow: 10, borderRadius: 10 }}
           />
-          <Button
-            variant="contained"
-            sx={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              zIndex: 1,
-              margin: "1rem",
-              borderRadius: "100%",
-              height: 60,
-            }}
-            onClick={onCreateWalkIn}
-          >
-            <EditCalendarIcon />
-          </Button>
+          <Tooltip title="Create walk-in">
+            <Button
+              variant="contained"
+              sx={styles.button}
+              onClick={onCreateWalkIn}
+            >
+              <EditCalendarIcon />
+            </Button>
+          </Tooltip>
         </Box>
       </LocalizationProvider>
-      {/* For Creating New Appointment For Walk In */}
-      {/* <SetUpWalkInPatient
-        openCreateAppointment={openCreateAppointment}
-        handleCloseCreateAppointment={handleCloseCreateAppointment}
-      /> */}
     </Box>
   );
 }

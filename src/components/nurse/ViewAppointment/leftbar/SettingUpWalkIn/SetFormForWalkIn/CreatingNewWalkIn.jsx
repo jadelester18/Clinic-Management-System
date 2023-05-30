@@ -30,17 +30,36 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   countries,
   provinces,
   cities,
 } from "../../../../../../pages/addressDb/adress";
+import SelectHonorific from "./SelectHonorific";
+import SelectBirthdate from "../PatientSearchStep/SelectBirthdate";
+import SelectGender from "./SelectGender";
 
-const CreatingNewWalkIn = ({
-  openCreateAppointment,
-  handleCloseCreateAppointment,
-}) => {
+const CreatingNewWalkIn = ({ patient }) => {
+  const [form, setForm] = useState({
+    honorific: "",
+    firstName: "",
+    lastName: "",
+    suffixName: "",
+    birthDate: null,
+    gender: "",
+    countryForPhone: null,
+    contactNo: "",
+    email: "",
+    country: "",
+    province: "",
+    city: "",
+    barangay: "",
+    street: "",
+    postalCode: "",
+  });
+  // console.log("form", form);
+
   const [country, setCountry] = React.useState([]);
   const [province, setProvince] = React.useState([]);
   const [city, setCity] = React.useState([]);
@@ -55,6 +74,49 @@ const CreatingNewWalkIn = ({
     );
     setFilteredCities(filteredCities);
   };
+
+  function handleSelect(event, origin) {
+    switch (origin) {
+      case "honorific":
+        setForm({ ...form, honorific: event.target.value });
+        break;
+      case "birthDate":
+        setForm({ ...form, birthDate: event });
+        break;
+      case "gender":
+        setForm({ ...form, gender: event.target.value });
+        break;
+      default:
+        throw new Error("Invalid input");
+    }
+  }
+
+  function handleTextInput(event) {
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
+  }
+
+  useEffect(() => {
+    if (patient) {
+      const countryForPhone = countries.find((country) => {
+        const areaCode = patient.contactNo.substring(1, 3);
+        return country.code === areaCode;
+      });
+      const countryForAddress = countries.find(
+        (country) => country.label === patient.address?.country
+      );
+      setForm({
+        ...patient,
+        ...patient.address,
+        birthDate: dayjs(patient.birthDate),
+        countryForPhone: countryForPhone,
+        contactNo: "",
+        country: countryForAddress,
+        province: "",
+        city: "",
+      });
+    }
+  }, [patient]);
 
   return (
     <Box>
@@ -73,99 +135,67 @@ const CreatingNewWalkIn = ({
             spacing={2}
           >
             <Grid item xs={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  Honorific
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  label="Honorific"
-                  autoWidth
-                >
-                  <MenuItem value={"Mr."}>Mr.</MenuItem>
-                  <MenuItem value={"Mrs."}>Mrs.</MenuItem>
-                  <MenuItem value={"Ms."}>Ms.</MenuItem>
-                  <MenuItem value={"Mx."}>Mx.</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="First Name"
-                fullWidth
-                variant="outlined"
-                multiline
-                size="small"
+              <SelectHonorific
+                value={form.honorific}
+                onSelect={(event) => handleSelect(event, "honorific")}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
-                autoFocus
+                name="firstName"
+                value={form.firstName}
                 margin="dense"
-                label="Middle Name"
+                label="First name"
                 fullWidth
                 variant="outlined"
-                multiline
-                size="small"
+                onChange={handleTextInput}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
-                autoFocus
+                name="middleName"
+                value={form.middleName}
                 margin="dense"
-                label="Last Name"
+                label="Middle name"
                 fullWidth
                 variant="outlined"
-                multiline
-                size="small"
+                onChange={handleTextInput}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
-                autoFocus
+                name="lastName"
                 margin="dense"
+                label="Last name"
+                value={form.lastName}
+                fullWidth
+                variant="outlined"
+                onChange={handleTextInput}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                margin="dense"
+                value={form.suffixName}
                 label="Suffix"
                 fullWidth
                 variant="outlined"
-                multiline
-                size="small"
+                onChange={handleTextInput}
               />
             </Grid>
             <Grid item xs={4}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="BirthDate"
-                  slotProps={{ textField: { size: "small" } }}
-                  sx={{ width: "100%" }}
-                  renderInput={(props) => (
-                    <TextField
-                      {...props}
-                      value={dayjs().format("YYYY-MM-DD")}
-                    />
-                  )}
-                />
-              </LocalizationProvider>
+              <SelectBirthdate
+                value={form.birthDate}
+                onChange={(event) => handleSelect(event, "birthDate")}
+              />
             </Grid>
-
             <Grid item xs={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-autowidth-label">
-                  Gender
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-autowidth-label"
-                  id="demo-simple-select-autowidth"
-                  label="Gender"
-                  autoWidth
-                >
-                  <MenuItem value={"Male"}>Male</MenuItem>
-                  <MenuItem value={"Female"}>Female</MenuItem>
-                </Select>
-              </FormControl>
+              <SelectGender
+                value={form.gender}
+                onSelect={(event) => handleSelect(event, "gender")}
+              />
             </Grid>
+            {/* TODO: CONTACT NO */}
             <Grid item xs={4}>
               <Stack direction="row">
                 <Autocomplete
@@ -221,15 +251,15 @@ const CreatingNewWalkIn = ({
             </Grid>
             <Grid item xs={4}>
               <TextField
-                autoFocus
+                value={form.email}
                 margin="dense"
                 label="Email"
                 fullWidth
                 variant="outlined"
-                multiline
-                size="small"
+                onChange={handleTextInput}
               />
             </Grid>
+            {/* TODO: COUNTRY */}
             <Grid item xs={4}>
               <Autocomplete
                 id="country-select-demo"
@@ -269,6 +299,7 @@ const CreatingNewWalkIn = ({
                 )}
               />
             </Grid>
+            {/* TODO: ADDRESS */}
             <Grid item xs={4}>
               <Autocomplete
                 id="country-select-demo"
@@ -333,48 +364,40 @@ const CreatingNewWalkIn = ({
             </Grid>
             <Grid item xs={4}>
               <TextField
-                margin="normal"
-                name="Barangay"
+                value={form.barangay}
+                margin="dense"
+                name="barangay"
                 label="Barangay"
                 autoComplete="barangay"
                 fullWidth
-                size="small"
                 variant="outlined"
+                onChange={handleTextInput}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
-                margin="normal"
-                name="Street"
+                value={form.street}
+                margin="dense"
+                name="street"
                 label="Zone/Street"
                 autoComplete="Street"
                 fullWidth
-                size="small"
                 variant="outlined"
+                onChange={handleTextInput}
               />
             </Grid>
             <Grid item xs={4}>
               <TextField
-                margin="normal"
+                value={form.postalCode}
+                margin="dense"
                 name="postalCode"
-                label="postal Code"
+                label="Postal Code"
                 autoComplete="postalCode"
                 fullWidth
-                size="small"
                 variant="outlined"
+                onChange={handleTextInput}
               />
             </Grid>
-            {/* <Grid item xs={12}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  label="Chief Complaint"
-                  fullWidth
-                  variant="outlined"
-                  multiline
-                  size="small"
-                />
-              </Grid> */}
           </Grid>
         </Grid>
       </Grid>

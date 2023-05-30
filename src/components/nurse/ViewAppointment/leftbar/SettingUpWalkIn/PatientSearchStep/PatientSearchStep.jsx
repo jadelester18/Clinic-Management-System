@@ -1,186 +1,96 @@
-import {
-  Avatar,
-  Divider,
-  Grid,
-  List,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import React from "react";
+import { Box, Divider, Grid, List, Typography } from "@mui/material";
+import React, { Fragment, useRef, useState } from "react";
+import * as patientSvc from "../../../../../../redux/GetApiCalls/patient";
+import { DEFAULT_DATE_FORMAT } from "../../../../../../redux/default";
+import PatientSearchFilter from "./PatientSearchFilter";
+import PatientRow from "./PatientRow";
+import PatientHeader from "./PatientHeader";
 
-const PatientSearchStep = () => {
+const MAX_RESULT_SIZE = 5;
+
+const PatientSearchStep = ({ selected, onSelect }) => {
+  const [form, setForm] = useState({
+    birthdate: null,
+    firstName: "",
+    lastName: "",
+  });
+  const [patients, setPatients] = useState([]);
+
+  async function fetchPatients({ firstName, lastName, birthdate }) {
+    try {
+      if (firstName || lastName || birthdate) {
+        const { data: page } = await patientSvc.searchPatients({
+          firstName: firstName,
+          lastName: lastName,
+          birthDate: birthdate ? birthdate.format(DEFAULT_DATE_FORMAT) : null,
+          pageNo: 0,
+          pageSize: MAX_RESULT_SIZE,
+        });
+        console.log("fetchPatients result", page);
+        setPatients(page.content);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const debounce = useRef(null);
+
+  function handleInput(event, origin) {
+    if (origin === "birthdate") {
+      const newForm = { ...form, birthdate: event };
+      setForm(newForm);
+      fetchPatients(newForm);
+    } else {
+      const newForm = { ...form, [origin]: event.target.value };
+      setForm(newForm);
+      if (debounce.current) {
+        clearTimeout(debounce.current);
+      }
+      debounce.current = setTimeout(() => fetchPatients(newForm), 400);
+    }
+  }
+
+  const styles = {
+    list: {
+      width: "100%",
+      display: "flex",
+      flexDirection: "column",
+      overflowY: "scroll",
+      height: "15rem",
+      "&::-webkit-scrollbar": {
+        width: "0.4em",
+      },
+      "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "#888",
+      },
+    },
+  };
+
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item>
-          <Typography variant="body1" mt={3}>
-            Filter By:
-          </Typography>
-        </Grid>
-        <Grid item xs={3} mt={1}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              sx={{ width: "100%" }}
-              label="BirthDate"
-              renderInput={(props) => (
-                <TextField {...props} value={dayjs().format("YYYY-MM-DD")} />
-              )}
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="First Name"
-            fullWidth
-            variant="outlined"
-            multiline
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Last Name"
-            fullWidth
-            variant="outlined"
-            multiline
-          />
-        </Grid>
-      </Grid>
+      <PatientSearchFilter form={form} onInput={handleInput} />
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <List
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              overflowY: "scroll",
-              height: "15rem",
-              "&::-webkit-scrollbar": {
-                width: "0.4em",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#888",
-              },
-            }}
-          >
-            <ListItemButton alignItems="flex-start" fullWidth>
-              <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Brunch this weekend?"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      Ali Connors
-                    </Typography>
-                    {" — I'll be in your neighborhood doing errands this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItemButton>
-            <Divider component="li" />
-          </List>
-        </Grid>
-      </Grid>
-    </>
-  );
-};
-
-const DoctorSearchStep = () => {
-  return (
-    <>
-      <Grid container spacing={2}>
-        <Grid item>
-          <Typography variant="body1" mt={3}>
-            2 Filter By:
-          </Typography>
-        </Grid>
-        <Grid item xs={3} mt={1}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              sx={{ width: "100%" }}
-              label="BirthDate"
-              renderInput={(props) => (
-                <TextField {...props} value={dayjs().format("YYYY-MM-DD")} />
-              )}
-            />
-          </LocalizationProvider>
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="First Name"
-            fullWidth
-            variant="outlined"
-            multiline
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Last Name"
-            fullWidth
-            variant="outlined"
-            multiline
-          />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <List
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              overflowY: "scroll",
-              height: "15rem",
-              "&::-webkit-scrollbar": {
-                width: "0.4em",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#888",
-              },
-            }}
-          >
-            <ListItemButton alignItems="flex-start" fullWidth>
-              <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Brunch this weekend?"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      sx={{ display: "inline" }}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      Ali Connors
-                    </Typography>
-                    {" — I'll be in your neighborhood doing errands this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItemButton>
-            <Divider component="li" />
+          <PatientHeader />
+          <List sx={styles.list}>
+            <Divider variant="middle" />
+            {patients?.length > 0 ? (
+              patients.map((patient) => (
+                <Fragment key={patient.id}>
+                  <PatientRow
+                    selected={selected}
+                    patient={patient}
+                    onSelect={onSelect}
+                  />
+                  <Divider variant="middle" />
+                </Fragment>
+              ))
+            ) : (
+              <Box sx={{ textAlign: "center", m: 1 }}>
+                <Typography variant="body1">No results</Typography>
+              </Box>
+            )}
           </List>
         </Grid>
       </Grid>

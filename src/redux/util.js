@@ -54,7 +54,7 @@ export function formatTime(timeString) {
 export function fullAddress(address) {
   if (address) {
     const { street, barangay, city, province, country, postalCode } = address;
-    return `${street}, Brgy. ${barangay}, ${city}, ${province}, ${country}, ${postalCode}`;
+    return `${street}, ${barangay}, ${city}, ${province}, ${country}, ${postalCode}`;
   }
 }
 

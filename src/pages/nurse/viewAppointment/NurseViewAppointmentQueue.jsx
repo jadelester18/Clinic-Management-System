@@ -18,6 +18,7 @@ import AppointmentQueueTabs from "../../../components/nurse/ViewAppointment/cont
 import * as appointmentSvc from "../../../redux/GetApiCalls/appointment";
 import { SnackBarContext } from "../../../context/SnackBarContext";
 import * as queueSvc from "../../../redux/GetApiCalls/queue";
+import SetUpWalkInPatient from "../../../components/nurse/ViewAppointment/leftbar/SettingUpWalkIn/SetUpWalkInPatient";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -30,13 +31,15 @@ function NurseViewAppointmentQueue() {
   const [activeTab, setActiveTab] = useState("APPOINTMENT");
   const [selectedStatus, setSelectedStatus] = useState("SCHEDULED");
   const [queues, setQueues] = useState([]);
-
+  console.log(queues);
   const [appointments, setAppointments] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isQueueFormOpen, setIsQueueFormOpen] = useState(false);
 
   async function fetchDoctorStatusList() {
     try {
@@ -70,13 +73,6 @@ function NurseViewAppointmentQueue() {
 
   async function fetchQueues() {
     try {
-      console.log("searchQueuesDto", {
-        date: date.format(DEFAULT_DATE_FORMAT),
-        checkInStatus: selectedStatus,
-        doctorId: selectedDoctor ? selectedDoctor.id : null,
-        pageNo: page - 1,
-        pageSize: DEFAULT_PAGE_SIZE,
-      });
       const { data: queuesPage } = await queueSvc.searchQueues({
         date: date.format(DEFAULT_DATE_FORMAT),
         checkInStatus: selectedStatus,
@@ -84,7 +80,6 @@ function NurseViewAppointmentQueue() {
         pageNo: page - 1,
         pageSize: DEFAULT_PAGE_SIZE,
       });
-      console.log("QUEUES", queuesPage);
       setQueues(queuesPage.content);
       setTotalPages(queuesPage.totalPages);
     } catch (error) {
@@ -153,63 +148,72 @@ function NurseViewAppointmentQueue() {
   }, [date, selectedDoctor, page, activeTab, selectedStatus]);
 
   return (
-    <Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} lg={4}>
-              <QueueCalendar
-                date={date}
-                onDateChange={handleDateChange}
-                onCreateWalkIn={handleCreateWalkIn}
-              />
-            </Grid>
-            <Grid item xs={12} lg={8}>
-              <DoctorStatusSection
-                statusList={doctorStatusList}
-                date={date}
-                onSelect={(doctor) => setSelectedDoctor(doctor)}
-              />
+    <>
+      <Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} lg={4}>
+                <QueueCalendar
+                  date={date}
+                  onDateChange={handleDateChange}
+                  onCreateWalkIn={() => setIsQueueFormOpen(true)}
+                />
+              </Grid>
+              <Grid item xs={12} lg={8}>
+                <DoctorStatusSection
+                  statusList={doctorStatusList}
+                  date={date}
+                  onSelect={(doctor) => setSelectedDoctor(doctor)}
+                />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Box flex={2} p={2}>
-            <Card sx={{ borderRadius: 10 }} elevation={3}>
-              <CardContent mt={6}>
-                {/* HEADER TABS */}
-                <AppointmentQueueTabs
-                  activeTab={activeTab}
-                  onTabChange={(tab) => setActiveTab(tab)}
-                />
-                {activeTab === "QUEUE" && (
-                  <Queues
-                    queues={queues}
-                    selectedStatus={selectedStatus}
-                    onFilterChange={(status) => setSelectedStatus(status)}
-                    onStatusChange={handleStatusChange}
+          <Grid item xs={12}>
+            <Box flex={2} p={2}>
+              <Card sx={{ borderRadius: 10 }} elevation={3}>
+                <CardContent mt={6}>
+                  {/* HEADER TABS */}
+                  <AppointmentQueueTabs
+                    activeTab={activeTab}
+                    onTabChange={(tab) => setActiveTab(tab)}
                   />
-                )}
+                  {activeTab === "QUEUE" && (
+                    <Queues
+                      queues={queues}
+                      selectedStatus={selectedStatus}
+                      onFilterChange={(status) => setSelectedStatus(status)}
+                      onStatusChange={handleStatusChange}
+                    />
+                  )}
 
-                {activeTab === "APPOINTMENT" && (
-                  <ApprovedAppointments
-                    appointments={appointments}
-                    onArrivalChange={handleArrivalChange}
+                  {activeTab === "APPOINTMENT" && (
+                    <ApprovedAppointments
+                      appointments={appointments}
+                      onArrivalChange={handleArrivalChange}
+                    />
+                  )}
+                </CardContent>
+                <CardActions sx={{ justifyContent: "center" }}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(event, newValue) => setPage(newValue)}
                   />
-                )}
-              </CardContent>
-              <CardActions sx={{ justifyContent: "center" }}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(event, newValue) => setPage(newValue)}
-                />
-              </CardActions>
-            </Card>
-          </Box>
+                </CardActions>
+              </Card>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
+      {isQueueFormOpen && (
+        <SetUpWalkInPatient
+          date={date}
+          open={isQueueFormOpen}
+          onClose={() => setIsQueueFormOpen(false)}
+        />
+      )}
+    </>
   );
 }
 
