@@ -615,7 +615,9 @@ function NurseHome({ toggleMode, mode }) {
                 <Breadcrumbs aria-label="breadcrumb">
                   <StyledBreadcrumb
                     component="a"
-                    href="#"
+                    onClick={() => {
+                      setMenuData("Dashboard");
+                    }}
                     label="Dashboard"
                     icon={<HomeIcon fontSize="small" />}
                   />
@@ -623,7 +625,9 @@ function NurseHome({ toggleMode, mode }) {
                   {menuData === "New Appointment" ? (
                     <StyledBreadcrumb
                       component="a"
-                      href={"#"}
+                      onClick={() => {
+                        setMenuData("New Appointment");
+                      }}
                       label="New Appoinments"
                     />
                   ) : (
@@ -632,7 +636,9 @@ function NurseHome({ toggleMode, mode }) {
                   {menuData === "Appointments" ? (
                     <StyledBreadcrumb
                       component="a"
-                      href={"#"}
+                      onClick={() => {
+                        setMenuData("Appointments");
+                      }} 
                       label="Reception"
                     />
                   ) : (

@@ -28,6 +28,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Stack,
   Step,
   StepContent,
   StepLabel,
@@ -198,6 +199,9 @@ const PatientReport = () => {
     setMedicines(updatedMedicines);
   };
 
+  //For Storing the Medicine Object
+  const [medicineObject, setMedicineObject] = useState([]);
+
   //For Storing and computing the total medicine
   const [totalMedicineToBeTake, setTotalMedicineToBeInTake] = useState("");
   const [medicinePiece, setMedicinePiece] = useState("");
@@ -243,7 +247,255 @@ const PatientReport = () => {
   const handleChangePrescription = (event) => {
     setPrescriptionType(event.target.value);
   };
+
   const steps = [
+    {
+      label: "Title of Report",
+      descriptionReport: `Descreption of the report.`,
+      userInfo: (
+        <Typography variant="subtitle2">
+          User Information.
+          <Tooltip title="This for User Information cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      user_info: (
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={3}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="lname"
+              fullWidth
+              label="Last Name"
+              autoComplete="Last Name"
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="fname"
+              fullWidth
+              label="First Name"
+              autoComplete="First Name"
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="mname"
+              fullWidth
+              label="Middle Name"
+              autoComplete="Middle Name"
+              disabled
+            />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="suffix"
+              fullWidth
+              label="Suffix"
+              autoComplete="Suffix"
+              disabled
+            />
+          </Grid>
+        </Grid>
+      ),
+      vitalSignsInfo: (
+        <Typography variant="subtitle2">
+          Vital Signs.
+          <Tooltip title="This for Vital Signs cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      vital_signs: (
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={2.4}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="Blood Pressure"
+              fullWidth
+              label="Blood Pressure"
+              autoComplete="Blood Pressure"
+              value={bloodPressure}
+              onChange={handleBloodPressureChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12} md={2.4}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="Temperature"
+              fullWidth
+              label="Temperature"
+              autoComplete="Temperature"
+              value={temperature}
+              onChange={handleTemperatureChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12} md={2.4}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="Respiratory Rate"
+              fullWidth
+              label="Respiratory Rate"
+              autoComplete="Respiratory Rate"
+              value={respiratory}
+              onChange={handleRespiratoryChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12} md={2.4}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="Heart Rate"
+              fullWidth
+              label="Heart Rate"
+              autoComplete="Heart Rate"
+              value={heart}
+              onChange={handleHeartChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12} md={2.4}>
+            <TextField
+              size="small"
+              margin="normal"
+              name="Oxygen Saturation"
+              fullWidth
+              label="Oxygen Saturation"
+              autoComplete="Oxygen Saturation"
+              value={oxygenSaturation}
+              onChange={handleOxygenSaturationChange}
+              required
+            />
+          </Grid>
+        </Grid>
+      ),
+
+      labProcedureInfo: (
+        <Typography variant="subtitle2">
+          Laboratory Procedures.
+          <Tooltip title="These are for laboratory cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      lab_procedures: (
+        <FormGroup>
+          <Grid container direction="row" alignItems="center">
+            <Grid item>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label="X-ray"
+                required
+              />
+            </Grid>
+            <Grid item>
+              <FormControlLabel control={<Checkbox />} label="CBC" />
+            </Grid>
+            <Grid item>
+              <FormControlLabel control={<Checkbox />} label="Urinalysis" />
+            </Grid>
+            <Grid item>
+              <FormControlLabel control={<Checkbox />} label="Eye Test" />
+            </Grid>
+          </Grid>
+        </FormGroup>
+      ),
+      diagnosisInfo: (
+        <Typography variant="subtitle2">
+          Diagnosis.
+          <Tooltip title="This for Diagnosis cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      diagnosis: (
+        <TextField
+          size="small"
+          margin="normal"
+          name="Diagnosis"
+          fullWidth
+          label="Diagnosis"
+          autoComplete="Diagnosis"
+          multiline
+          required
+        />
+      ),
+      prognosisInfo: (
+        <Typography variant="subtitle2">
+          Prognosis.
+          <Tooltip title="This for Prognosis cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      prognosis: (
+        <TextField
+          size="small"
+          margin="normal"
+          name="Prognosis"
+          fullWidth
+          label="Prognosis"
+          autoComplete="Prognosis"
+          multiline
+          required
+        />
+      ),
+      managementInfo: (
+        <Typography variant="subtitle2">
+          Management.
+          <Tooltip title="This for Management cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      management: (
+        <TextField
+          size="small"
+          margin="normal"
+          name="Management"
+          fullWidth
+          label="Management"
+          autoComplete="Management"
+          multiline
+          required
+        />
+      ),
+      nurseInfo: (
+        <Typography variant="subtitle2">
+          Nurse Assisted.
+          <Tooltip title="This for Nurse Assisted cotent.">
+            <HelpIcon />
+          </Tooltip>
+        </Typography>
+      ),
+      nurse_assisted: (
+        <TextField
+          size="small"
+          margin="normal"
+          name="Nurse Assisted"
+          fullWidth
+          label="Nurse Assisted"
+          autoComplete="Nurse Assisted"
+          disabled
+        />
+      ),
+    },
     {
       label: "Title of Report",
       descriptionReport: `Descreption of the report.`,
@@ -496,324 +748,169 @@ const PatientReport = () => {
   return (
     <Box
       sx={{
-        display: "flex",
+        // display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
       }}
       p={2}
     >
-      <Grid container spacing={12}>
-        <Grid item xs={3}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box sx={{ position: "relative" }}>
-                  <StaticDatePicker
-                    orientation="portrait"
-                    showDaysOutsideCurrentMonth
-                    //   fixedWeekNumber={6}
-                    //   defaultValue={initialValue}
-                    //   loading={isLoading}
-                    //   onMonthChange={handleMonthChange}
-                    //   renderLoading={() => <DayCalendarSkeleton />}\
-
-                    slotProps={{
-                      actionBar: { actions: [] },
-                    }}
-                    sx={{ boxShadow: 10, borderRadius: 10 }}
-                  />
-                </Box>
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12}>
-              <List
-                sx={{
-                  width: "100%",
-                  //   maxWidth: 360,
-                  bgcolor: "background.paper",
-                  boxShadow: 5,
-                  borderRadius: 10,
-                }}
-              >
-                <ListItemButton alignItems="flex-start" disablePadding dense>
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="/static/images/avatar/1.jpg"
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Brunch this weekend?"
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          Ali Connors
-                        </Typography>
-                        {" — I'll be in your neighborhood doing errands this…"}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItemButton>
-                <Divider variant="inset" component="li" />
-                <ListItemButton alignItems="flex-start" disablePadding dense>
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Travis Howard"
-                      src="/static/images/avatar/2.jpg"
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Summer BBQ"
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          to Scott, Alex, Jennifer
-                        </Typography>
-                        {" — Wish I could come, but I'm out of town this…"}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItemButton>
-                <Divider variant="inset" component="li" />
-                <ListItemButton alignItems="flex-start" disablePadding dense>
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Cindy Baker"
-                      src="/static/images/avatar/3.jpg"
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Oui Oui"
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          Sandra Adams
-                        </Typography>
-                        {" — Do you have Paris recommendations? Have you ever…"}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItemButton>
-                <ListItemButton alignItems="flex-start" disablePadding dense>
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Cindy Baker"
-                      src="/static/images/avatar/3.jpg"
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Oui Oui"
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          Sandra Adams
-                        </Typography>
-                        {" — Do you have Paris recommendations? Have you ever…"}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItemButton>
-                <ListItemButton alignItems="flex-start" disablePadding dense>
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Cindy Baker"
-                      src="/static/images/avatar/3.jpg"
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Oui Oui"
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          Sandra Adams
-                        </Typography>
-                        {" — Do you have Paris recommendations? Have you ever…"}
-                      </React.Fragment>
-                    }
-                  />
-                </ListItemButton>
-              </List>
-            </Grid>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item>
+          <Stepper activeStep={activeStep} orientation="vertical">
+            {steps.map((step, index) => (
+              <Step key={step.label}>
+                <StepLabel></StepLabel>
+              </Step>
+            ))}
+          </Stepper>
         </Grid>
-        <Grid item xs={9}>
-          <Grid container spacing={2}>
-            <Grid item>
-              <Stepper activeStep={activeStep} orientation="vertical">
-                {steps.map((step, index) => (
-                  <Step key={step.label}>
-                    <StepLabel></StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Grid>
-            <Grid item xs={11}>
-              <Card item sx={{ flex: 1 }} xs={1}>
-                <CardContent>
+        <Grid item xs={10} md={11.5}>
+          <Card item sx={{ borderRadius: 10, boxShadow: 15 }}>
+            <CardContent>
+              <Grid container>
+                <Grid item xs={10}>
                   <Typography variant="h6">
                     {steps[activeStep].label}
                   </Typography>
-                </CardContent>
-                <CardContent>
                   <Typography>{steps[activeStep].descriptionReport}</Typography>
-                </CardContent>
-                <CardContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      {steps[activeStep].userInfo}
-                      <Grid item xs={12}>
-                        {steps[activeStep].user_info}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {steps[activeStep].vitalSignsInfo}
-                      <Grid item xs={12}>
-                        {steps[activeStep].vital_signs}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {steps[activeStep].labProcedureInfo}
-                      <Grid item xs={12}>
-                        {steps[activeStep].lab_procedures}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {steps[activeStep].diagnosisInfo}
-                      <Grid item xs={12}>
-                        {steps[activeStep].diagnosis}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {steps[activeStep].prognosisInfo}
-                      <Grid item xs={12}>
-                        {steps[activeStep].prognosis}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {steps[activeStep].managementInfo}
-                      <Grid item xs={12}>
-                        {steps[activeStep].management}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      {steps[activeStep].nurseInfo}
-                      <Grid item xs={5} md={3}>
-                        {steps[activeStep].nurse_assisted}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle2">
-                        Medicines.
-                        <Tooltip title="This for Medicines cotent.">
-                          <HelpIcon />
-                        </Tooltip>
-                      </Typography>
-                      {medicines.map((medicine, index) => (
-                        <Grid container spacing={2} key={index}>
-                          <Grid item xs={12} md={10}>
-                            <TextField
-                              size="small"
-                              margin="normal"
-                              name={`medicine-${index}`}
-                              fullWidth
-                              label="Medicine"
-                              autoComplete="Medicine"
-                              value={medicine.name}
-                              onChange={(event) =>
-                                handleMedicineChange(
-                                  index,
-                                  "name",
-                                  event.target.value
-                                )
-                              }
-                              onClick={() => handleOpenModalMedication(index)}
-                              required
-                            />
-                          </Grid>
-                          <Grid item xs={6} md={2} mt={2}>
-                            <Button
-                              size="small"
-                              variant="contained"
-                              color="secondary"
-                              onClick={() => handleRemoveMedicine(index)}
-                            >
-                              Close
-                            </Button>
-                          </Grid>
-                        </Grid>
-                      ))}
-                      <Button variant="contained" onClick={handleAddMedicine}>
-                        Add Medicine
-                      </Button>
-                    </Grid>
-                    <Grid item xs={11}>
-                      <Button
-                        variant="contained"
-                        onClick={handleNext}
-                        sx={{
-                          display:
-                            activeStep === steps.length - 1 ? "none" : "block",
-                        }}
-                      >
-                        {activeStep === steps.length - 1
-                          ? "Finish"
-                          : "Continue"}
-                      </Button>
-                      <Button
-                        disabled={activeStep === 0}
-                        onClick={handleBack}
-                        sx={{
-                          display:
-                            activeStep === steps.length - 1 ? "none" : "block",
-                        }}
-                      >
-                        Back
-                      </Button>
-                    </Grid>
-                    <Grid item>
-                      <Button variant="contained">Submit</Button>
-                    </Grid>
+                </Grid>
+                <Grid item>
+                  <Typography variant="body2">View Recent Reports</Typography>
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ padding: 1 }}
+                    boxShadow={10}
+                    borderRadius={2}
+                  >
+                    <Button
+                      variant="contained"
+                      onClick={handleNext}
+                      size="small"
+                    >
+                      {activeStep === steps.length - 1 ? "Finish" : "Continue"}
+                    </Button>
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      size="small"
+                    >
+                      Back
+                    </Button>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </CardContent>
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  {steps[activeStep].userInfo}
+                  <Grid item xs={12}>
+                    {steps[activeStep].user_info}
                   </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  {steps[activeStep].vitalSignsInfo}
+                  <Grid item xs={12}>
+                    {steps[activeStep].vital_signs}
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  {steps[activeStep].labProcedureInfo}
+                  <Grid item xs={12}>
+                    {steps[activeStep].lab_procedures}
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  {steps[activeStep].diagnosisInfo}
+                  <Grid item xs={12}>
+                    {steps[activeStep].diagnosis}
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  {steps[activeStep].prognosisInfo}
+                  <Grid item xs={12}>
+                    {steps[activeStep].prognosis}
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  {steps[activeStep].managementInfo}
+                  <Grid item xs={12}>
+                    {steps[activeStep].management}
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  {steps[activeStep].nurseInfo}
+                  <Grid item xs={12} md={3}>
+                    {steps[activeStep].nurse_assisted}
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2">
+                    Medicines.
+                    <Tooltip title="This for Medicines cotent.">
+                      <HelpIcon />
+                    </Tooltip>
+                  </Typography>
+                  {medicines.map((medicine, index) => (
+                    <Grid container spacing={2} key={index}>
+                      <Grid item xs={12} md={10}>
+                        <TextField
+                          size="small"
+                          margin="normal"
+                          name={`medicine-${index}`}
+                          fullWidth
+                          label="Medicine"
+                          autoComplete="Medicine"
+                          value={medicine.name}
+                          onChange={(event) =>
+                            handleMedicineChange(
+                              index,
+                              "name",
+                              event.target.value
+                            )
+                          }
+                          onClick={() => handleOpenModalMedication(index)}
+                          required
+                        />
+                      </Grid>
+                      <Grid item xs={6} md={2} mt={2}>
+                        <Button
+                          // size="small"
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => handleRemoveMedicine(index)}
+                        >
+                          Close
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  ))}
+                  <Button variant="contained" onClick={handleAddMedicine}>
+                    Add Medicine
+                  </Button>
+                </Grid>
+                <Grid item xs={10}></Grid>
+                <Grid item>
+                  <Button variant="standard">Clear</Button>
+                </Grid>
+                <Grid item>
+                  <Button variant="contained">Save</Button>
+                </Grid>
+              </Grid>
 
-                  {activeStep === steps.length && (
-                    <Paper square elevation={0} sx={{ p: 3 }}>
-                      <Typography>
-                        All steps completed - you&apos;re finished
-                      </Typography>
-                      <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-                        Reset
-                      </Button>
-                    </Paper>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+              {activeStep === steps.length && (
+                <Paper square elevation={0} sx={{ p: 3 }}>
+                  <Typography>
+                    All steps completed - you&apos;re finished
+                  </Typography>
+                  <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
+                    Reset
+                  </Button>
+                </Paper>
+              )}
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
       <Dialog
@@ -898,7 +995,6 @@ const PatientReport = () => {
                   disablePortal
                   id="combo-box-demo"
                   options={top100Films}
-                  // sx={{ width: 300 }}
                   renderInput={(params) => (
                     <TextField {...params} label="Medicine" />
                   )}
