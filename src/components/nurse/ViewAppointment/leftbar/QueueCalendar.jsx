@@ -12,6 +12,7 @@ import {
   DialogTitle,
   Grid,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -33,17 +34,29 @@ import axios from "axios";
 import CreatingNewWalkIn from "./SettingUpWalkIn/SetFormForWalkIn/CreatingNewWalkIn";
 import SetUpWalkInPatient from "./SettingUpWalkIn/SetUpWalkInPatient";
 
-function NurseLeftBar() {
+function QueueCalendar({ date, onDateChange, onCreateWalkIn }) {
   //For Creating Appointment Modal
-  const [openCreateAppointment, setOpenCreateAppointment] =
-    React.useState(false);
+  // const [openCreateAppointment, setOpenCreateAppointment] =
+  //   React.useState(false);
 
-  const handleClickOpenCreateAppointment = () => {
-    setOpenCreateAppointment(true);
-  };
+  // const handleClickOpenCreateAppointment = () => {
+  //   setOpenCreateAppointment(true);
+  // };
 
-  const handleCloseCreateAppointment = () => {
-    setOpenCreateAppointment(false);
+  // const handleCloseCreateAppointment = () => {
+  //   setOpenCreateAppointment(false);
+  // };
+
+  const styles = {
+    button: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      zIndex: 1,
+      margin: "1rem",
+      borderRadius: "100%",
+      height: 60,
+    },
   };
 
   return (
@@ -51,43 +64,28 @@ function NurseLeftBar() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ position: "relative" }}>
           <StaticDatePicker
+            value={date}
+            onChange={onDateChange}
             orientation="portrait"
             showDaysOutsideCurrentMonth
-            //   fixedWeekNumber={6}
-            //   defaultValue={initialValue}
-            //   loading={isLoading}
-            //   onMonthChange={handleMonthChange}
-            //   renderLoading={() => <DayCalendarSkeleton />}\
-
             slotProps={{
               actionBar: { actions: [] },
             }}
             sx={{ boxShadow: 10, borderRadius: 10 }}
           />
-          <Button
-            variant="contained"
-            sx={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              zIndex: 1,
-              margin: "1rem",
-              borderRadius: "100%",
-              height: 60,
-            }}
-            onClick={handleClickOpenCreateAppointment}
-          >
-            <EditCalendarIcon />
-          </Button>
+          <Tooltip title="Create walk-in">
+            <Button
+              variant="contained"
+              sx={styles.button}
+              onClick={onCreateWalkIn}
+            >
+              <EditCalendarIcon />
+            </Button>
+          </Tooltip>
         </Box>
       </LocalizationProvider>
-      {/* For Creating New Appointment For Walk In */}
-      <SetUpWalkInPatient
-        openCreateAppointment={openCreateAppointment}
-        handleCloseCreateAppointment={handleCloseCreateAppointment}
-      />
     </Box>
   );
 }
 
-export default NurseLeftBar;
+export default QueueCalendar;

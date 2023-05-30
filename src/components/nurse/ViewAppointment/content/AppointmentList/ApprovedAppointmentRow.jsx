@@ -15,45 +15,53 @@ import {
 import DrawIcon from "@mui/icons-material/Draw";
 import PersonIcon from "@mui/icons-material/Person";
 import React, { useState } from "react";
-import * as util from "../../../../redux/util";
-import PatientInfoDialog from "./PatientInfoDialog";
-import UpdateAppointmentDialog from "./UpdateAppointmentDialog";
+import PatientInfoDialog from "../../../ViewNewAppointment/righbar/PatientInfoDialog";
+import * as util from "../../../../../redux/util";
 
-export default function AppointmentRow({
+export default function ApprovedAppointmentRow({
   appointment,
-  onUpdate,
-  onApprove,
+  onArrived,
   onRevert,
 }) {
-  const { id, patient, doctor, timeSlot, date, remark, status } = appointment;
+  const { id, patient, doctor, timeSlot, remark, status, hasArrived } =
+    appointment;
 
   const [isPatientInfoOpen, setIsPatientInfoOpen] = useState(false);
-  const [isUpdateOpen, setIsUpdateOpen] = useState(false);
 
   function handleToggle(event) {
     if (event.target.checked) {
-      onApprove(id);
+      onArrived(id);
     } else {
       onRevert(id);
     }
   }
 
+  const styles = {
+    gContainer: {
+      spacing: 1,
+      justifyContent: "center",
+      alignItems: "stretch",
+    },
+    gItem: {
+      xs: 12,
+      md: 4,
+    },
+    stack: {
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    liText: {
+      textAlign: { xs: "center", md: "left" },
+    },
+  };
+
   return (
     <>
       <ListItem alignItems="center">
-        <Grid
-          container
-          spacing={1}
-          alignItems="stretch"
-          // columns={{ xs: 4, sm: 8, md: 12 }}
-        >
-          <Grid item xs={12} md={4}>
-            <Stack
-              direction={{ xs: "column", md: "row" }}
-              height="100%"
-              alignItems="center"
-              justifyContent="center"
-            >
+        <Grid container {...styles.gContainer}>
+          <Grid item {...styles.gItem}>
+            <Stack direction={{ xs: "column", md: "row" }} {...styles.stack}>
               <ListItemAvatar>
                 <Avatar
                   alt={patient.firstName}
@@ -61,10 +69,10 @@ export default function AppointmentRow({
                 />
               </ListItemAvatar>
               <ListItemText
-                sx={{ textAlign: { xs: "center", md: "left" } }}
+                sx={styles.liText}
                 disableTypography
                 primary={
-                  <Typography variant="h6">{util.name(patient)}</Typography>
+                  <Typography variant="body1">{util.name(patient)}</Typography>
                 }
                 secondary={
                   <Typography variant="body2">{`CC: "${remark}"`}</Typography>
@@ -72,19 +80,18 @@ export default function AppointmentRow({
               />
             </Stack>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Stack alignItems="center" height="100%" justifyContent="center">
+          <Grid item {...styles.gItem}>
+            <Stack {...styles.stack}>
               <Typography variant="body1">{util.name(doctor)}</Typography>
-              <Typography variant="body1">{util.timeSlot(timeSlot)}</Typography>
+              <Typography variant="body2">{util.timeSlot(timeSlot)}</Typography>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item {...styles.gItem}>
             <Stack
               direction="row"
-              justifyContent={{ xs: "center", md: "end" }}
-              alignItems="center"
               spacing={1}
-              height="100%"
+              alignItems="center"
+              justifyContent={{ xs: "center", md: "end" }}
             >
               <Tooltip title="View Patient Information">
                 <IconButton
@@ -94,21 +101,11 @@ export default function AppointmentRow({
                   <PersonIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Update Appointment">
-                <IconButton
-                  color="success"
-                  aria-label="upload picture"
-                  component="label"
-                  onClick={() => setIsUpdateOpen(true)}
-                >
-                  <DrawIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Approve Appointment">
+              <Tooltip title="Arrived?">
                 <FormControlLabel
                   control={
                     <Android12Switch
-                      checked={status === "APPROVED"}
+                      checked={hasArrived}
                       onChange={handleToggle}
                     />
                   }
@@ -123,14 +120,6 @@ export default function AppointmentRow({
           patient={patient}
           open={isPatientInfoOpen}
           onClose={() => setIsPatientInfoOpen(false)}
-        />
-      )}
-      {isUpdateOpen && (
-        <UpdateAppointmentDialog
-          appointment={appointment}
-          open={isUpdateOpen}
-          onClose={() => setIsUpdateOpen(false)}
-          onSave={onUpdate}
         />
       )}
     </>
