@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { DISPLAY_DATE_FORMAT } from "./default";
+import { DISPLAY_DATE_FORMAT, QUEUE_TYPE } from "./default";
 
 export function name(person) {
   if (person) {
@@ -32,7 +32,7 @@ function convertTimeStringToObject(timeString) {
   }
 }
 
-function formatTime(timeString) {
+export function formatTime(timeString) {
   if (timeString) {
     const timeObject = convertTimeStringToObject(timeString);
     let { hour, minute } = timeObject;
@@ -54,7 +54,7 @@ function formatTime(timeString) {
 export function fullAddress(address) {
   if (address) {
     const { street, barangay, city, province, country, postalCode } = address;
-    return `${street}, Brgy. ${barangay}, ${city}, ${province}, ${country}, ${postalCode}`;
+    return `${street}, ${barangay}, ${city}, ${province}, ${country}, ${postalCode}`;
   }
 }
 
@@ -62,4 +62,42 @@ export function getDayjsFromDateAndTimeString(dateString, timeString) {
   if (dateString && timeString) {
     return dayjs(`${dateString}T${timeString.substring(0, 5)}`);
   }
+}
+
+export function morningSchedule(timeSlots) {
+  if (timeSlots) {
+    const morningSlots = timeSlots.filter((slot) => {
+      const hour = slot.startTime.substring(0, 2);
+      return hour < 12;
+    });
+
+    if (morningSlots.length > 0) {
+      const startTime = formatTime(morningSlots[0].startTime);
+      const endTime = formatTime(morningSlots[morningSlots.length - 1].endTime);
+
+      return `${startTime} - ${endTime}`;
+    }
+  }
+}
+
+export function afternoonSchedule(timeSlots) {
+  if (timeSlots) {
+    const afternoonSlots = timeSlots.filter((slot) => {
+      const hour = slot.startTime.substring(0, 2);
+      return hour >= 12;
+    });
+
+    if (afternoonSlots.length > 0) {
+      const startTime = formatTime(afternoonSlots[0].startTime);
+      const endTime = formatTime(
+        afternoonSlots[afternoonSlots.length - 1].endTime
+      );
+
+      return `${startTime} - ${endTime}`;
+    }
+  }
+}
+
+export function queueType(typeValue) {
+  return QUEUE_TYPE.find((type) => type.value === typeValue).text;
 }

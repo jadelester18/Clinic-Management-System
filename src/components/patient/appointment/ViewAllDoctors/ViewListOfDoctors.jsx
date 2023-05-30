@@ -1,35 +1,27 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Card,
   CardContent,
-  FormControl,
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   TablePagination,
   TextField,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DoctorsCardInfo from "./doctorsCard/DoctorsCardInfo";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import PropTypes from "prop-types";
-import { http } from "../../../../redux/http";
 
 import * as doctorService from "../../../../redux/PostApiCalls/doctor";
-import * as hmoService from "../../../../redux/GetApiCalls/hmo";
-import * as specializationService from "../../../../redux/GetApiCalls/specialization";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import SelectHmo from "./SelectHmo";
+import SelectSpecialization from "./SelectSpecialization";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -385,62 +377,3 @@ const ViewListOfDoctors = () => {
 };
 
 export default ViewListOfDoctors;
-
-function SelectHmo({ value, onSelect }) {
-  const [hmoList, setHmoList] = useState([]);
-
-  async function fetchHmoList() {
-    try {
-      const { data } = await hmoService.getHmos();
-      setHmoList(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  useEffect(() => {
-    fetchHmoList();
-  }, []);
-
-  return (
-    <Autocomplete
-      options={hmoList}
-      getOptionLabel={(option) => option.title}
-      value={value}
-      renderInput={(params) => (
-        <TextField {...params} label="HMO Accreditation" />
-      )}
-      onChange={onSelect}
-      fullWidth
-    />
-  );
-}
-
-function SelectSpecialization({ value, onSelect }) {
-  const [specializations, setSpecializations] = useState([]);
-
-  async function fetchSpecializationList() {
-    try {
-      const { data } = await specializationService.getSpecializations();
-      setSpecializations(data);
-      console.log("specializations", specializations);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  useEffect(() => {
-    fetchSpecializationList();
-  }, []);
-
-  return (
-    <Autocomplete
-      options={specializations}
-      getOptionLabel={(option) => option.description}
-      value={value}
-      renderInput={(params) => <TextField {...params} label="Specialization" />}
-      onChange={onSelect}
-      fullWidth
-    />
-  );
-}

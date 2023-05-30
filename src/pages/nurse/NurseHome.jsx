@@ -605,7 +605,7 @@ function NurseHome({ toggleMode, mode }) {
                 ""
               )}
               {menuData === "Appointments" ? (
-                <Typography variant="h4">Approved Appoinments</Typography>
+                <Typography variant="h4">Reception</Typography>
               ) : (
                 ""
               )}
@@ -633,7 +633,7 @@ function NurseHome({ toggleMode, mode }) {
                     <StyledBreadcrumb
                       component="a"
                       href={"#"}
-                      label="Approved Appoinments"
+                      label="Reception"
                     />
                   ) : (
                     ""

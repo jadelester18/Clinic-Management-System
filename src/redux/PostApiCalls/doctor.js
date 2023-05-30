@@ -7,3 +7,7 @@ export function searchDoctors(doctors) {
 export function getAvailableSlots(doctorId, date) {
   return http.get(`/doctors/${doctorId}/schedules/available-slots/${date}`);
 }
+
+export function getDoctorStatusList(date) {
+  return http.get(`/doctors/status/${date}`);
+}
