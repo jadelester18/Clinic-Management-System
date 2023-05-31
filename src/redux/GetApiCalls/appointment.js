@@ -18,3 +18,7 @@ export function changeArrivalStatus(appointmentId, arrivalStatusDto) {
     arrivalStatusDto
   );
 }
+
+export function getMonthDaysWithNewAppointments(dayInMonth) {
+  return http.get(`/appointments/by-month/${dayInMonth}/days`);
+}
