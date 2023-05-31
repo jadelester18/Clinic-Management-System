@@ -36,16 +36,12 @@ function ServerDay(props) {
 
 function Calendar({ date, onDateChange, appointments }) {
   const [highlightedDays, setHighlightedDays] = useState([]);
-  console.log("date in calendar", date);
-  console.log("highlightedDays", highlightedDays);
 
   const fetchHighlightedDays = async (date) => {
-    console.log("fetchHighlightedDays");
     try {
       const { data } = await appointmentSvc.getMonthDaysWithNewAppointments(
         date.format(DEFAULT_DATE_FORMAT)
       );
-      console.log("days with new appointment", data);
       setHighlightedDays(data);
     } catch (error) {
       console.error(error);

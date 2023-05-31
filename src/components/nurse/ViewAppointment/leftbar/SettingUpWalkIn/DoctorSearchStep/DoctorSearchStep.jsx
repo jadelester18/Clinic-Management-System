@@ -1,11 +1,10 @@
-import { Box, Divider, Grid, List, Typography } from "@mui/material";
-import React, { Fragment, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import DoctorSearchFilter from "./DoctorSearchFilter";
 import * as doctorSvc from "../../../../../../redux/PostApiCalls/doctor";
-import DoctorRow from "./DoctorRow";
-import DoctorHeader from "./DoctorHeader";
+import { DAY_OF_WEEK_FORMAT } from "../../../../../../redux/default";
+import DoctorsResultList from "./DoctorsResultList";
 
-const MAX_RESULT_SIZE = 5;
+const MAX_RESULT_SIZE = 50;
 
 const DoctorSearchStep = ({ selected, onSelect, date }) => {
   const [doctors, setDoctors] = useState([]);
@@ -14,6 +13,7 @@ const DoctorSearchStep = ({ selected, onSelect, date }) => {
     lastName: "",
     hmo: null,
     specialization: null,
+    onlyScheduled: false,
   });
 
   const handleSelect = (value, origin) => {
@@ -24,6 +24,9 @@ const DoctorSearchStep = ({ selected, onSelect, date }) => {
         break;
       case "hmo":
         newQuery = { ...query, hmo: value };
+        break;
+      case "onlyScheduled":
+        newQuery = { ...query, onlyScheduled: value };
         break;
       default:
         throw new Error("Invalid input");
@@ -56,30 +59,34 @@ const DoctorSearchStep = ({ selected, onSelect, date }) => {
         pageSize: MAX_RESULT_SIZE,
       });
       console.log("Search Doctors Result", doctorsPage);
-      setDoctors(doctorsPage.content);
+      setDoctors(sortDoctorsBySchedule(doctorsPage.content));
     } catch (error) {
       console.error(error);
     }
   };
 
-  const styles = {
-    list: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      overflowY: "scroll",
-      height: "15rem",
-      "&::-webkit-scrollbar": {
-        width: "0.4em",
-      },
-      "&::-webkit-scrollbar-thumb": {
-        backgroundColor: "#888",
-      },
-    },
-    box: {
-      textAlign: "center",
-      m: 1,
-    },
+  const sortDoctorsBySchedule = (doctors) => {
+    // return negative (first in the order) if has schedule
+    return doctors.sort((doctorA, doctorB) => {
+      if (hasSchedule(doctorA) && !hasSchedule(doctorB)) {
+        return -1;
+      }
+      if (!hasSchedule(doctorA) && hasSchedule(doctorB)) {
+        return 1;
+      }
+      if (
+        (hasSchedule(doctorA) && hasSchedule(doctorB)) ||
+        (!hasSchedule(doctorA) && !hasSchedule(doctorB))
+      ) {
+        return 0;
+      }
+    });
+  };
+
+  const hasSchedule = (doctor) => {
+    return doctor.schedules.some(
+      (sched) => sched.day === date.format(DAY_OF_WEEK_FORMAT).toUpperCase()
+    );
   };
 
   return (
@@ -89,31 +96,16 @@ const DoctorSearchStep = ({ selected, onSelect, date }) => {
         onSelect={handleSelect}
         onTextInput={handleTextInput}
       />
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <DoctorHeader />
-          <Divider variant="middle" />
-          <List sx={styles.list}>
-            {doctors?.length > 0 ? (
-              doctors.map((doctor) => (
-                <Fragment key={doctor.id}>
-                  <DoctorRow
-                    doctor={doctor}
-                    selected={selected}
-                    date={date}
-                    onSelect={onSelect}
-                  />
-                  <Divider variant="middle" />
-                </Fragment>
-              ))
-            ) : (
-              <Box sx={styles.box}>
-                <Typography variant="body1">No results</Typography>
-              </Box>
-            )}
-          </List>
-        </Grid>
-      </Grid>
+      <DoctorsResultList
+        doctors={
+          query.onlyScheduled
+            ? doctors.filter((doctor) => hasSchedule(doctor))
+            : doctors
+        }
+        date={date}
+        selected={selected}
+        onSelect={onSelect}
+      />
     </>
   );
 };

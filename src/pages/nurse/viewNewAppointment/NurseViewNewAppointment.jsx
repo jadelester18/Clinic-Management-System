@@ -125,7 +125,11 @@ function NurseViewNewAppointment() {
       <Box>
         <Grid container spacing={2}>
           <Grid item xs={12} lg={4}>
-            <Calendar date={date} onDateChange={handleDateChange} />
+            <Calendar
+              date={date}
+              onDateChange={handleDateChange}
+              appointments={appointments}
+            />
           </Grid>
           <Grid item xs={12} lg={8}>
             <Box flex={2} p={2}>
