@@ -15,7 +15,7 @@ export default function DoctorsResultList({
       display: "flex",
       flexDirection: "column",
       overflowY: "scroll",
-      height: "15rem",
+      maxHeight: "15rem",
       "&::-webkit-scrollbar": {
         width: "0.4em",
       },

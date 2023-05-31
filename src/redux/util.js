@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
 import { DISPLAY_DATE_FORMAT, QUEUE_TYPE } from "./default";
+import dayjs from "dayjs";
 
 export function name(person) {
   if (person) {
@@ -100,4 +100,27 @@ export function afternoonSchedule(timeSlots) {
 
 export function queueType(typeValue) {
   return QUEUE_TYPE.find((type) => type.value === typeValue).text;
+}
+
+export function elapsedTimeFromNow(timeString) {
+  if (timeString) {
+    const timeObject = convertTimeStringToObject(timeString);
+    let { hour, minute } = timeObject;
+    const now = dayjs();
+
+    const timeInMinutes = hour * 60 + minute;
+    const nowInMinutes = now.hour() * 60 + now.minute();
+    const totalDiffInMinutes = nowInMinutes - timeInMinutes;
+
+    const hoursDiff = (totalDiffInMinutes / 60).toFixed(0);
+    const minutesDiff = totalDiffInMinutes % 60;
+
+    if (hoursDiff === 0 && minutesDiff === 0) {
+      return `just now`;
+    }
+
+    return `${hoursDiff > 0 ? `${hoursDiff}h ` : ""}${
+      minutesDiff > 0 ? `${minutesDiff}m ` : ""
+    } ago`;
+  }
 }

@@ -117,11 +117,16 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
               <List>
                 <Divider textAlign="center">PATIENT</Divider>
                 <PatientHeader />
-                <PatientRow patient={form.patient} onSelect={() => {}} />
+                <PatientRow
+                  selected={form.patient}
+                  patient={form.patient}
+                  onSelect={() => {}}
+                />
                 <Divider textAlign="center">DOCTOR</Divider>
                 <DoctorHeader />
                 <DoctorRow
                   date={date}
+                  selected={form.doctor}
                   doctor={form.doctor}
                   onSelect={() => {}}
                 />

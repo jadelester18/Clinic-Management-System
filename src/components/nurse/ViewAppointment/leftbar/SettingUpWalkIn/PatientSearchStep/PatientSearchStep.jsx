@@ -57,7 +57,7 @@ const PatientSearchStep = ({ selected, onSelect }) => {
       display: "flex",
       flexDirection: "column",
       overflowY: "scroll",
-      height: "15rem",
+      maxHeight: "15rem",
       "&::-webkit-scrollbar": {
         width: "0.4em",
       },
@@ -73,8 +73,8 @@ const PatientSearchStep = ({ selected, onSelect }) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <PatientHeader />
+          <Divider variant="middle" />
           <List sx={styles.list}>
-            <Divider variant="middle" />
             {patients?.length > 0 ? (
               patients.map((patient) => (
                 <Fragment key={patient.id}>

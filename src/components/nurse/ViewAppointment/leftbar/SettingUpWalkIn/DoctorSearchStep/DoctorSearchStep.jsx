@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DoctorSearchFilter from "./DoctorSearchFilter";
 import * as doctorSvc from "../../../../../../redux/PostApiCalls/doctor";
 import { DAY_OF_WEEK_FORMAT } from "../../../../../../redux/default";
@@ -7,7 +7,7 @@ import DoctorsResultList from "./DoctorsResultList";
 const MAX_RESULT_SIZE = 50;
 
 const DoctorSearchStep = ({ selected, onSelect, date }) => {
-  const [doctors, setDoctors] = useState([]);
+  const [doctors, setDoctors] = useState(selected ? [selected] : []);
   const [query, setQuery] = useState({
     firstName: "",
     lastName: "",
@@ -88,6 +88,12 @@ const DoctorSearchStep = ({ selected, onSelect, date }) => {
       (sched) => sched.day === date.format(DAY_OF_WEEK_FORMAT).toUpperCase()
     );
   };
+
+  // useEffect(() => {
+  //   if (selected) {
+  //     setDoctors([selected]);
+  //   }
+  // }, [])
 
   return (
     <>
