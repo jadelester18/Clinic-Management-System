@@ -17,7 +17,7 @@ import React from "react";
 import DoctorStatusHeader from "./DoctorStatusHeader";
 import DoctorStatusRow from "./DoctorStatusRow";
 
-function DoctorStatusSection({ date, statusList, onSelect }) {
+function DoctorStatusSection({ selected, date, statusList, onSelect }) {
   return (
     <Box flex={2} p={2}>
       <Card sx={{ height: 440, borderRadius: 10 }} elevation={3}>
@@ -45,6 +45,7 @@ function DoctorStatusSection({ date, statusList, onSelect }) {
             {statusList?.length > 0 ? (
               statusList?.map((status) => (
                 <DoctorStatusRow
+                  selected={selected}
                   date={date}
                   doctorStatus={status}
                   key={status.doctor.id}

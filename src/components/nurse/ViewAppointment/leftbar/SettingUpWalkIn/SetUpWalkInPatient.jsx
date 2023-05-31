@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Button,
   Dialog,
   DialogActions,
@@ -9,25 +8,12 @@ import {
   Divider,
   Grid,
   List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
+  Stack,
   Step,
   StepButton,
   Stepper,
-  TextField,
-  Typography,
 } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
 import React, { useState } from "react";
-import {
-  countries,
-  provinces,
-  cities,
-} from "../../../../../pages/addressDb/adress";
 import CreatingNewWalkIn from "./SetFormForWalkIn/CreatingNewWalkIn";
 import PatientSearchStep from "./PatientSearchStep/PatientSearchStep";
 import DoctorSearchStep from "./DoctorSearchStep/DoctorSearchStep";
@@ -36,6 +22,7 @@ import DoctorRow from "./DoctorSearchStep/DoctorRow";
 import PatientRow from "./PatientSearchStep/PatientRow";
 import PatientHeader from "./PatientSearchStep/PatientHeader";
 import DoctorHeader from "./DoctorSearchStep/DoctorHeader";
+import { DISPLAY_DATE_FORMAT } from "../../../../../redux/default";
 
 const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
   const steps = ["Search Patient", "Search Doctor", "Summary"];
@@ -60,6 +47,11 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
     }
   };
 
+  const handleSubmit = () => {
+    onSubmit(form.patient.id, form.doctor.id);
+    onClose();
+  };
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -74,7 +66,12 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xl">
-      <DialogTitle>Walk-in Patient</DialogTitle>
+      <Stack direction="row" justifyContent="space-between" p={0} m={0}>
+        <DialogTitle variant="h5">Walk-in Patient</DialogTitle>
+        <DialogTitle variant="h5">
+          {date.format(DISPLAY_DATE_FORMAT)}
+        </DialogTitle>
+      </Stack>
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -120,11 +117,16 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
               <List>
                 <Divider textAlign="center">PATIENT</Divider>
                 <PatientHeader />
-                <PatientRow patient={form.patient} onSelect={() => {}} />
+                <PatientRow
+                  selected={form.patient}
+                  patient={form.patient}
+                  onSelect={() => {}}
+                />
                 <Divider textAlign="center">DOCTOR</Divider>
                 <DoctorHeader />
                 <DoctorRow
                   date={date}
+                  selected={form.doctor}
                   doctor={form.doctor}
                   onSelect={() => {}}
                 />
@@ -156,7 +158,7 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
           </Button>
         )}
         {activeStep === steps.length - 1 && (
-          <Button onClick={onClose} variant="contained">
+          <Button onClick={handleSubmit} variant="contained">
             Submit
           </Button>
         )}
