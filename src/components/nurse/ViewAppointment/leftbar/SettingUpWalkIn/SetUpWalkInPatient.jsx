@@ -60,6 +60,11 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
     }
   };
 
+  const handleSubmit = () => {
+    onSubmit(form.patient.id, form.doctor.id);
+    onClose();
+  };
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -156,7 +161,7 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
           </Button>
         )}
         {activeStep === steps.length - 1 && (
-          <Button onClick={onClose} variant="contained">
+          <Button onClick={handleSubmit} variant="contained">
             Submit
           </Button>
         )}

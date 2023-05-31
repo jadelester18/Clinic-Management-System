@@ -19,6 +19,7 @@ import * as appointmentSvc from "../../../redux/GetApiCalls/appointment";
 import { SnackBarContext } from "../../../context/SnackBarContext";
 import * as queueSvc from "../../../redux/GetApiCalls/queue";
 import SetUpWalkInPatient from "../../../components/nurse/ViewAppointment/leftbar/SettingUpWalkIn/SetUpWalkInPatient";
+import LoadingScreen from "../../../components/LoadingScreen";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -124,8 +125,34 @@ function NurseViewAppointmentQueue() {
     fetchDoctorStatusList(event.format(DEFAULT_DATE_FORMAT));
   }
 
-  function handleCreateWalkIn(event) {
-    // TODO
+  async function handleCreateWalkIn(patientId, doctorId) {
+    setIsLoading(true);
+    try {
+      const { data } = await queueSvc.createWalkInQueue({
+        date: date.format(DEFAULT_DATE_FORMAT),
+        patientId,
+        doctorId,
+      });
+      console.log("NEW QUEUE ", data);
+      if (
+        activeTab === "QUEUE" &&
+        selectedStatus === "FOR_ASSESSMENT" &&
+        selectedDoctor?.id === data.report.doctor.id
+      ) {
+        fetchQueues();
+      } else {
+        setActiveTab("QUEUE");
+        setSelectedStatus("FOR_ASSESSMENT");
+        setSelectedDoctor(data.report.doctor);
+      }
+
+      onShowSuccess("Patient added to queue");
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -162,6 +189,7 @@ function NurseViewAppointmentQueue() {
               </Grid>
               <Grid item xs={12} lg={8}>
                 <DoctorStatusSection
+                  selected={selectedDoctor}
                   statusList={doctorStatusList}
                   date={date}
                   onSelect={(doctor) => setSelectedDoctor(doctor)}
@@ -211,8 +239,10 @@ function NurseViewAppointmentQueue() {
           date={date}
           open={isQueueFormOpen}
           onClose={() => setIsQueueFormOpen(false)}
+          onSubmit={handleCreateWalkIn}
         />
       )}
+      {isLoading && <LoadingScreen open={isLoading} />}
     </>
   );
 }
