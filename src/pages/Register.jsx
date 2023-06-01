@@ -6,6 +6,7 @@ import {
   Container,
   CssBaseline,
   FormControl,
+  FormHelperText,
   Grid,
   IconButton,
   InputAdornment,
@@ -29,6 +30,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { countries, provinces, cities } from "./addressDb/adress.js";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import Joi from "joi";
 
 function Register({ handleCloseRegister }) {
   //For Country Code
@@ -60,6 +62,11 @@ function Register({ handleCloseRegister }) {
   const [idNumber, setIdNumber] = React.useState("");
   const [idFileUrl, setIdFileUrl] = React.useState("");
 
+  //For Handling the Joi Error message
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  console.log(fieldErrors);
+
   // Update contactNo whenever code or phone change
   React.useEffect(() => {
     setContactNo(code + phone);
@@ -69,7 +76,83 @@ function Register({ handleCloseRegister }) {
   const dispatch = useDispatch();
   const handleClick = (e) => {
     // e.preventDefault();
-    signup(dispatch, {
+
+    // Joi validation schema
+    const schema = Joi.object({
+      honorific: Joi.string().required(),
+      firstName: Joi.string().required().min(2).max(50).messages({
+        "string.empty": "First Name is required",
+        "string.min": "First Name should have at least {#limit} characters",
+        "string.max": "First Name should have at most {#limit} characters",
+      }),
+      middleName: Joi.string().min(2).max(50).allow("").messages({
+        "string.min": "Middle Name should have at least {#limit} characters",
+      }),
+      lastName: Joi.string().required().min(2).max(50).messages({
+        "string.empty": "Last Name is required",
+        "string.min": "Last Name should have at least {#limit} characters",
+        "string.max": "Last Name should have at most {#limit} characters",
+      }),
+      suffixName: Joi.string().allow("").max(50).messages({
+        "string.max": "Suffix Name should have at most {#limit} characters",
+      }),
+      birthDate: Joi.string()
+        .required()
+        .custom((value, helpers) => {
+          const isValid = dayjs(value, "YYYY-MM-DD", true).isValid();
+          if (!isValid) {
+            return helpers.message(
+              "Invalid Birth Date format. Please use YYYY-MM-DD"
+            );
+          }
+          return value;
+        }),
+      gender: Joi.string().required().valid("MALE", "FEMALE").messages({
+        "any.only": "Gender must be MALE or FeMALE",
+      }),
+      contactNo: Joi.string()
+        .required()
+        .pattern(/^\+?[0-9]+$/, { name: "numbers" })
+        // .length(10, { name: "Contact Number" })
+        .messages({
+          "string.pattern.base": "Contact Number should contain only numbers",
+          "string.length": "Contact Number should be exactly {#limit} digits",
+        }),
+      email: Joi.string()
+        .required()
+        .email({ tlds: { allow: false } })
+        .messages({
+          "string.empty": "Email is required",
+          "string.email": "Invalid email format",
+        }),
+      password: Joi.string()
+        .required()
+        .pattern(
+          new RegExp(
+            "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+          )
+        )
+        .messages({
+          "string.empty": "Password is required",
+          "string.pattern.base":
+            "Password must contain at least 8 characters, one lowercase letter, one uppercase letter, one digit, and one special character",
+        }),
+      confirmPassword: Joi.string()
+        .valid(Joi.ref("password"))
+        .required()
+        .messages({ "any.only": "Passwords do not match" }),
+      country: Joi.string().required(),
+      province: Joi.string().required(),
+      city: Joi.string().required(),
+      barangay: Joi.string().required(),
+      street: Joi.string().required(),
+      postalCode: Joi.string().required(),
+      idTypeId: Joi.number().required(),
+      idNumber: Joi.string().required(),
+      idFileUrl: Joi.string().required(),
+    });
+
+    const data = {
       honorific,
       firstName,
       middleName,
@@ -80,6 +163,7 @@ function Register({ handleCloseRegister }) {
       contactNo,
       email,
       password,
+      confirmPassword,
       country,
       province,
       city,
@@ -89,8 +173,26 @@ function Register({ handleCloseRegister }) {
       idTypeId,
       idNumber,
       idFileUrl,
-    });
+    };
+
+    const { error } = schema.validate(data, { abortEarly: false });
+
+    if (error) {
+      const errorMessages = {};
+      error.details.forEach((err) => {
+        const fieldName = err.path[0];
+        const errorMessage = err.message;
+        errorMessages[fieldName] = errorMessage;
+      });
+      setFieldErrors(errorMessages);
+      return;
+    }
+
+    console.log(data);
+    signup(dispatch, data);
   };
+
+  // Rest of the component code...
 
   //Fetching the IDs Type
   useEffect(() => {
@@ -168,7 +270,7 @@ function Register({ handleCloseRegister }) {
             mt={2}
           >
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
+              <FormControl fullWidth error={Boolean(fieldErrors.honorific)}>
                 <InputLabel id="demo-simple-select-autowidth-label">
                   Honorific
                 </InputLabel>
@@ -185,6 +287,7 @@ function Register({ handleCloseRegister }) {
                   <MenuItem value={"Ms."}>Ms.</MenuItem>
                   <MenuItem value={"Mx."}>Mx.</MenuItem>
                 </Select>
+                <FormHelperText>{fieldErrors.honorific || ""}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -195,6 +298,8 @@ function Register({ handleCloseRegister }) {
                 label="First Name"
                 autoComplete="First Name"
                 onChange={(e) => setFirstName(e.target.value)}
+                helperText={fieldErrors.firstName || ""}
+                error={Boolean(fieldErrors.firstName)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -205,6 +310,8 @@ function Register({ handleCloseRegister }) {
                 label="Middle Name"
                 autoComplete="Middle Name"
                 onChange={(e) => setMiddleName(e.target.value)}
+                helperText={fieldErrors.middleName || ""}
+                error={Boolean(fieldErrors.middleName)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -215,6 +322,8 @@ function Register({ handleCloseRegister }) {
                 label="Last Name"
                 autoComplete="Last Name"
                 onChange={(e) => setLastName(e.target.value)}
+                helperText={fieldErrors.lastName || ""}
+                error={Boolean(fieldErrors.lastName)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -224,6 +333,8 @@ function Register({ handleCloseRegister }) {
                 label="Suffix"
                 autoComplete="Suffix"
                 onChange={(e) => setSuffixName(e.target.value)}
+                helperText={fieldErrors.suffixName || ""}
+                error={Boolean(fieldErrors.suffixName)}
               />
             </Grid>
 
@@ -231,7 +342,7 @@ function Register({ handleCloseRegister }) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="BirthDate"
-                  value={birthDate}
+                  value={birthDate ? dayjs(birthDate).format("YYYY-MM-DD") : ""}
                   onChange={(newValue) =>
                     setBirthDate(dayjs(newValue).format("YYYY-MM-DD"))
                   }
@@ -239,15 +350,23 @@ function Register({ handleCloseRegister }) {
                     <TextField
                       {...props}
                       value={
-                        birthDate ? dayjs(birthDate).format("YYYY-MM-DD") : ""
+                        birthDate
+                          ? dayjs(birthDate).format("YYYY-MM-DD")
+                          : dayjs()
                       }
                     />
                   )}
                 />
               </LocalizationProvider>
+              <FormHelperText sx={{ color: "red" }}>
+                {fieldErrors.birthDate || ""}
+              </FormHelperText>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <FormControl sx={{ minWidth: { xs: "100%", md: 120 }, m: 1 }}>
+              <FormControl
+                sx={{ minWidth: { xs: "100%", md: 120 }, m: 1 }}
+                error={Boolean(fieldErrors.gender)}
+              >
                 <InputLabel id="demo-simple-select-autowidth-label">
                   Gender
                 </InputLabel>
@@ -262,6 +381,7 @@ function Register({ handleCloseRegister }) {
                   <MenuItem value={"MALE"}>Male</MenuItem>
                   <MenuItem value={"FEMALE"}>Female</MenuItem>
                 </Select>
+                <FormHelperText>{fieldErrors.gender || ""}</FormHelperText>
               </FormControl>
             </Grid>
           </Grid>
@@ -283,8 +403,9 @@ function Register({ handleCloseRegister }) {
                   id="country-select-demo"
                   // sx={{ width: 200 }}
                   sx={{ mr: 1 }}
-                  options={countries
-                    .sort((a, b) => a.label.localeCompare(b.label))}
+                  options={countries.sort((a, b) =>
+                    a.label.localeCompare(b.label)
+                  )}
                   autoHighlight
                   onChange={(event, value) => setCode("+" + value.phone)}
                   getOptionLabel={(option) => " +" + option.phone}
@@ -313,6 +434,7 @@ function Register({ handleCloseRegister }) {
                     <TextField
                       {...params}
                       label="Code"
+                      error={Boolean(fieldErrors.contactNo)}
                       inputProps={{
                         ...params.inputProps,
                         autoComplete: "new-password", // disable autocomplete and autofill
@@ -320,6 +442,7 @@ function Register({ handleCloseRegister }) {
                     />
                   )}
                 />
+
                 <TextField
                   label="Phone Number"
                   fullWidth
@@ -327,8 +450,12 @@ function Register({ handleCloseRegister }) {
                     maxLength: 10,
                   }}
                   onChange={(e) => setPhone(e.target.value)}
+                  error={Boolean(fieldErrors.contactNo)}
                 />
               </Stack>
+              <FormHelperText sx={{ color: "red" }}>
+                {fieldErrors.contactNo || ""}
+              </FormHelperText>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
@@ -338,6 +465,8 @@ function Register({ handleCloseRegister }) {
                 label="Email"
                 autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
+                helperText={fieldErrors.email || ""}
+                error={Boolean(fieldErrors.email)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -361,6 +490,8 @@ function Register({ handleCloseRegister }) {
                   ),
                 }}
                 onChange={(e) => setPassword(e.target.value)}
+                helperText={fieldErrors.password || ""}
+                error={Boolean(fieldErrors.password)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -383,6 +514,9 @@ function Register({ handleCloseRegister }) {
                     </InputAdornment>
                   ),
                 }}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                helperText={fieldErrors.confirmPassword || ""}
+                error={Boolean(fieldErrors.confirmPassword)}
               />
             </Grid>
           </Grid>
@@ -428,6 +562,8 @@ function Register({ handleCloseRegister }) {
                   <TextField
                     {...params}
                     label="Choose a country"
+                    helperText={fieldErrors.country || ""}
+                    error={Boolean(fieldErrors.country)}
                     inputProps={{
                       ...params.inputProps,
                       autoComplete: "new-password",
@@ -460,6 +596,8 @@ function Register({ handleCloseRegister }) {
                   <TextField
                     {...params}
                     label="Choose a province"
+                    helperText={fieldErrors.province || ""}
+                    error={Boolean(fieldErrors.province)}
                     inputProps={{
                       ...params.inputProps,
                       autoComplete: "new-password",
@@ -489,6 +627,8 @@ function Register({ handleCloseRegister }) {
                   <TextField
                     {...params}
                     label="Choose a city"
+                    helperText={fieldErrors.city || ""}
+                    error={Boolean(fieldErrors.city)}
                     inputProps={{
                       ...params.inputProps,
                       autoComplete: "new-password",
@@ -505,6 +645,8 @@ function Register({ handleCloseRegister }) {
                 label="Barangay"
                 autoComplete="barangay"
                 onChange={(e) => setBarangay(e.target.value)}
+                helperText={fieldErrors.barangay || ""}
+                error={Boolean(fieldErrors.barangay)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -515,6 +657,8 @@ function Register({ handleCloseRegister }) {
                 label="Zone/Street"
                 autoComplete="Street"
                 onChange={(e) => setStreet(e.target.value)}
+                helperText={fieldErrors.street || ""}
+                error={Boolean(fieldErrors.street)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -525,6 +669,8 @@ function Register({ handleCloseRegister }) {
                 label="postal Code"
                 autoComplete="postalCode"
                 onChange={(e) => setPostalCode(e.target.value)}
+                helperText={fieldErrors.postalCode || ""}
+                error={Boolean(fieldErrors.postalCode)}
               />
             </Grid>
           </Grid>
@@ -548,14 +694,18 @@ function Register({ handleCloseRegister }) {
             <Grid item xs={12} sm={6} md={3}>
               <Autocomplete
                 id="id-type-select"
-                options={idTypeIdList} // Pass idTypeId as options
+                options={idTypeIdList}
                 autoHighlight
-                onChange={(event, value) => setIdTypeId(value?.id)} // Update the state with the selected value
+                onChange={(event, value) => setIdTypeId(value?.id)}
+                helperText={fieldErrors.idTypeId || ""}
+                error={Boolean(fieldErrors.idTypeId)}
                 getOptionLabel={(option) => option?.type}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="ID Type"
+                    helperText={fieldErrors.idTypeId || ""}
+                    error={Boolean(fieldErrors.idTypeId)}
                     inputProps={{
                       ...params.inputProps,
                       autoComplete: "new-password",
@@ -572,6 +722,8 @@ function Register({ handleCloseRegister }) {
                 label="ID Number"
                 autoComplete="idNumber"
                 onChange={(e) => setIdNumber(e.target.value)}
+                helperText={fieldErrors.idNumber || ""}
+                error={Boolean(fieldErrors.idNumber)}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -580,6 +732,10 @@ function Register({ handleCloseRegister }) {
                 component="label"
                 size="large"
                 fullWidth
+                sx={{
+                  color: Boolean(fieldErrors.idFileUrl) ? "red" : "",
+                  borderColor: Boolean(fieldErrors.idFileUrl) ? "red" : "",
+                }}
               >
                 Upload ID
                 <input
@@ -587,8 +743,12 @@ function Register({ handleCloseRegister }) {
                   accept="image/*"
                   type="file"
                   onChange={(e) => setIdFileUrl(e.target.value)}
+                  error={Boolean(fieldErrors.idFileUrl)}
                 />
               </Button>
+              <FormHelperText sx={{ color: "red" }}>
+                {fieldErrors.idFileUrl || ""}
+              </FormHelperText>
             </Grid>
           </Grid>
           <Button
@@ -597,7 +757,7 @@ function Register({ handleCloseRegister }) {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             onClick={() => {
-              currentUrl === "http://localhost:3000/" && handleCloseRegister();
+              handleCloseRegister();
               handleClick();
             }}
           >

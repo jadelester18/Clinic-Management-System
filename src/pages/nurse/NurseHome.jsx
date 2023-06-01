@@ -55,6 +55,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import StreetviewIcon from "@mui/icons-material/Streetview";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 import HomeIcon from "@mui/icons-material/Home";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 
 const drawerWidth = 240;
 
@@ -531,6 +532,37 @@ function NurseHome({ toggleMode, mode }) {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
+              onClick={() => setMenuData("New Registered")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <NewReleasesIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="New Registered"
+                  secondary="for approval"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
               onClick={() => setMenuData("New Appointment")}
             >
               <ListItemButton
@@ -558,6 +590,7 @@ function NurseHome({ toggleMode, mode }) {
             </ListItem>
           </List>
           <Divider />
+
           <List>
             <ListItem
               disablePadding
@@ -599,6 +632,11 @@ function NurseHome({ toggleMode, mode }) {
               ) : (
                 ""
               )}
+              {menuData === "New Registered" ? (
+                <Typography variant="h4">New Registered</Typography>
+              ) : (
+                ""
+              )}
               {menuData === "New Appointment" ? (
                 <Typography variant="h4">New Appoinments</Typography>
               ) : (
@@ -621,7 +659,18 @@ function NurseHome({ toggleMode, mode }) {
                     label="Dashboard"
                     icon={<HomeIcon fontSize="small" />}
                   />
-
+                  {menuData === "New Registered" ? (
+                    <StyledBreadcrumb
+                      component="a"
+                      onClick={() => {
+                        setMenuData("New Registered");
+                      }}
+                      label="New Registered"
+                      icon={<NewReleasesIcon fontSize="small" />}
+                    />
+                  ) : (
+                    ""
+                  )}
                   {menuData === "New Appointment" ? (
                     <StyledBreadcrumb
                       component="a"
@@ -629,6 +678,7 @@ function NurseHome({ toggleMode, mode }) {
                         setMenuData("New Appointment");
                       }}
                       label="New Appoinments"
+                      icon={<StreetviewIcon fontSize="small" />}
                     />
                   ) : (
                     ""
@@ -638,8 +688,9 @@ function NurseHome({ toggleMode, mode }) {
                       component="a"
                       onClick={() => {
                         setMenuData("Appointments");
-                      }} 
+                      }}
                       label="Reception"
+                      icon={<ViewInArIcon fontSize="small" />}
                     />
                   ) : (
                     ""
@@ -650,6 +701,7 @@ function NurseHome({ toggleMode, mode }) {
           </Grid>
           <Box component="main" sx={{ flexGrow: { xs: 0, md: 1 }, p: 3 }}>
             {menuData === "Dashboard" && <NurseDashboard />}
+            {menuData === "New Registered" && <NurseViewAppointmentQueue />}
             {menuData === "New Appointment" && <NurseViewNewAppointment />}
             {menuData === "Appointments" && <NurseViewAppointmentQueue />}
           </Box>

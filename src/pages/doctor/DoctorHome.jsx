@@ -498,7 +498,7 @@ function DoctorHome({ toggleMode, mode }) {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() => setMenuData("Appointments")}
+              onClick={() => setMenuData("Patient Reports")}
             >
               <ListItemButton
                 sx={{
@@ -517,7 +517,7 @@ function DoctorHome({ toggleMode, mode }) {
                   <MedicalInformationIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Appointments"
+                  primary="Patient Reports"
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
@@ -533,7 +533,7 @@ function DoctorHome({ toggleMode, mode }) {
               ) : (
                 ""
               )}
-              {menuData === "Appointments" ? (
+              {menuData === "Patient Reports" ? (
                 <Typography variant="h4">Patient Reports</Typography>
               ) : (
                 ""
@@ -551,13 +551,14 @@ function DoctorHome({ toggleMode, mode }) {
                     icon={<HomeIcon fontSize="small" />}
                   />
 
-                  {menuData === "Appointments" ? (
+                  {menuData === "Patient Reports" ? (
                     <StyledBreadcrumb
                       component="a"
                       onClick={() => {
-                        setMenuData("Appointments");
+                        setMenuData("Patient Reports");
                       }}
                       label="Patient Reports"
+                      icon={<MedicalInformationIcon fontSize="small" />}
                     />
                   ) : (
                     ""
@@ -568,7 +569,7 @@ function DoctorHome({ toggleMode, mode }) {
           </Grid>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             {menuData === "Dashboard" && <DoctorDashboard />}
-            {menuData === "Appointments" && <DoctorViewAppointmentQueue />}
+            {menuData === "Patient Reports" && <DoctorViewAppointmentQueue />}
           </Box>
         </Box>
       </Box>

@@ -1,4 +1,4 @@
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Stack, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import PatientMedication from "./medication/PatientMedication";
 import LabReports from "./reports/LabReports";

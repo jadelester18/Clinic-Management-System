@@ -105,6 +105,16 @@ function Navbar({ toggleMode, mode }) {
   let userObject = userLoggedinDetails?.user;
   let user = userLoggedinDetails?.user?.user;
 
+  //For Theme
+  const theme = useTheme();
+  const neutralLight = theme.palette.neutral.light;
+  const dark = theme.palette.neutral.dark;
+  const main = theme.palette.neutral.main;
+  const background = theme.palette.background.default;
+  const primaryLight = theme.palette.primary.light;
+  const alt = theme.palette.background.alt;
+  const landingPageBg = theme.palette.background.landingPageBg;
+
   //For Open/Close Login Moda;
   const [openLogin, setOpenLogin] = React.useState(false);
 
@@ -203,7 +213,8 @@ function Navbar({ toggleMode, mode }) {
 
   return (
     <AppBar position="sticky">
-      <Toolbar>
+      {/* <Toolbar sx={{ backgroundColor: "rgb(230,240,255)" }}> */}
+      <Toolbar sx={{ backgroundColor: landingPageBg }}>
         <IconButton
           size="large"
           edge="start"
@@ -211,12 +222,12 @@ function Navbar({ toggleMode, mode }) {
           aria-label="menu"
           sx={{ mr: 2 }}
           component={Link}
-          to={`/landingpage`}
+          to={`/`}
         >
           <LocalHospitalIcon />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Intellicare
+          Grand Budapest Clinic
         </Typography>
         {/* For Dark Mode Toggle Button */}
         <DarkMode toggleMode={toggleMode} mode={mode} />

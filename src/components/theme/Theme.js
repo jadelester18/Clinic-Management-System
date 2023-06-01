@@ -27,6 +27,10 @@ export const colorTokens = {
     800: "#00353F",
     900: "#001519",
   },
+  landing: {
+    100: "#4D4D4D",
+    800: "#E6F0FF",
+  },
 };
 
 // mui theme settings
@@ -52,6 +56,7 @@ export const themeSettings = (mode) => {
             background: {
               default: colorTokens.grey[900],
               alt: colorTokens.grey[800],
+              landingPageBg: colorTokens.landing[100],
             },
           }
         : {
@@ -71,6 +76,7 @@ export const themeSettings = (mode) => {
             background: {
               default: colorTokens.grey[10],
               alt: colorTokens.grey[0],
+              landingPageBg: colorTokens.landing[800],
             },
           }),
     },
