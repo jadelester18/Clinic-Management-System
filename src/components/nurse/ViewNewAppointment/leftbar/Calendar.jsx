@@ -1,94 +1,29 @@
-import {
-  Autocomplete,
-  Avatar,
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import dayjs from "dayjs";
-import {
-  DateCalendar,
-  PickersDay,
-  StaticDateTimePicker,
-  LocalizationProvider,
-  DatePicker,
-} from "@mui/x-date-pickers";
+import { Badge, Box } from "@mui/material";
+import { PickersDay, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StaticDatePicker } from "@mui/x-date-pickers/StaticDatePicker";
-import React, { useEffect, useRef, useState } from "react";
-import { styled } from "@mui/material/styles";
-import Fab from "@mui/material/Fab";
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { Add, Inbox } from "@mui/icons-material";
-import EditCalendarIcon from "@mui/icons-material/EditCalendar";
-import axios from "axios";
-import {
-  countries,
-  provinces,
-  cities,
-} from "../../../../pages/addressDb/adress";
-
-function getRandomNumber(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-}
-
-/**
- * Mimic fetch with abort controller https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
- * ⚠️ No IE11 support
- */
-function fakeFetch(date, { signal }) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      const daysInMonth = date.daysInMonth();
-      const daysToHighlight = [1, 2, 3].map(() =>
-        getRandomNumber(1, daysInMonth)
-      );
-
-      resolve({ daysToHighlight });
-    }, 500);
-
-    signal.onabort = () => {
-      clearTimeout(timeout);
-      reject(new DOMException("aborted", "AbortError"));
-    };
-  });
-}
-
-const initialValue = dayjs("2022-04-17");
+import React, { useEffect, useState } from "react";
+import * as appointmentSvc from "../../../../redux/GetApiCalls/appointment";
+import { DEFAULT_DATE_FORMAT } from "../../../../redux/default";
+import dayjs from "dayjs";
 
 function ServerDay(props) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+  const { highlightedDays, day, outsideCurrentMonth, ...other } = props;
 
-  const isSelected =
-    !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) > 0;
+  const hasNewAppointment = highlightedDays.some((dateString) =>
+    day.isSame(dateString, "day")
+  );
+
+  const isSelected = !outsideCurrentMonth && hasNewAppointment;
+  // const isSelected = ;
 
   return (
     <Badge
       key={props.day.toString()}
       overlap="circular"
-      badgeContent={isSelected ? "🌚" : undefined}
+      variant="dot"
+      invisible={!isSelected}
+      color="error"
     >
       <PickersDay
         {...other}
@@ -99,35 +34,25 @@ function ServerDay(props) {
   );
 }
 
-function Calendar({ date, onDateChange }) {
-  const requestAbortController = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
+function Calendar({ date, onDateChange, appointments }) {
+  const [highlightedDays, setHighlightedDays] = useState([]);
 
-  const fetchHighlightedDays = (date) => {
-    const controller = new AbortController();
-    fakeFetch(date, {
-      signal: controller.signal,
-    })
-      .then(({ daysToHighlight }) => {
-        setHighlightedDays(daysToHighlight);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
-        if (error.name !== "AbortError") {
-          throw error;
-        }
-      });
-
-    requestAbortController.current = controller;
+  const fetchHighlightedDays = async (date) => {
+    try {
+      const { data } = await appointmentSvc.getMonthDaysWithNewAppointments(
+        date.format(DEFAULT_DATE_FORMAT)
+      );
+      setHighlightedDays(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  React.useEffect(() => {
-    fetchHighlightedDays(initialValue);
-    // abort request on unmount
-    return () => requestAbortController.current?.abort();
-  }, []);
+  useEffect(() => {
+    if (date && appointments) {
+      fetchHighlightedDays(date);
+    }
+  }, [date, appointments]);
 
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "block" } }}>
@@ -137,11 +62,7 @@ function Calendar({ date, onDateChange }) {
             value={date}
             orientation="portrait"
             showDaysOutsideCurrentMonth
-            //   fixedWeekNumber={6}
-            //   defaultValue={initialValue}
-            //   loading={isLoading}
-            //   onMonthChange={handleMonthChange}
-            //   renderLoading={() => <DayCalendarSkeleton />}\
+            onMonthChange={fetchHighlightedDays}
             onChange={onDateChange}
             slots={{
               day: ServerDay,

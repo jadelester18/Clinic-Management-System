@@ -16,6 +16,9 @@ export default function DoctorRow({ selected, doctor, date, onSelect }) {
   const schedule = doctor.schedules.find(
     (sched) => sched.day === date.format(DAY_OF_WEEK_FORMAT).toUpperCase()
   );
+  function isSelected() {
+    return selected ? selected.id === doctor.id : false;
+  }
   const styles = {
     gContainer: {
       spacing: 1,
@@ -34,13 +37,19 @@ export default function DoctorRow({ selected, doctor, date, onSelect }) {
     liText: {
       textAlign: { xs: "center", md: "left" },
     },
+    liButton: {
+      borderRadius: 10,
+      border: isSelected() ? 1 : 0,
+      borderColor: isSelected() ? "#00D5FA" : "none",
+    },
   };
   return (
     <>
       <ListItemButton
         alignItems="center"
         onClick={() => onSelect(doctor)}
-        selected={selected ? selected.id === doctor.id : false}
+        selected={isSelected()}
+        sx={styles.liButton}
       >
         <Grid container {...styles.gContainer}>
           <Grid item {...styles.gItem}>

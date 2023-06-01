@@ -123,7 +123,9 @@ export default function QueueRow({ queue, onStatusChange }) {
                   {`Not yet arrived`}
                 </Typography>
               )}
-              <Typography variant="caption">1hr 32m ago</Typography>
+              <Typography variant="caption">
+                {util.elapsedTimeFromNow(startTime)}
+              </Typography>
             </Stack>
           </Grid>
           <Grid item xs={12} md={3.5}>

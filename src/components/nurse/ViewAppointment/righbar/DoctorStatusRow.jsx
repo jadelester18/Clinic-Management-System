@@ -13,7 +13,12 @@ import React from "react";
 import * as util from "../../../../redux/util";
 import { DAY_OF_WEEK_FORMAT } from "../../../../redux/default";
 
-export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
+export default function DoctorStatusRow({
+  selected,
+  date,
+  doctorStatus,
+  onSelect,
+}) {
   const { doctor, status, totalForConsultation, totalNotYetAssessed } =
     doctorStatus;
 
@@ -21,15 +26,32 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
     (sched) => sched.day === date.format(DAY_OF_WEEK_FORMAT).toUpperCase()
   );
 
+  function isSelected() {
+    return selected ? selected.id === doctor.id : false;
+  }
+
+  function handleSelect() {
+    onSelect(isSelected() ? null : doctor);
+  }
+
+  const styles = {
+    liButton: {
+      borderRadius: 10,
+      border: isSelected() ? 1 : 0,
+      borderColor: isSelected() ? "#00D5FA" : "none",
+    },
+  };
+
   return (
     <>
       <ListItemButton
         alignItems="center"
-        sx={{ borderRadius: 10 }}
-        onClick={() => onSelect(doctor)}
+        sx={styles.liButton}
+        onClick={handleSelect}
+        selected={isSelected()}
       >
         <Grid container alignItems="stretch" spacing={1}>
-          <Grid item xs={12} md={5}>
+          <Grid item xs={12} md={4}>
             <Stack
               direction={{ xs: "column", md: "row" }}
               alignItems="center"
@@ -55,7 +77,7 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
               />
             </Stack>
           </Grid>
-          <Grid item xs={12} md={3.5}>
+          <Grid item xs={12} md={4}>
             <Stack justifyContent="center" alignItems="center" height="100%">
               <Typography variant="subtitle2">
                 {util.morningSchedule(schedule?.timeSlots)}
@@ -65,7 +87,7 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
               </Typography>
             </Stack>
           </Grid>
-          <Grid item xs={12} md={3.5}>
+          <Grid item xs={12} md={4}>
             <Stack
               direction={{ xs: "column", md: "row" }}
               justifyContent="center"
@@ -73,13 +95,6 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
               spacing={2}
               height="100%"
             >
-              <Stack direction="row" spacing={1}>
-                <Chip
-                  label={totalNotYetAssessed}
-                  sx={{ backgroundColor: "orange", color: "black" }}
-                />
-                <Chip label={totalForConsultation} color="primary" />
-              </Stack>
               {status === "AVAILABLE" && (
                 <Typography sx={{ color: "green" }} variant="body1">
                   AVAILABLE
@@ -95,6 +110,13 @@ export default function DoctorStatusRow({ date, doctorStatus, onSelect }) {
                   UNAVAILABLE
                 </Typography>
               )}
+              <Stack direction="row" spacing={1}>
+                <Chip
+                  label={totalNotYetAssessed}
+                  sx={{ backgroundColor: "orange", color: "black" }}
+                />
+                <Chip label={totalForConsultation} color="primary" />
+              </Stack>
             </Stack>
           </Grid>
         </Grid>

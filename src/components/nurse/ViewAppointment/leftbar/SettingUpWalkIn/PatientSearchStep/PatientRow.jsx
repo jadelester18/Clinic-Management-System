@@ -12,6 +12,11 @@ import * as util from "../../../../../../redux/util";
 
 export default function PatientRow({ selected, patient, onSelect }) {
   const { icNo, birthDate, gender, email, contactNo, address } = patient;
+
+  function isSelected() {
+    return selected ? selected.id === patient.id : false;
+  }
+
   const styles = {
     gContainer: {
       spacing: 1,
@@ -30,12 +35,18 @@ export default function PatientRow({ selected, patient, onSelect }) {
     liText: {
       textAlign: { xs: "center", md: "left" },
     },
+    liButton: {
+      borderRadius: 10,
+      border: isSelected() ? 1 : 0,
+      borderColor: isSelected() ? "#00D5FA" : "none",
+    },
   };
   return (
     <ListItemButton
       alignItems="center"
       onClick={() => onSelect(patient)}
-      selected={selected ? selected.id === patient.id : false}
+      selected={isSelected()}
+      sx={styles.liButton}
     >
       <Grid container {...styles.gContainer}>
         <Grid item {...styles.gItem}>
