@@ -10,9 +10,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useContext, useEffect, useState } from "react";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CalendarSettings from "./calendarConfig/CalendarSettings";
 import ClockSettings from "./clockConfig/ClockSettings";
@@ -26,11 +25,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-
 import DoctorProfileAppointment from "./doctorProfile/DoctorProfileAppointment";
-import { SnackBarContext } from "../../../../context/SnackBarContext";
-import LoadingScreen from "../../../LoadingScreen";
-
 
 const BookAppointment = () => {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -40,9 +35,6 @@ const BookAppointment = () => {
 
   let location = useLocation();
   let id = location.pathname.split("/")[2];
-
-  const [isLoading, setIsLoading] = useState(false);
-  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
   //Fetching the Profile info
   const [profile, setProfile] = React.useState("");
@@ -173,7 +165,6 @@ const BookAppointment = () => {
 
   const handlePost = (e) => {
     e.preventDefault();
-    setIsLoading(true);
     if (selectedFiles.length > 0) {
       const uploadPromises = [];
       const fileUrls = [];
@@ -237,17 +228,12 @@ const BookAppointment = () => {
               setUploadPercent(0);
               // Handle API response
               setSelectedFiles([]); // Clear the selected files
-
-              // alert("Your Post was uploaded successfully");
-              onShowSuccess("Appointment booked!");
-              setIsLoading(false);
+              alert("Your Post was uploaded successfully");
               navigate("/patient");
             })
             .catch((error) => {
               // Handle API error
               console.error(error);
-              onShowFail(error.response.data.message);
-              setIsLoading(false);
             });
         })
         .catch((error) => {
@@ -406,15 +392,13 @@ const BookAppointment = () => {
                       >
                         Cancel
                       </Button>
-
                     </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
             </Grid>
           </Grid>
         </Grid>
-
       </Grid>
       {previewOpen && (
         <Modal open={previewOpen} onClose={handleClosePreview}>
@@ -467,8 +451,7 @@ const BookAppointment = () => {
           </Box>
         </Modal>
       )}
-      {isLoading && <LoadingScreen open={isLoading} />}
-    </>
+    </Box>
   );
 };
 
