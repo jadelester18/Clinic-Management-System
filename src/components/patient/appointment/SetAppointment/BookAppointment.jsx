@@ -1,22 +1,17 @@
 import {
-  Avatar,
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   Checkbox,
-  Divider,
   Grid,
-  List,
-  ListItem,
-  Stack,
+  LinearProgress,
+  Modal,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import dayjs from "dayjs";
+
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CalendarSettings from "./calendarConfig/CalendarSettings";
 import ClockSettings from "./clockConfig/ClockSettings";
@@ -30,6 +25,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import DoctorProfileAppointment from "./doctorProfile/DoctorProfileAppointment";
 
 const BookAppointment = () => {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -113,15 +109,56 @@ const BookAppointment = () => {
     };
   });
 
+  //For Progress Bar Upload Post
+  const [progress, setProgress] = React.useState(0);
+  const [buffer, setBuffer] = React.useState(10);
+  const [uploadPercent, setUploadPercent] = useState(0);
+
+  const progressRef = React.useRef(() => {});
+  React.useEffect(() => {
+    progressRef.current = () => {
+      if (progress > 100) {
+        setProgress(0);
+        setBuffer(10);
+      } else {
+        const diff = uploadPercent;
+        const diff2 = uploadPercent;
+        setProgress(progress + diff);
+        setBuffer(progress + diff + diff2);
+      }
+    };
+  });
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      progressRef.current();
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   //For Uploading docs and saving the other data
   const [date, setDate] = useState("");
   const [timeSlotId, setTimeSlotId] = useState("");
   const [remark, setRemark] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
 
   const handleFileSelect = (event) => {
     const files = event.target.files;
     setSelectedFiles(files);
+  };
+
+  const handleFilePreview = (file) => {
+    setPreviewFile(file);
+    setPreviewOpen(true);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewOpen(false);
   };
 
   const navigate = useNavigate();
@@ -144,6 +181,9 @@ const BookAppointment = () => {
             "state_changed",
             (snapshot) => {
               // Handle upload progress if needed
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setUploadPercent(progress);
             },
             (error) => {
               // Handle upload error if needed
@@ -185,9 +225,10 @@ const BookAppointment = () => {
           })
             .then((response) => response.json())
             .then((data) => {
+              setUploadPercent(0);
               // Handle API response
               setSelectedFiles([]); // Clear the selected files
-              // alert("Your Post was uploaded successfully");
+              alert("Your Post was uploaded successfully");
               navigate("/patient");
             })
             .catch((error) => {
@@ -214,218 +255,19 @@ const BookAppointment = () => {
     setTimeSlotId(time);
   };
 
+  //For Confirmation Of Check Box
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+
   console.log(date);
   console.log(timeSlotId);
 
   return (
     <Box p={2}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} md={4} lg={3}>
-          <Card
-            sx={{
-              // maxWidth: { xs: 900, md: 360 },
-              // width: { xs: 360, sm: 600, md: 400 },
-              justifyContent: "center",
-              alignItems: "center",
-              boxShadow: 10,
-              borderRadius: 10,
-            }}
-          >
-            <Stack
-              direction={{ xs: "column" }}
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-            >
-              <Avatar
-                alt="Doreamon"
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
-                sx={{
-                  m: 1,
-                  bgcolor: "primary.main",
-                  width: { xs: 100, sm: 130, md: 140 },
-                  height: { xs: 100, sm: 130, md: 140 },
-                  border: "5px solid white",
-                  boxShadow: 10,
-                }}
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {profile?.honorific +
-                    " " +
-                    profile?.firstName +
-                    " " +
-                    profile?.middleName +
-                    " " +
-                    profile?.lastName}{" "}
-                  {profile?.suffixName !== "" || null
-                    ? profile?.suffixName
-                    : ""}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {dayjs(profile?.birthDate).format("MMM DD, YYYY")}
-                </Typography>
-                <Stack
-                  direction={{ xs: "row", md: "row" }}
-                  justifyContent={{ xs: "center" }}
-                  alignItems={{ xs: "center" }}
-                  spacing={2}
-                  mt={2}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    Title
-                    <Typography variant="body1" color="text.primary">
-                      {profile?.suffixTitle}
-                    </Typography>
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    license No.
-                    <Typography variant="body1" color="text.primary">
-                      {profile?.licenseNo}
-                    </Typography>
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Presence
-                    <Typography variant="body1" color="text.primary">
-                      {profile?.content?.isIn === false
-                        ? "Present"
-                        : "Absent/Leave"}
-                    </Typography>
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions>
-                <Button
-                  variant="contained"
-                  size="medium"
-                  startIcon={<QuestionAnswerIcon />}
-                  sx={{ borderRadius: 10, width: 200 }}
-                >
-                  Chat
-                </Button>
-                {/* <Button size="small">Learn More</Button> */}
-              </CardActions>
-            </Stack>
-            <Stack direction={{ xs: "column" }}>
-              <CardContent>
-                <Typography
-                  gutterBottom
-                  variant="subtitle2"
-                  component="div"
-                  color="text.secondary"
-                >
-                  HMO Accreditation
-                </Typography>
-                {/* <Typography variant="body2" color="text.secondary">
-              10 April, 1999
-            </Typography> */}
-                <List sx={{ width: "100%", maxWidth: 360 }} dense>
-                  <ListItem>
-                    <ListItem disablePadding>
-                      {profile?.hmoAccreditation?.map((hmo) => (
-                        <Typography
-                          variant="subtitle2"
-                          color="text.primary"
-                          key={hmo?.id}
-                        >
-                          {hmo?.title.length > 25
-                            ? hmo?.title.substring(0, 25) + "... "
-                            : hmo?.title}
-                        </Typography>
-                      ))}
-                    </ListItem>
-                  </ListItem>
-                  <Divider variant="inset" component="li" />
-                </List>
-
-                <Typography
-                  gutterBottom
-                  variant="subtitle2"
-                  component="div"
-                  color="text.secondary"
-                >
-                  Clinic Schedule
-                </Typography>
-                {/* <Typography variant="body2" color="text.secondary">
-              10 April, 1999
-            </Typography> */}
-                <List sx={{ width: "100%", maxWidth: 360 }} dense>
-                  {Object.entries(scheduleInfo).map(([dayOfWeek, schedule]) => (
-                    <ListItem>
-                      <ListItem disablePadding>
-                        <Typography
-                          variant="subtitle2"
-                          color="text.primary"
-                          key={dayOfWeek}
-                        >
-                          {dayOfWeek}
-                          <Typography
-                            variant="subtitle2"
-                            color="text.primary"
-                            sx={
-                              schedule.morningStart
-                                ? { display: "block" }
-                                : { display: "none" }
-                            }
-                          >
-                            Morning:{" "}
-                            {schedule.morningStart
-                              ? `${schedule.morningStart} - ${schedule.morningEnd}`
-                              : " "}
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            color="text.primary"
-                            sx={
-                              schedule.afternoonStart
-                                ? { display: "block" }
-                                : { display: "none" }
-                            }
-                          >
-                            Afternoon:{" "}
-                            {schedule.afternoonStart
-                              ? `${schedule.afternoonStart} - ${schedule.afternoonEnd}`
-                              : " "}
-                          </Typography>
-                        </Typography>
-                      </ListItem>
-                    </ListItem>
-                  ))}
-                  <Divider variant="inset" component="li" />
-                </List>
-
-                <Typography
-                  gutterBottom
-                  variant="subtitle2"
-                  component="div"
-                  color="text.secondary"
-                >
-                  Contact Details
-                </Typography>
-                {/* <Typography variant="body2" color="text.secondary">
-              10 April, 1999
-            </Typography> */}
-                <List sx={{ width: "100%", maxWidth: 360 }} dense>
-                  <ListItem>
-                    <ListItem disablePadding>
-                      <Typography variant="subtitle2" color="text.primary">
-                        {profile?.contactNo}
-                      </Typography>
-                    </ListItem>
-                  </ListItem>
-                  <ListItem>
-                    <ListItem disablePadding>
-                      <Typography variant="subtitle2" color="text.primary">
-                        {profile?.email}
-                      </Typography>
-                    </ListItem>
-                  </ListItem>
-                  <Divider variant="inset" component="li" />
-                </List>
-              </CardContent>
-            </Stack>
-          </Card>
-        </Grid>
+        <DoctorProfileAppointment
+          profile={profile}
+          scheduleInfo={scheduleInfo}
+        />
         <Grid item xs={12} sm={12} md={8} lg={9}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={12} lg={6}>
@@ -467,6 +309,11 @@ const BookAppointment = () => {
                       <Typography variant="body2" color="text.secondary">
                         ATTACH FILES (LOA, LAB OR IMAGING, ETC.)
                       </Typography>
+                      <LinearProgress
+                        variant="buffer"
+                        value={progress}
+                        valueBuffer={buffer}
+                      />
                       <Button
                         variant="outlined"
                         component="label"
@@ -477,22 +324,41 @@ const BookAppointment = () => {
                         Upload File
                         <input
                           hidden
-                          accept="image/*"
+                          accept=".pdf, image/*"
                           multiple
                           type="file"
                           onChange={handleFileSelect}
                         />
                       </Button>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle2">
-                        <Checkbox defaultChecked />I am booking for an Online
-                        Consultation
+                      <Typography variant="subtitle2" sx={{ mt: 1 }}>
+                        Selected Files:
                       </Typography>
+                      {selectedFiles.length > 0 && (
+                        <ul>
+                          {Array.from(selectedFiles).map((file, index) => (
+                            <li key={index}>
+                              {file.name}
+                              <Button
+                                variant="text"
+                                size="small"
+                                onClick={() => handleFilePreview(file)}
+                              >
+                                View
+                              </Button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </Grid>
+
                     <Grid item xs={12}>
                       <Typography variant="subtitle2">
-                        <Checkbox defaultChecked />
+                        <Checkbox
+                          defaultChecked={isCheckboxChecked}
+                          onChange={(e) =>
+                            setIsCheckboxChecked(e.target.checked)
+                          }
+                        />
                         By booking, I have read and accepted the Patient Consent
                         Form
                       </Typography>
@@ -508,9 +374,17 @@ const BookAppointment = () => {
                         variant="contained"
                         sx={{ mr: 2 }}
                         onClick={handlePost}
+                        disabled={
+                          date === "" ||
+                          timeSlotId === "" ||
+                          remark === "" ||
+                          // selectedFiles === [null]
+                          !isCheckboxChecked
+                        }
                       >
                         Book Now
                       </Button>
+
                       <Button
                         variant="outlined"
                         component={Link}
@@ -526,6 +400,57 @@ const BookAppointment = () => {
           </Grid>
         </Grid>
       </Grid>
+      {previewOpen && (
+        <Modal open={previewOpen} onClose={handleClosePreview}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Typography variant="h6">{previewFile.name}</Typography>
+            {previewFile.type === "application/pdf" ? (
+              <Box>
+                <embed
+                  src={URL.createObjectURL(previewFile)}
+                  type="application/pdf"
+                  width="100%"
+                  height="800px"
+                />
+                <Button
+                  href={URL.createObjectURL(previewFile)}
+                  target="_blank"
+                  variant="contained"
+                  fullWidth
+                >
+                  Open Full View
+                </Button>
+              </Box>
+            ) : (
+              <Box>
+                <img
+                  src={URL.createObjectURL(previewFile)}
+                  alt={previewFile.name}
+                  style={{ maxWidth: "100%", maxHeight: "500px" }}
+                />
+                <Button
+                  href={URL.createObjectURL(previewFile)}
+                  target="_blank"
+                  variant="contained"
+                  fullWidth
+                >
+                  Open Full View
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Modal>
+      )}
     </Box>
   );
 };
