@@ -1,5 +1,5 @@
 import { http } from "../http";
 
-export function getLabProd() {
+export function getLabProcedures() {
   return http.get("/lab-procedures");
 }

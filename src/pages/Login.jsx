@@ -10,15 +10,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { loginStart, loginFailure, loginSuccess } from "../redux/UserReducer";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import Joi from "joi";
+import { SnackBarContext } from "../context/SnackBarContext";
 
 function Login({ handleCloseLogin }) {
   const [eroor, setErrorMessage] = useState("");
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
   const login = async (dispatch, user) => {
     dispatch(loginStart());
@@ -34,6 +36,8 @@ function Login({ handleCloseLogin }) {
     } catch (error) {
       // setErrorMessage(error.response.data.message);
       dispatch(loginFailure(eroor));
+      console.error(error);
+      onShowFail(error.response.data.message);
     }
   };
 

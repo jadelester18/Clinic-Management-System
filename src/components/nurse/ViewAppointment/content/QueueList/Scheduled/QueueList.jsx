@@ -3,7 +3,7 @@ import React, { Fragment } from "react";
 import QueueRow from "../QueueRow";
 import QueueListHeader from "./QueueListHeader";
 
-const QueueList = ({ queues, onStatusChange }) => {
+const QueueList = ({ queues, onStatusChange, onViewReport }) => {
   const styles = {
     list: {
       width: "100%",
@@ -31,7 +31,11 @@ const QueueList = ({ queues, onStatusChange }) => {
         {queues?.length > 0 ? (
           queues?.map((queue) => (
             <Fragment key={queue.id}>
-              <QueueRow queue={queue} onStatusChange={onStatusChange} />
+              <QueueRow
+                queue={queue}
+                onStatusChange={onStatusChange}
+                onViewReport={onViewReport}
+              />
               <Divider variant="middle" />
             </Fragment>
           ))

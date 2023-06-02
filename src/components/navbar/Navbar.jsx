@@ -550,4 +550,3 @@ function Navbar({ toggleMode, mode }) {
 }
 
 export default Navbar;
-

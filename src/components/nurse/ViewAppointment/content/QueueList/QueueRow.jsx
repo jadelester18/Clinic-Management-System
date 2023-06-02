@@ -21,10 +21,12 @@ import * as appointmentSvc from "../../../../../redux/GetApiCalls/appointment";
 import SelectCheckInStatus from "./SelectCheckInStatus";
 import PatientInfoDialog from "../../../ViewNewAppointment/righbar/PatientInfoDialog";
 import { green } from "@mui/material/colors";
+import ReportDialog from "./ReportDialog";
 
-export default function QueueRow({ queue, onStatusChange }) {
+export default function QueueRow({ queue, onStatusChange, onViewReport }) {
   const { id, startTime, checkInStatus, type, patient, report, date } = queue;
   const [isPatientInfoOpen, setIsPatientInfoOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const [appointment, setAppointment] = useState(null);
 
   async function fetchAppointment() {
@@ -145,7 +147,10 @@ export default function QueueRow({ queue, onStatusChange }) {
                 </IconButton>
               </Tooltip>
               <Tooltip title="View Report">
-                <IconButton color="primary" onClick={() => {}}>
+                <IconButton
+                  color="primary"
+                  onClick={() => onViewReport(report.id)}
+                >
                   <ArticleIcon />
                 </IconButton>
               </Tooltip>
