@@ -1,10 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Dialog, DialogContent } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent } from "@mui/material";
 import Report from "../../../../report/Report";
 import { SnackBarContext } from "../../../../../context/SnackBarContext";
 import * as reportSvc from "../../../../../redux/GetApiCalls/report";
+import LoadingScreen from "../../../../LoadingScreen";
 
-export default function ReportDialog({ open, onClose, reportId }) {
+export default function ReportDialog({
+  open,
+  onClose,
+  reportId,
+  onSave,
+  isSaving,
+}) {
   const [report, setReport] = useState(null);
   console.log("reportId", reportId);
 
@@ -29,8 +36,14 @@ export default function ReportDialog({ open, onClose, reportId }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth={"lg"} fullWidth={true}>
       <DialogContent>
-        <Report report={report} />
+        <Report report={report} onSave={onSave} />
+        {isSaving && <LoadingScreen open={isSaving} />}
       </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={onClose}>
+          CLOSE
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

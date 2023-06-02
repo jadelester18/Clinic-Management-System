@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -22,7 +23,7 @@ import PrescriptionsSection from "./PrescriptionsSection";
 const INTEGER_TYPES = ["respiratoryRateBPM", "heartRateBPM"];
 const DOUBLE_TYPES = ["temperatureC", "oxygenSaturation"];
 
-export default function Report({ report }) {
+export default function Report({ report, onSave }) {
   const loginDetails = useSelector((state) => state.user?.user);
 
   const userIsNurse = loginDetails.user.role === "ROLE_NURSE";
@@ -47,20 +48,7 @@ export default function Report({ report }) {
     prognosis: "",
     management: "",
     labProcedures: [],
-    prescriptions: [
-      {
-        id: 1,
-        formulation: "Paracetamol 500mg",
-        signatura: "Take one tablet twice a day for 7 days",
-        subscription: 14,
-      },
-      {
-        id: 2,
-        formulation: "Amoxicillin 250mg",
-        signatura: "Take two capsules three times a day with meals for 2 days",
-        subscription: 12,
-      },
-    ],
+    prescriptions: [],
   });
   console.log(form);
 
@@ -109,27 +97,36 @@ export default function Report({ report }) {
     }
   }
 
+  function handleAddPrescription(prescription) {
+    const updated = [...form.prescriptions, prescription];
+    setForm({ ...form, prescriptions: updated });
+  }
+
+  function handleRemovePrescription(index) {
+    const updated = form.prescriptions.slice();
+    updated.splice(index, 1);
+    setForm({ ...form, prescriptions: updated });
+  }
+
   useEffect(() => {
     if (report) {
-      const { reportDetails } = report;
-      const vitalSigns = reportDetails?.vitalSigns;
+      const { details } = report;
+      const vitalSigns = details?.vitalSigns;
       let newForm = {
         ...form,
         ...report,
+        consultationType: report.consultationType || "INITIAL",
         doctor: report.doctor,
         nurse: report.nurse || loginDetails.person,
       };
-      console.log("adding report to form", newForm);
-      if (reportDetails) {
+      if (details) {
         newForm = {
           ...newForm,
-          ...reportDetails,
+          ...details,
         };
-        console.log("adding reportDetails to form", newForm);
       }
       if (vitalSigns) {
         newForm = { ...newForm, ...vitalSigns };
-        console.log("adding vitalSigns to form", newForm);
       }
       setForm(newForm);
     }
@@ -141,35 +138,6 @@ export default function Report({ report }) {
         title="Visitation Report"
         subheader={util.date(report?.queue?.date)}
       />
-      {/* <CardContent>
-        <Grid container>
-          <Grid item xs={10}>
-            <Typography variant="h6">{steps[activeStep].label}</Typography>
-            <Typography>{steps[activeStep].descriptionReport}</Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="body2">View Recent Reports</Typography>
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{ padding: 1 }}
-              boxShadow={10}
-              borderRadius={2}
-            >
-              <Button variant="contained" onClick={handleNext} size="small">
-                {activeStep === steps.length - 1 ? "Finish" : "Continue"}
-              </Button>
-              <Button
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                size="small"
-              >
-                Back
-              </Button>
-            </Stack>
-          </Grid>
-        </Grid>
-      </CardContent> */}
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -194,7 +162,22 @@ export default function Report({ report }) {
                 onChange={handleTextInput}
                 size="small"
                 name="chiefComplaint"
-                label="Remarks"
+                fullWidth
+                multiline
+              />
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <ReportSectionHeader
+              title="Medical History"
+              helpText="Allergies, illnesses, surgeries, immunizations, test results, etc."
+            />
+            <Grid item xs={12}>
+              <TextField
+                value={form.medicalHistory}
+                onChange={handleTextInput}
+                size="small"
+                name="medicalHistory"
                 fullWidth
                 multiline
               />
@@ -255,8 +238,8 @@ export default function Report({ report }) {
               <Grid item xs={12}>
                 <PrescriptionsSection
                   form={form}
-                  onAdd={() => {}}
-                  onRemove={() => {}}
+                  onAdd={handleAddPrescription}
+                  onRemove={handleRemovePrescription}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -278,64 +261,15 @@ export default function Report({ report }) {
             <Typography variant="caption">Attending Physician</Typography>
             <Typography variant="body1">{util.name(form.doctor)}</Typography>
           </Grid>
-          {/* <Grid item xs={12}>
-            <Typography variant="subtitle2">
-              Medicines.
-              <Tooltip title="This for Medicines cotent.">
-                <HelpIcon />
-              </Tooltip>
-            </Typography>
-            {medicines.map((medicine, index) => (
-              <Grid container spacing={2} key={index}>
-                <Grid item xs={12} md={10}>
-                  <TextField
-                    size="small"
-                    margin="normal"
-                    name={`medicine-${index}`}
-                    fullWidth
-                    label="Medicine"
-                    autoComplete="Medicine"
-                    value={medicine.name}
-                    onChange={(event) =>
-                      handleMedicineChange(index, "name", event.target.value)
-                    }
-                    onClick={() => handleOpenModalMedication(index)}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={6} md={2} mt={2}>
-                  <Button
-                    // size="small"
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleRemoveMedicine(index)}
-                  >
-                    Close
-                  </Button>
-                </Grid>
-              </Grid>
-            ))}
-            <Button variant="contained" onClick={handleAddMedicine}>
-              Add Medicine
-            </Button>
-          </Grid>
-          <Grid item xs={10}></Grid>
           <Grid item>
             <Button variant="standard">Clear</Button>
           </Grid>
           <Grid item>
-            <Button variant="contained">Save</Button>
-          </Grid> */}
-        </Grid>
-
-        {/* {activeStep === steps.length && (
-          <Paper square elevation={0} sx={{ p: 3 }}>
-            <Typography>All steps completed - you&apos;re finished</Typography>
-            <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
-              Reset
+            <Button variant="contained" onClick={() => onSave(form)}>
+              Save
             </Button>
-          </Paper>
-        )} */}
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );

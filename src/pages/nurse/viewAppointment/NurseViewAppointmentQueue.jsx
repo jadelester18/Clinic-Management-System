@@ -22,6 +22,7 @@ import SetUpWalkInPatient from "../../../components/nurse/ViewAppointment/leftba
 import LoadingScreen from "../../../components/LoadingScreen";
 import PatientReport from "../../PatientReport";
 import ReportDialog from "../../../components/nurse/ViewAppointment/content/QueueList/ReportDialog";
+import * as reportSvc from "../../../redux/GetApiCalls/report";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -31,7 +32,7 @@ function NurseViewAppointmentQueue() {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   const [activeTab, setActiveTab] = useState("APPOINTMENT");
-  const [selectedStatus, setSelectedStatus] = useState("SCHEDULED");
+  const [selectedStatus, setSelectedStatus] = useState(null);
   const [queues, setQueues] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [page, setPage] = useState(1);
@@ -39,6 +40,7 @@ function NurseViewAppointmentQueue() {
 
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSavingReport, setIsSavingReport] = useState(false);
 
   const [isQueueFormOpen, setIsQueueFormOpen] = useState(false);
 
@@ -159,6 +161,43 @@ function NurseViewAppointmentQueue() {
     }
   }
 
+  async function handleSaveReport(form) {
+    setIsSavingReport(true);
+    try {
+      const updateReportDto = getDtoFromReportForm(form);
+      const { data } = await reportSvc.updateReport(
+        selectedReportId,
+        updateReportDto
+      );
+      // TODO: handle prescription add
+
+      setSelectedReportId(null);
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsSavingReport(false);
+    }
+  }
+
+  function getDtoFromReportForm(form) {
+    return {
+      consultationType: form.consultationType,
+      nurseId: form.nurse.id,
+      chiefComplaint: form.chiefComplaint,
+      medicalHistory: form.medicalHistory,
+      diagnosis: form.diagnosis,
+      prognosis: form.prognosis,
+      management: form.management,
+      labProcedureIds: form.labProcedures.map((procedure) => procedure.id),
+      bloodPressure: form.bloodPressure,
+      temperatureC: +form.temperatureC,
+      respiratoryRateBPM: +form.respiratoryRateBPM,
+      heartRateBPM: +form.heartRateBPM,
+      oxygenSaturation: +form.oxygenSaturation,
+    };
+  }
+
   useEffect(() => {
     fetchDoctorStatusList();
   }, [date]);
@@ -249,9 +288,11 @@ function NurseViewAppointmentQueue() {
       )}
       {isReportOpen && (
         <ReportDialog
+          isSaving={isSavingReport}
           open={isReportOpen}
           reportId={selectedReportId}
           onClose={() => setSelectedReportId(null)}
+          onSave={handleSaveReport}
         />
       )}
       {isLoading && <LoadingScreen open={isLoading} />}
