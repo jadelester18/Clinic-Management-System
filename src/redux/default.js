@@ -8,3 +8,19 @@ export const QUEUE_TYPE = [
   { value: "WALK_IN", text: "Walk-in" },
   { value: "APPOINTMENT", text: "Appointment" },
 ];
+
+export const CHECK_IN_STATUS = [
+  { value: "SCHEDULED", text: "Scheduled" },
+  { value: "FOR_ASSESSMENT", text: "For assessment" },
+  { value: "ONGOING_ASSESSMENT", text: "Ongoing assessment" },
+  { value: "FOR_CONSULTATION", text: "For consultation" },
+  { value: "ONGOING_CONSULTATION", text: "Ongoing consultation" },
+  { value: "FINISHED", text: "Finished" },
+  { value: "CANCELLED", text: "Cancelled" },
+];
+
+export const CONSULTATION_TYPES = [
+  { value: "INITIAL", text: "Initial" },
+  { value: "FOLLOW_UP", text: "Follow-up" },
+  { value: "CLEARANCE", text: "Clearance" },
+];

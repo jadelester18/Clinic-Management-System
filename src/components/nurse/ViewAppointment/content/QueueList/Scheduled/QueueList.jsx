@@ -3,7 +3,7 @@ import React, { Fragment } from "react";
 import QueueRow from "../QueueRow";
 import QueueListHeader from "./QueueListHeader";
 
-const QueueList = ({ queues, onStatusChange, onViewReport }) => {
+const QueueList = ({ queues, onStatusChange, onViewReport, showHeader }) => {
   const styles = {
     list: {
       width: "100%",
@@ -25,8 +25,8 @@ const QueueList = ({ queues, onStatusChange, onViewReport }) => {
   };
   return (
     <>
+      {showHeader && <QueueListHeader />}
       <List sx={styles.list} dense={true}>
-        <QueueListHeader />
         <Divider variant="middle" />
         {queues?.length > 0 ? (
           queues?.map((queue) => (

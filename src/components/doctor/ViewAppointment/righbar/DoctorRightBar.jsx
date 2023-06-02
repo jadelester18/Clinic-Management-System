@@ -24,12 +24,12 @@ import React from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { StaticDateTimePicker } from "@mui/x-date-pickers";
-import PatientReport from "../../../../pages/PatientReport";
+import PatientReports from "../../../../pages/PatientReports";
 
 function DoctorRightBar() {
   return (
     <Box>
-      <PatientReport />
+      <PatientReports />
     </Box>
   );
 }

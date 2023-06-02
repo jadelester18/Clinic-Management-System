@@ -20,6 +20,7 @@ export default function Queues({
         queues={queues}
         onStatusChange={onStatusChange}
         onViewReport={onViewReport}
+        showHeader={true}
       />
     </Grid>
   );

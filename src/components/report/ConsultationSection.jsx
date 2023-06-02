@@ -8,12 +8,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import ReportSectionHeader from "./ReportSectionHeader";
-
-const CONSULTATION_TYPES = [
-  { value: "INITIAL", text: "Initial" },
-  { value: "FOLLOW_UP", text: "Follow-up" },
-  { value: "CLEARANCE", text: "Clearance" },
-];
+import { CONSULTATION_TYPES } from "../../redux/default";
 
 export default function ConsultationSection({ form, onChange }) {
   return (

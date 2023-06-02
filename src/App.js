@@ -8,13 +8,7 @@ import DoctorHome from "./pages/doctor/DoctorHome";
 import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage";
 import PageNotFound from "./pages/PageNotFound";
-import {
-  BrowserRouter,
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { themeSettings } from "./components/theme/Theme";
 import Navbar from "./components/navbar/Navbar";
@@ -28,7 +22,7 @@ import { CssBaseline } from "@mui/material";
 import AdminHome from "./pages/admin/AdminHome";
 import MedicalCertificate from "./pages/MedicalCertificate";
 import ReferralCertificate from "./pages/ReferralCertificate";
-import PatientReport from "./pages/PatientReport";
+import PatientReports from "./pages/PatientReports";
 
 function App() {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -248,7 +242,7 @@ function App() {
             element={
               user?.enabled === true ? (
                 // user?.role === "ROLE_PATIENT" ? (
-                <PatientReport />
+                <PatientReports />
               ) : (
                 // <Navigate to={"/"} />
                 // )

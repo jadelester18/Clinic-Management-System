@@ -1,15 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React from "react";
-
-const CHECK_IN_STATUS = [
-  { value: "SCHEDULED", text: "Scheduled" },
-  { value: "FOR_ASSESSMENT", text: "For assessment" },
-  { value: "ONGOING_ASSESSMENT", text: "Ongoing assessment" },
-  { value: "FOR_CONSULTATION", text: "For consultation" },
-  { value: "ONGOING_CONSULTATION", text: "Ongoing consultation" },
-  { value: "FINISHED", text: "Finished" },
-  { value: "CANCELLED", text: "Cancelled" },
-];
+import { CHECK_IN_STATUS } from "../../../../../redux/default";
 
 export default function SelectCheckInStatus({ value, onSelect }) {
   return (

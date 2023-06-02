@@ -15,7 +15,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PrescriptionDialog from "./PrescriptionDialog";
 import * as util from "../../redux/util";
 
-export default function PrescriptionsSection({ form, onAdd, onRemove }) {
+export default function PrescriptionsSection({
+  form,
+  onAdd,
+  onRemove,
+  disabled,
+}) {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const styles = {
@@ -55,24 +60,28 @@ export default function PrescriptionsSection({ form, onAdd, onRemove }) {
                 )}`}</Typography>
               </Stack>
             </Grid>
-            <Grid item xs={2}>
-              <Box sx={styles.buttonBox}>
-                <Tooltip title="Remove prescription">
-                  <IconButton color="error" onClick={() => onRemove(index)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Grid>
+            {!disabled && (
+              <Grid item xs={2}>
+                <Box sx={styles.buttonBox}>
+                  <Tooltip title="Remove prescription">
+                    <IconButton color="error" onClick={() => onRemove(index)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              </Grid>
+            )}
           </Fragment>
         ))}
-        <Grid item xs={12} md={10}>
-          <TextField
-            label="Add Prescription"
-            onClick={() => setIsFormOpen(true)}
-            fullWidth
-          />
-        </Grid>
+        {!disabled && (
+          <Grid item xs={12} md={10}>
+            <TextField
+              label="Add Prescription"
+              onClick={() => setIsFormOpen(true)}
+              fullWidth
+            />
+          </Grid>
+        )}
       </Grid>
       {isFormOpen && (
         <PrescriptionDialog
