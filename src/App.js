@@ -24,7 +24,7 @@ import BookAppointment from "./components/patient/appointment/SetAppointment/Boo
 import { useSelector } from "react-redux";
 import VerifyUser from "./pages/VerifyUser";
 import { CssBaseline } from "@mui/material";
-import PatientReport from "./pages/PatientReportForm";
+import PatientReport from "./pages/PatientReport";
 
 function App() {
   const userLoggedinDetails = useSelector((state) => state.user);

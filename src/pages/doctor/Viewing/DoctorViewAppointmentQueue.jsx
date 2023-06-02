@@ -3,7 +3,7 @@ import React from "react";
 import DoctorLeftBar from "../../../components/doctor/ViewAppointment/leftbar/DoctorLeftBar";
 import DoctorRightBar from "../../../components/doctor/ViewAppointment/righbar/DoctorRightBar";
 import DoctorContentBottom from "../../../components/doctor/ViewAppointment/content/DoctorContentBottom";
-import PatientReport from "../../PatientReportForm";
+import PatientReport from "../../PatientReport";
 
 function DoctorViewAppointmentQueue() {
   return (

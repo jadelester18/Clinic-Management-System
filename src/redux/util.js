@@ -115,12 +115,28 @@ export function elapsedTimeFromNow(timeString) {
     const hoursDiff = (totalDiffInMinutes / 60).toFixed(0);
     const minutesDiff = totalDiffInMinutes % 60;
 
-    if (hoursDiff === 0 && minutesDiff === 0) {
+    console.log("hoursDiff", hoursDiff);
+    console.log("minutesDiff", minutesDiff);
+    if (+hoursDiff === 0 && +minutesDiff === 0) {
       return `just now`;
     }
 
     return `${hoursDiff > 0 ? `${hoursDiff}h ` : ""}${
       minutesDiff > 0 ? `${minutesDiff}m ` : ""
     } ago`;
+  }
+}
+
+export function signatura(signatura) {
+  if (signatura) {
+    if (typeof signatura === "string") {
+      return signatura;
+    } else {
+      const { action, totalPerIntake, packaging, totalPerDay, totalDays } =
+        signatura;
+      return `${action || "___"} ${totalPerIntake || "_"} ${packaging || "_"} ${
+        totalPerDay || "_"
+      } times per day for ${totalDays || "_"} days`;
+    }
   }
 }
