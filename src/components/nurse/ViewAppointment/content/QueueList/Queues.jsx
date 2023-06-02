@@ -8,6 +8,7 @@ export default function Queues({
   selectedStatus,
   onFilterChange,
   onStatusChange,
+  onViewReport,
 }) {
   return (
     <Grid container>
@@ -15,7 +16,11 @@ export default function Queues({
         selectedStatus={selectedStatus}
         onFilterChange={onFilterChange}
       />
-      <QueueList queues={queues} onStatusChange={onStatusChange} />
+      <QueueList
+        queues={queues}
+        onStatusChange={onStatusChange}
+        onViewReport={onViewReport}
+      />
     </Grid>
   );
 }

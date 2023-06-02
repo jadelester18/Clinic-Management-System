@@ -448,10 +448,9 @@ const PatientReport = () => {
         <TextField
           size="small"
           margin="normal"
-          name="Prognosis"
+          name="prognosis"
           fullWidth
           label="Prognosis"
-          autoComplete="Prognosis"
           multiline
           required
         />
@@ -764,8 +763,13 @@ const PatientReport = () => {
             ))}
           </Stepper>
         </Grid>
-        <Grid item xs={10} md={11.5}>
-          <Card item sx={{ borderRadius: 10, boxShadow: 15 }}>
+        <Grid
+          item
+          xs={10}
+          md={11.5}
+          // sx={{ borderRadius: 10, boxShadow: 15, p: 2 }}
+        >
+          <Card item>
             <CardContent>
               <Grid container>
                 <Grid item xs={10}>

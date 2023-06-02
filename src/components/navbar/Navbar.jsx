@@ -385,7 +385,7 @@ function Navbar({ toggleMode, mode }) {
         <DialogContent>
           <Login handleCloseLogin={handleCloseLogin} />
           <Container component="main">
-            <Grid container>
+            <Grid container justifyContent="space-between">
               <Grid item underline="none">
                 <Button
                   sx={{ fontSize: ".8rem" }}
@@ -539,4 +539,3 @@ function Navbar({ toggleMode, mode }) {
 }
 
 export default Navbar;
-

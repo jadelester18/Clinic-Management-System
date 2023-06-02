@@ -20,6 +20,8 @@ import { SnackBarContext } from "../../../context/SnackBarContext";
 import * as queueSvc from "../../../redux/GetApiCalls/queue";
 import SetUpWalkInPatient from "../../../components/nurse/ViewAppointment/leftbar/SettingUpWalkIn/SetUpWalkInPatient";
 import LoadingScreen from "../../../components/LoadingScreen";
+import PatientReport from "../../PatientReport";
+import ReportDialog from "../../../components/nurse/ViewAppointment/content/QueueList/ReportDialog";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -27,12 +29,10 @@ function NurseViewAppointmentQueue() {
   const [date, setDate] = useState(dayjs());
   const [doctorStatusList, setDoctorStatusList] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  console.log("selectedDoctor", selectedDoctor);
 
   const [activeTab, setActiveTab] = useState("APPOINTMENT");
   const [selectedStatus, setSelectedStatus] = useState("SCHEDULED");
   const [queues, setQueues] = useState([]);
-  console.log(queues);
   const [appointments, setAppointments] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -41,6 +41,10 @@ function NurseViewAppointmentQueue() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [isQueueFormOpen, setIsQueueFormOpen] = useState(false);
+
+  const [selectedReportId, setSelectedReportId] = useState(null);
+  const isReportOpen = Boolean(selectedReportId);
+  console.log("selectedReport", selectedReportId);
 
   async function fetchDoctorStatusList() {
     try {
@@ -210,8 +214,9 @@ function NurseViewAppointmentQueue() {
                     <Queues
                       queues={queues}
                       selectedStatus={selectedStatus}
-                      onFilterChange={(status) => setSelectedStatus(status)}
+                      onFilterChange={setSelectedStatus}
                       onStatusChange={handleStatusChange}
+                      onViewReport={(reportId) => setSelectedReportId(reportId)}
                     />
                   )}
 
@@ -240,6 +245,13 @@ function NurseViewAppointmentQueue() {
           open={isQueueFormOpen}
           onClose={() => setIsQueueFormOpen(false)}
           onSubmit={handleCreateWalkIn}
+        />
+      )}
+      {isReportOpen && (
+        <ReportDialog
+          open={isReportOpen}
+          reportId={selectedReportId}
+          onClose={() => setSelectedReportId(null)}
         />
       )}
       {isLoading && <LoadingScreen open={isLoading} />}
