@@ -88,11 +88,11 @@ const PatientMedication = () => {
             <MedicationLiquidIcon />
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
+        // action={
+        //   <IconButton aria-label="settings">
+        //     <MoreVertIcon />
+        //   </IconButton>
+        // }
         // title="Shrimp and Chorizo Paella"
         subheader={<Typography variant="h6">Medication</Typography>}
       />

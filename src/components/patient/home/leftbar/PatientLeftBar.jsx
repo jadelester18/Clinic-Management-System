@@ -5,28 +5,36 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   Checkbox,
   Divider,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Menu,
   MenuItem,
   Modal,
   Select,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import dayjs from "dayjs";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Circle } from "@mui/icons-material";
+import CircleIcon from "@mui/icons-material/Circle";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -87,6 +95,15 @@ const PatientLeftBar = () => {
     getUserDetails();
   }, []);
 
+  //For Dropdown Profile Option
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
   //For Profile Picture
   const [profilePicleUrl, setProfilePic] = React.useState("");
 
@@ -114,29 +131,77 @@ const PatientLeftBar = () => {
         borderRadius: 10,
       }}
     >
+      <CardHeader
+        action={
+          <IconButton aria-label="settings" onClick={handleOpenUserMenu}>
+            <MoreVertIcon />
+          </IconButton>
+        }
+      />
+      <Menu
+        sx={{ mt: "45px" }}
+        id="menu-appbar"
+        anchorEl={anchorElUser}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorElUser)}
+        onClose={handleCloseUserMenu}
+      >
+        <MenuItem
+          onClick={() => {
+            handleCloseUserMenu();
+          }}
+        >
+          <Typography textAlign="center" onClick={handleOpenProfile}>
+            Edit Profile
+          </Typography>
+        </MenuItem>
+      </Menu>
       <Stack
         direction={{ xs: "column" }}
         justifyContent="center"
         alignItems="center"
         textAlign="center"
+        marginTop={{ xs: "-10%" }}
       >
         <Button
           sx={{ backgroundColor: "transparent", borderRadius: "100%" }}
           onClick={handleOpenProfile}
         >
-          <Avatar
-            alt="Doreamon"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
-            sx={{
-              m: 1,
-              bgcolor: "primary.main",
-              width: { xs: 100, sm: 130, md: 140 },
-              height: { xs: 100, sm: 130, md: 140 },
-              border: "5px solid white",
-              boxShadow: 10,
-            }}
-          />
+          <Box sx={{ position: "relative" }}>
+            <Avatar
+              alt="Doreamon"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
+              sx={{
+                m: 1,
+                bgcolor: "primary.main",
+                width: { xs: 100, sm: 130, md: 140 },
+                height: { xs: 100, sm: 130, md: 140 },
+                border: "5px solid white",
+                boxShadow: 10,
+              }}
+            />
+            <Tooltip title="Create walk-in">
+              <Typography
+                variant="contained"
+                sx={stylesStatus.button}
+                color="orange"
+              >
+                <CircleIcon />
+              </Typography>
+            </Tooltip>
+          </Box>
         </Button>
+        <Typography variant="body1" color="orange" sx={{ fontWeight: 500 }}>
+          Status : Pending
+        </Typography>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
             {userPatientDetails?.firstName +
@@ -261,6 +326,9 @@ const PatientLeftBar = () => {
                 onChange={(e) => setProfilePic(e.target.files[0])}
               />
             </Button>
+            <Typography variant="subtitle2" color="green">
+              Click the Avatar to Change Profile
+            </Typography>
             <FormControl sx={{ minWidth: "100%" }}>
               <InputLabel id="demo-multiple-checkbox-label">HMO</InputLabel>
               <Select
@@ -305,4 +373,16 @@ const style = {
   borderRadius: 10,
   boxShadow: 24,
   p: 4,
+};
+
+const stylesStatus = {
+  button: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 1,
+    margin: "1rem",
+    borderRadius: "100%",
+    height: 60,
+  },
 };
