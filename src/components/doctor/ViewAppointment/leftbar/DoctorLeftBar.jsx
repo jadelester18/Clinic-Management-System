@@ -25,6 +25,7 @@ import Fab from "@mui/material/Fab";
 import QueueCalendar from "../../../nurse/ViewAppointment/leftbar/QueueCalendar";
 import Queues from "../../../nurse/ViewAppointment/content/QueueList/Queues";
 import QueueList from "../../../nurse/ViewAppointment/content/QueueList/Scheduled/QueueList";
+import { useReactToPrint } from "react-to-print";
 
 function DoctorLeftBar() {
   const componentRefMedicalCertificate = useRef();
