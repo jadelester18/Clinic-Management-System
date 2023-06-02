@@ -6,11 +6,11 @@ import { properties } from "./properties/properties";
 const Properties = () => {
   //For Theme
   const theme = useTheme();
+  const primaryLight = theme.palette.primary.light;
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
   const main = theme.palette.neutral.main;
   const background = theme.palette.background.default;
-  const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
   const landingPageBg = theme.palette.background.landingPageBg;
 

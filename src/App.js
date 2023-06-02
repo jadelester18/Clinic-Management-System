@@ -25,11 +25,15 @@ import { useSelector } from "react-redux";
 import VerifyUser from "./pages/VerifyUser";
 import { CssBaseline } from "@mui/material";
 import PatientReport from "./pages/PatientReportForm";
+import AdminHome from "./pages/admin/AdminHome";
+import MedicalCertificate from "./pages/MedicalCertificate";
+import ReferralCertificate from "./pages/ReferralCertificate";
 
 function App() {
   const userLoggedinDetails = useSelector((state) => state.user);
   let userObject = userLoggedinDetails?.user;
   let user = userLoggedinDetails?.user?.user;
+  let role = userLoggedinDetails?.user?.user.role;
 
   const [mode, setMode] = useState(localStorage.getItem("theme") || "light");
 
@@ -67,15 +71,15 @@ function App() {
             }
           />
           <Route
-            path="/nurse"
+            path="/admin"
             element={
               user?.enabled === true ? (
-                // user?.role === "ROLE_NURSE" ? (
-                <NurseHome toggleMode={toggleMode} mode={mode} />
+                // user?.role === "ROLE_DOCTOR" ? (
+                <AdminHome toggleMode={toggleMode} mode={mode} />
               ) : (
-                //   ) : (
-                //     <Navigate to={"/"} replace={true} />
-                //   )
+                // <Navigate to={"/"} replace={true} />
+                // )
+                // ) : (
                 <Navigate to={"/"} replace={true} />
               )
             }
@@ -90,6 +94,20 @@ function App() {
                 // <Navigate to={"/"} replace={true} />
                 // )
                 // ) : (
+                <Navigate to={"/"} replace={true} />
+              )
+            }
+          />
+          <Route
+            path="/nurse"
+            element={
+              user?.enabled === true ? (
+                // user?.role === "ROLE_NURSE" ? (
+                <NurseHome toggleMode={toggleMode} mode={mode} />
+              ) : (
+                //   ) : (
+                //     <Navigate to={"/"} replace={true} />
+                //   )
                 <Navigate to={"/"} replace={true} />
               )
             }
@@ -230,6 +248,35 @@ function App() {
               user?.enabled === true ? (
                 // user?.role === "ROLE_PATIENT" ? (
                 <PatientReport />
+              ) : (
+                // <Navigate to={"/"} />
+                // )
+                // ) : (
+                <Navigate to={"/"} />
+              )
+            }
+          />
+          <Route
+            path="/medical-certificate"
+            element={
+              user?.enabled === true ? (
+                // user?.role === "ROLE_PATIENT" ? (
+                <MedicalCertificate />
+              ) : (
+                // <Navigate to={"/"} />
+                // )
+                // ) : (
+                <Navigate to={"/"} />
+              )
+            }
+          />
+
+          <Route
+            path="/referral-certificate"
+            element={
+              user?.enabled === true ? (
+                // user?.role === "ROLE_PATIENT" ? (
+                <ReferralCertificate />
               ) : (
                 // <Navigate to={"/"} />
                 // )

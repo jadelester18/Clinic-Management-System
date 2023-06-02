@@ -69,11 +69,11 @@ const LabReports = () => {
             <SummarizeIcon />
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
+        // action={
+        //   <IconButton aria-label="settings">
+        //     <MoreVertIcon />
+        //   </IconButton>
+        // }
         // title="Shrimp and Chorizo Paella"
         subheader={<Typography variant="h6">My Reports</Typography>}
       />

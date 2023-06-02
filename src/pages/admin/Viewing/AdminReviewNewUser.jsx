@@ -1,11 +1,13 @@
 import { Box, Grid, Stack } from "@mui/material";
 import React from "react";
-import PatientLeftBar from "../../../components/patient/home/leftbar/PatientLeftBar";
-import PatientRightBar from "../../../components/patient/home/rightbar/PatientRightBar";
+import DoctorLeftBar from "../../../components/doctor/ViewAppointment/leftbar/DoctorLeftBar";
+import DoctorRightBar from "../../../components/doctor/ViewAppointment/righbar/DoctorRightBar";
+import DoctorContentBottom from "../../../components/doctor/ViewAppointment/content/DoctorContentBottom";
+import PatientReport from "../../PatientReportForm";
 
-const PatientDashboard = () => {
+function DoctorViewAppointmentQueue() {
   return (
-    <Box p={2}>
+    <Box>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent="center"
@@ -13,18 +15,18 @@ const PatientDashboard = () => {
         // spacing={2}
       >
         <Grid container spacing={0}>
-          <Grid xs={12} mt={2}>
+          <Grid item xs={12}>
             <Stack
               direction={{ xs: "column", sm: "column", md: "row" }}
               justifyContent={{ xs: "center", md: "flex-start" }}
               alignItems={{ xs: "center", md: "flex-start" }}
-              spacing={2}
+              spacing={4}
             >
-              <Grid item xs={12} lg={3}>
-                <PatientLeftBar />
+              <Grid item lg={3}>
+                <DoctorLeftBar />
               </Grid>
-              <Grid item xs={12} lg={9}>
-                <PatientRightBar />
+              <Grid item lg={9}>
+                <PatientReport />
               </Grid>
             </Stack>
           </Grid>
@@ -35,6 +37,6 @@ const PatientDashboard = () => {
       </Stack>
     </Box>
   );
-};
+}
 
-export default PatientDashboard;
+export default DoctorViewAppointmentQueue;

@@ -39,19 +39,21 @@ import {
   emphasize,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import { Link } from "react-router-dom";
 import DarkMode from "../../components/theme/DarkMode";
-import DoctorViewAppointmentQueue from "../doctor/Viewing/DoctorViewAppointmentQueue";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logout } from "../../redux/UserReducer";
-import DoctorDashboard from "./Dashboard/DoctorDashboard";
+import AdminDashboard from "./Dashboard/AdminDashboard";
+import NewRegisteredUser from "../../components/admin/ListOfNewRegistered/NewRegisteredUser";
+import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import MasksIcon from "@mui/icons-material/Masks";
+import VaccinesIcon from "@mui/icons-material/Vaccines";
 
 const drawerWidth = 240;
 
@@ -174,12 +176,7 @@ const messageExamples = [
   },
 ];
 
-function DoctorHome({ toggleMode, mode }) {
-  const userLoggedinDetails = useSelector((state) => state.user);
-  let userObject = userLoggedinDetails?.user;
-  let user = userLoggedinDetails?.user?.user;
-  let id = userLoggedinDetails?.user?.user?.id;
-
+function AdminHome({ toggleMode, mode }) {
   const theme = useTheme();
   //For Drawer
   const [open, setOpen] = React.useState(false);
@@ -417,7 +414,7 @@ function DoctorHome({ toggleMode, mode }) {
                 <MenuItem
                   onClick={handleCloseUserMenu}
                   component={Link}
-                  to={`/profile/${id}`}
+                  to={`/profile`}
                 >
                   <Typography textAlign="center">Profile</Typography>
                 </MenuItem>
@@ -503,7 +500,7 @@ function DoctorHome({ toggleMode, mode }) {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
-              onClick={() => setMenuData("Patient Reports")}
+              onClick={() => setMenuData("New Registered User")}
             >
               <ListItemButton
                 sx={{
@@ -519,16 +516,106 @@ function DoctorHome({ toggleMode, mode }) {
                     justifyContent: "center",
                   }}
                 >
-                  <MedicalInformationIcon />
+                  <AccessibilityNewIcon />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Patient Reports"
+                  primary="New Registered User"
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
             </ListItem>
           </List>
-          {/* <Divider /> */}
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("List Of Approved Patient")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <VerifiedIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="List Of Approved Patient"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("List Of Nurses")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MasksIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="List Of Nurses"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("List Of Doctors")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <VaccinesIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="List Of Doctors"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Grid container ml={2}>
@@ -538,8 +625,23 @@ function DoctorHome({ toggleMode, mode }) {
               ) : (
                 ""
               )}
-              {menuData === "Patient Reports" ? (
-                <Typography variant="h4">Patient Reports</Typography>
+              {menuData === "New Registered User" ? (
+                <Typography variant="h4">New Registered User</Typography>
+              ) : (
+                ""
+              )}
+              {menuData === "List Of Approved Patient" ? (
+                <Typography variant="h4">List Of Approved Patient</Typography>
+              ) : (
+                ""
+              )}
+              {menuData === "List Of Nurses" ? (
+                <Typography variant="h4">List Of Nurses</Typography>
+              ) : (
+                ""
+              )}
+              {menuData === "List Of Doctors" ? (
+                <Typography variant="h4">List Of Doctors</Typography>
               ) : (
                 ""
               )}
@@ -556,14 +658,50 @@ function DoctorHome({ toggleMode, mode }) {
                     icon={<HomeIcon fontSize="small" />}
                   />
 
-                  {menuData === "Patient Reports" ? (
+                  {menuData === "New Registered User" ? (
                     <StyledBreadcrumb
                       component="a"
                       onClick={() => {
-                        setMenuData("Patient Reports");
+                        setMenuData("New Registered User");
                       }}
-                      label="Patient Reports"
-                      icon={<MedicalInformationIcon fontSize="small" />}
+                      label="New Registered User"
+                      icon={<AccessibilityNewIcon fontSize="small" />}
+                    />
+                  ) : (
+                    ""
+                  )}
+                  {menuData === "List Of Approved Patient" ? (
+                    <StyledBreadcrumb
+                      component="a"
+                      onClick={() => {
+                        setMenuData("List Of Approved Patient");
+                      }}
+                      label="List Of Approved Patient"
+                      icon={<AccessibilityNewIcon fontSize="small" />}
+                    />
+                  ) : (
+                    ""
+                  )}
+                  {menuData === "List Of Nurses" ? (
+                    <StyledBreadcrumb
+                      component="a"
+                      onClick={() => {
+                        setMenuData("List Of Nurses");
+                      }}
+                      label="List Of Nurses"
+                      icon={<AccessibilityNewIcon fontSize="small" />}
+                    />
+                  ) : (
+                    ""
+                  )}
+                  {menuData === "List Of Doctors" ? (
+                    <StyledBreadcrumb
+                      component="a"
+                      onClick={() => {
+                        setMenuData("List Of Doctors");
+                      }}
+                      label="List Of Doctors"
+                      icon={<AccessibilityNewIcon fontSize="small" />}
                     />
                   ) : (
                     ""
@@ -573,8 +711,11 @@ function DoctorHome({ toggleMode, mode }) {
             </Grid>
           </Grid>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            {menuData === "Dashboard" && <DoctorDashboard />}
-            {menuData === "Patient Reports" && <DoctorViewAppointmentQueue />}
+            {menuData === "Dashboard" && <AdminDashboard />}
+            {menuData === "New Registered User" && <NewRegisteredUser />}
+            {menuData === "List Of Approved Patient" && <NewRegisteredUser />}
+            {menuData === "List Of Nurses" && <NewRegisteredUser />}
+            {menuData === "List Of Doctors" && <NewRegisteredUser />}
           </Box>
         </Box>
       </Box>
@@ -582,7 +723,7 @@ function DoctorHome({ toggleMode, mode }) {
   );
 }
 
-export default DoctorHome;
+export default AdminHome;
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
   const backgroundColor =

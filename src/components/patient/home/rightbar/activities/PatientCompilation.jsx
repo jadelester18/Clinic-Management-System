@@ -36,11 +36,11 @@ const PatientCompilation = () => {
             <BackupTableIcon />
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
+        // action={
+        //   <IconButton aria-label="settings">
+        //     <MoreVertIcon />
+        //   </IconButton>
+        // }
         // title="Shrimp and Chorizo Paella"
         subheader={<Typography variant="h6">Compilation</Typography>}
       />

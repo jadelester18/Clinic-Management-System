@@ -396,7 +396,7 @@ function Navbar({ toggleMode, mode }) {
         <DialogContent>
           <Login handleCloseLogin={handleCloseLogin} />
           <Container component="main">
-            <Grid container>
+            <Grid container justifyContent="space-between">
               <Grid item underline="none">
                 <Button
                   sx={{ fontSize: ".8rem" }}
@@ -447,7 +447,7 @@ function Navbar({ toggleMode, mode }) {
           }}
         >
           <Register handleCloseRegister={handleCloseRegister} />
-          <Grid container>
+          <Grid container justifyContent="space-between">
             <Grid item underline="none">
               <Button
                 sx={{ fontSize: ".8rem" }}
@@ -489,7 +489,7 @@ function Navbar({ toggleMode, mode }) {
           <ForgotPassword
             handleCloseForgotPassword={handleCloseForgotPassword}
           />
-          <Grid container>
+          <Grid container justifyContent="space-between">
             <Grid item underline="none">
               <Button
                 sx={{ fontSize: ".8rem" }}
