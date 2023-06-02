@@ -35,18 +35,6 @@ import CreatingNewWalkIn from "./SettingUpWalkIn/SetFormForWalkIn/CreatingNewWal
 import SetUpWalkInPatient from "./SettingUpWalkIn/SetUpWalkInPatient";
 
 function QueueCalendar({ date, onDateChange, onCreateWalkIn }) {
-  //For Creating Appointment Modal
-  // const [openCreateAppointment, setOpenCreateAppointment] =
-  //   React.useState(false);
-
-  // const handleClickOpenCreateAppointment = () => {
-  //   setOpenCreateAppointment(true);
-  // };
-
-  // const handleCloseCreateAppointment = () => {
-  //   setOpenCreateAppointment(false);
-  // };
-
   const styles = {
     button: {
       position: "absolute",
@@ -73,15 +61,17 @@ function QueueCalendar({ date, onDateChange, onCreateWalkIn }) {
             }}
             sx={{ boxShadow: 10, borderRadius: 10 }}
           />
-          <Tooltip title="Create walk-in">
-            <Button
-              variant="contained"
-              sx={styles.button}
-              onClick={onCreateWalkIn}
-            >
-              <EditCalendarIcon />
-            </Button>
-          </Tooltip>
+          {!!onCreateWalkIn && (
+            <Tooltip title="Create walk-in">
+              <Button
+                variant="contained"
+                sx={styles.button}
+                onClick={onCreateWalkIn}
+              >
+                <EditCalendarIcon />
+              </Button>
+            </Tooltip>
+          )}
         </Box>
       </LocalizationProvider>
     </Box>

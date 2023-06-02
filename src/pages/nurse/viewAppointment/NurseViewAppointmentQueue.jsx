@@ -20,7 +20,6 @@ import { SnackBarContext } from "../../../context/SnackBarContext";
 import * as queueSvc from "../../../redux/GetApiCalls/queue";
 import SetUpWalkInPatient from "../../../components/nurse/ViewAppointment/leftbar/SettingUpWalkIn/SetUpWalkInPatient";
 import LoadingScreen from "../../../components/LoadingScreen";
-import PatientReport from "../../PatientReport";
 import ReportDialog from "../../../components/nurse/ViewAppointment/content/QueueList/ReportDialog";
 import * as reportSvc from "../../../redux/GetApiCalls/report";
 
@@ -46,7 +45,6 @@ function NurseViewAppointmentQueue() {
 
   const [selectedReportId, setSelectedReportId] = useState(null);
   const isReportOpen = Boolean(selectedReportId);
-  console.log("selectedReport", selectedReportId);
 
   async function fetchDoctorStatusList() {
     try {
@@ -161,15 +159,11 @@ function NurseViewAppointmentQueue() {
     }
   }
 
-  async function handleSaveReport(form) {
+  async function handleSaveReport(reportId, form) {
     setIsSavingReport(true);
     try {
       const updateReportDto = getDtoFromReportForm(form);
-      const { data } = await reportSvc.updateReport(
-        selectedReportId,
-        updateReportDto
-      );
-      // TODO: handle prescription add
+      const { data } = await reportSvc.updateReport(reportId, updateReportDto);
 
       setSelectedReportId(null);
     } catch (error) {

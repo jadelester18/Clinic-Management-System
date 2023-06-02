@@ -24,7 +24,8 @@ import { green } from "@mui/material/colors";
 import ReportDialog from "./ReportDialog";
 
 export default function QueueRow({ queue, onStatusChange, onViewReport }) {
-  const { id, startTime, checkInStatus, type, patient, report, date } = queue;
+  const { id, startTime, endTime, checkInStatus, type, patient, report, date } =
+    queue;
   const [isPatientInfoOpen, setIsPatientInfoOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [appointment, setAppointment] = useState(null);
@@ -125,9 +126,13 @@ export default function QueueRow({ queue, onStatusChange, onViewReport }) {
                   {`Not yet arrived`}
                 </Typography>
               )}
-              <Typography variant="caption">
-                {util.elapsedTimeFromNow(startTime)}
-              </Typography>
+              {endTime ? (
+                <Typography variant="caption">{`-`}</Typography>
+              ) : (
+                <Typography variant="caption">
+                  {util.elapsedTimeFromNow(startTime)}
+                </Typography>
+              )}
             </Stack>
           </Grid>
           <Grid item xs={12} md={3.5}>

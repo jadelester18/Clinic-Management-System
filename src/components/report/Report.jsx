@@ -1,6 +1,7 @@
 import {
   Button,
   Card,
+  CardActions,
   CardContent,
   CardHeader,
   Grid,
@@ -34,6 +35,7 @@ export default function Report({ report, onSave }) {
 
   const patient = report?.queue.patient;
   const [form, setForm] = useState({
+    formIsEdited: false,
     doctor: null,
     nurse: null,
     consultationType: "",
@@ -49,6 +51,7 @@ export default function Report({ report, onSave }) {
     management: "",
     labProcedures: [],
     prescriptions: [],
+    prescriptionsHasEdits: false,
   });
   console.log(form);
 
@@ -57,15 +60,15 @@ export default function Report({ report, onSave }) {
     if (INTEGER_TYPES.some((prop) => prop === name)) {
       const numericValue = value.replace(/[^0-9.-]+/g, "");
       if (numericValue >= 0) {
-        setForm({ ...form, [name]: +numericValue });
+        setForm({ ...form, [name]: +numericValue, formIsEdited: true });
       }
     } else if (DOUBLE_TYPES.some((prop) => prop === name)) {
       const numericValue = value.replace(/[^0-9.-]+/g, "");
       if (numericValue >= 0) {
-        setForm({ ...form, [name]: numericValue });
+        setForm({ ...form, [name]: numericValue, formIsEdited: true });
       }
     } else {
-      setForm({ ...form, [name]: value });
+      setForm({ ...form, [name]: value, formIsEdited: true });
     }
   }
 
@@ -73,7 +76,11 @@ export default function Report({ report, onSave }) {
     switch (origin) {
       case "consultationType":
         {
-          setForm({ ...form, consultationType: event.target.value });
+          setForm({
+            ...form,
+            consultationType: event.target.value,
+            formIsEdited: true,
+          });
         }
         break;
       case "labProcedures":
@@ -85,10 +92,10 @@ export default function Report({ report, onSave }) {
             const updated = form.labProcedures.filter(
               (procedure) => procedure.id !== value.id
             );
-            setForm({ ...form, labProcedures: updated });
+            setForm({ ...form, labProcedures: updated, formIsEdited: true });
           } else {
             const updated = [...form.labProcedures, value];
-            setForm({ ...form, labProcedures: updated });
+            setForm({ ...form, labProcedures: updated, formIsEdited: true });
           }
         }
         break;
@@ -99,13 +106,23 @@ export default function Report({ report, onSave }) {
 
   function handleAddPrescription(prescription) {
     const updated = [...form.prescriptions, prescription];
-    setForm({ ...form, prescriptions: updated });
+    setForm({
+      ...form,
+      prescriptions: updated,
+      prescriptionsHasEdits: true,
+      formIsEdited: true,
+    });
   }
 
   function handleRemovePrescription(index) {
     const updated = form.prescriptions.slice();
     updated.splice(index, 1);
-    setForm({ ...form, prescriptions: updated });
+    setForm({
+      ...form,
+      prescriptions: updated,
+      prescriptionsHasEdits: true,
+      formIsEdited: true,
+    });
   }
 
   useEffect(() => {
@@ -199,6 +216,7 @@ export default function Report({ report, onSave }) {
                 name="diagnosis"
                 fullWidth
                 multiline
+                InputProps={{ readOnly: !userIsDoctor }}
               />
             </Grid>
           </Grid>
@@ -215,6 +233,7 @@ export default function Report({ report, onSave }) {
                 name="prognosis"
                 fullWidth
                 multiline
+                InputProps={{ readOnly: !userIsDoctor }}
               />
             </Grid>
           </Grid>
@@ -233,6 +252,7 @@ export default function Report({ report, onSave }) {
                 <LabProceduresSection
                   form={form}
                   onChange={handleSpecialInput}
+                  disabled={!userIsDoctor}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -240,6 +260,7 @@ export default function Report({ report, onSave }) {
                   form={form}
                   onAdd={handleAddPrescription}
                   onRemove={handleRemovePrescription}
+                  disabled={!userIsDoctor}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -252,6 +273,7 @@ export default function Report({ report, onSave }) {
                     name="management"
                     fullWidth
                     multiline
+                    InputProps={{ readOnly: !userIsDoctor }}
                   />
                 </Grid>
               </Grid>
@@ -261,16 +283,24 @@ export default function Report({ report, onSave }) {
             <Typography variant="caption">Attending Physician</Typography>
             <Typography variant="body1">{util.name(form.doctor)}</Typography>
           </Grid>
-          <Grid item>
-            <Button variant="standard">Clear</Button>
-          </Grid>
-          <Grid item>
-            <Button variant="contained" onClick={() => onSave(form)}>
-              Save
-            </Button>
-          </Grid>
         </Grid>
       </CardContent>
+      <CardActions>
+        <Button
+          variant="contained"
+          onClick={() => onSave(report.id, form)}
+          disabled={!form.formIsEdited}
+        >
+          Save
+        </Button>
+        {!report?.medicalCertificate && userIsDoctor && (
+          <Button variant="outlined">GENERATE MC</Button>
+        )}
+        {report?.medicalCertificate && (
+          <Button variant="outlined">VIEW MC</Button>
+        )}
+        <Button variant="outlined">VIEW REFERRAL</Button>
+      </CardActions>
     </Card>
   );
 }

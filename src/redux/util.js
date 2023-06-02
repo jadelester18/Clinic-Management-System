@@ -1,4 +1,9 @@
-import { DISPLAY_DATE_FORMAT, QUEUE_TYPE } from "./default";
+import {
+  CHECK_IN_STATUS,
+  CONSULTATION_TYPES,
+  DISPLAY_DATE_FORMAT,
+  QUEUE_TYPE,
+} from "./default";
 import dayjs from "dayjs";
 
 export function name(person) {
@@ -139,4 +144,12 @@ export function signatura(signatura) {
       } times per day for ${totalDays || "_"} days`;
     }
   }
+}
+
+export function checkInStatus(statusValue) {
+  return CHECK_IN_STATUS.find((status) => status.value === statusValue).text;
+}
+
+export function consultationType(typeValue) {
+  return CONSULTATION_TYPES.find((type) => type.value === typeValue).text;
 }

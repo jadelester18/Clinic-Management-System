@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useState } from "react";
 import * as labProcedureSvc from "../../redux/GetApiCalls/labProcedure";
 
-export default function LabProceduresSection({ form, onChange }) {
+export default function LabProceduresSection({ form, onChange, disabled }) {
   const [labProcedures, setLabProcedures] = useState([]);
 
   async function fetchLabProcedures() {
@@ -56,6 +56,7 @@ export default function LabProceduresSection({ form, onChange }) {
                   label={
                     <Typography variant="body2">{`${labProcedure.code} - ${labProcedure.title}`}</Typography>
                   }
+                  disabled={disabled}
                 />
               </Grid>
             ))}

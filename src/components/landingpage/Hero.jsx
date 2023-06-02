@@ -76,7 +76,7 @@ const Hero = () => {
               {/* <img src="" alt="Time Line Image" style={{maxWidth: '100%', marginBottom: '2rem'}}/> */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                enable-background="new 0 0 66 66"
+                enableBackground="new 0 0 66 66"
                 viewBox="0 0 66 66"
                 id="hospital-indemnity"
               >
