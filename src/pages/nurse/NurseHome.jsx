@@ -204,7 +204,16 @@ function handleClick(event) {
 }
 
 function NurseHome({ toggleMode, mode }) {
+  //For Theme
   const theme = useTheme();
+  const neutralLight = theme.palette.neutral.light;
+  const dark = theme.palette.neutral.dark;
+  const main = theme.palette.neutral.main;
+  const background = theme.palette.background.default;
+  const primaryLight = theme.palette.primary.light;
+  const alt = theme.palette.background.alt;
+  const landingPageBg = theme.palette.background.landingPageBg;
+
   //For Drawer
   const [open, setOpen] = React.useState(false);
   // const [open, setOpen] = React.useState(true);
@@ -294,12 +303,31 @@ function NurseHome({ toggleMode, mode }) {
     setMessages(refreshMessages());
   }, [setMessages]);
 
+  //Getting the current date
+  const currentDate = new Date().toLocaleString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const formattedDate = currentDate.replace(",", " |");
+  // console.log(formattedDate); // Output: "Monday | May 15, 2023"
+
+  //Current Time
+  const currentTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+  // console.log(currentTime); // Output: "4:26 PM"
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="fixed">
-          <Toolbar>
+          <Toolbar sx={{ backgroundColor: landingPageBg }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -595,63 +623,73 @@ function NurseHome({ toggleMode, mode }) {
         </Drawer>
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Grid container ml={2}>
-            <Grid item xs={12}>
-              {menuData === "Dashboard" ? (
-                <Typography variant="h4">Dashboard</Typography>
-              ) : (
-                ""
-              )}
+          <Grid container>
+            <Grid item xs={9}>
+              <Grid item xs={12} ml={3}>
+                {menuData === "Dashboard" ? (
+                  <Typography variant="h4">Dashboard</Typography>
+                ) : (
+                  ""
+                )}
 
-              {menuData === "New Appointment" ? (
-                <Typography variant="h4">New Appoinments</Typography>
-              ) : (
-                ""
-              )}
-              {menuData === "Appointments" ? (
-                <Typography variant="h4">Reception</Typography>
-              ) : (
-                ""
-              )}
+                {menuData === "New Appointment" ? (
+                  <Typography variant="h4">New Appoinments</Typography>
+                ) : (
+                  ""
+                )}
+                {menuData === "Appointments" ? (
+                  <Typography variant="h4">Reception</Typography>
+                ) : (
+                  ""
+                )}
+              </Grid>
+              <Grid item xs={12} ml={3}>
+                <div role="presentation" onClick={handleClick}>
+                  <Breadcrumbs aria-label="breadcrumb">
+                    <StyledBreadcrumb
+                      component="a"
+                      onClick={() => {
+                        setMenuData("Dashboard");
+                      }}
+                      label="Dashboard"
+                      icon={<HomeIcon fontSize="small" />}
+                    />
+
+                    {menuData === "New Appointment" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("New Appointment");
+                        }}
+                        label="New Appoinments"
+                        icon={<StreetviewIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                    {menuData === "Appointments" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("Appointments");
+                        }}
+                        label="Reception"
+                        icon={<ViewInArIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Breadcrumbs>
+                </div>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <div role="presentation" onClick={handleClick}>
-                <Breadcrumbs aria-label="breadcrumb">
-                  <StyledBreadcrumb
-                    component="a"
-                    onClick={() => {
-                      setMenuData("Dashboard");
-                    }}
-                    label="Dashboard"
-                    icon={<HomeIcon fontSize="small" />}
-                  />
-
-                  {menuData === "New Appointment" ? (
-                    <StyledBreadcrumb
-                      component="a"
-                      onClick={() => {
-                        setMenuData("New Appointment");
-                      }}
-                      label="New Appoinments"
-                      icon={<StreetviewIcon fontSize="small" />}
-                    />
-                  ) : (
-                    ""
-                  )}
-                  {menuData === "Appointments" ? (
-                    <StyledBreadcrumb
-                      component="a"
-                      onClick={() => {
-                        setMenuData("Appointments");
-                      }}
-                      label="Reception"
-                      icon={<ViewInArIcon fontSize="small" />}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </Breadcrumbs>
-              </div>
+            <Grid item xs={3}>
+              <Grid item xs={12} textAlign="right" mr={3}>
+                <Typography variant="h6">{formattedDate}</Typography>
+                <Typography variant="h3" color="text.secondary">
+                  {currentTime}
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
           <Box component="main" sx={{ flexGrow: { xs: 0, md: 1 }, p: 3 }}>

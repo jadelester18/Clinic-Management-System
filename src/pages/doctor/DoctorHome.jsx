@@ -35,6 +35,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Switch,
   Tooltip,
   emphasize,
 } from "@mui/material";
@@ -180,7 +181,16 @@ function DoctorHome({ toggleMode, mode }) {
   let user = userLoggedinDetails?.user?.user;
   let id = userLoggedinDetails?.user?.user?.id;
 
+  //For Theme
   const theme = useTheme();
+  const neutralLight = theme.palette.neutral.light;
+  const dark = theme.palette.neutral.dark;
+  const main = theme.palette.neutral.main;
+  const background = theme.palette.background.default;
+  const primaryLight = theme.palette.primary.light;
+  const alt = theme.palette.background.alt;
+  const landingPageBg = theme.palette.background.landingPageBg;
+
   //For Drawer
   const [open, setOpen] = React.useState(false);
 
@@ -265,12 +275,31 @@ function DoctorHome({ toggleMode, mode }) {
     setMessages(refreshMessages());
   }, [setMessages]);
 
+  //Getting the current date
+  const currentDate = new Date().toLocaleString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const formattedDate = currentDate.replace(",", " |");
+  // console.log(formattedDate); // Output: "Monday | May 15, 2023"
+
+  //Current Time
+  const currentTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+  // console.log(currentTime); // Output: "4:26 PM"
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="fixed">
-          <Toolbar>
+          <Toolbar sx={{ backgroundColor: landingPageBg }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -528,48 +557,93 @@ function DoctorHome({ toggleMode, mode }) {
               </ListItemButton>
             </ListItem>
           </List>
-          {/* <Divider /> */}
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
+              onClick={() => setMenuData("Patient Reports")}
+            >
+              {/* <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <MedicalInformationIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Patient Reports"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton> */}
+              <Switch defaultChecked>
+                <ListItemText
+                  primary="Patient Reports"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </Switch>
+            </ListItem>
+          </List>
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Grid container ml={2}>
-            <Grid item xs={12}>
-              {menuData === "Dashboard" ? (
-                <Typography variant="h4">Dashboard</Typography>
-              ) : (
-                ""
-              )}
-              {menuData === "Patient Reports" ? (
-                <Typography variant="h4">Patient Reports</Typography>
-              ) : (
-                ""
-              )}
-            </Grid>
-            <Grid item xs={12}>
-              <div role="presentation" onClick={handleClick}>
-                <Breadcrumbs aria-label="breadcrumb">
-                  <StyledBreadcrumb
-                    component="a"
-                    onClick={() => {
-                      setMenuData("Dashboard");
-                    }}
-                    label="Dashboard"
-                    icon={<HomeIcon fontSize="small" />}
-                  />
-
-                  {menuData === "Patient Reports" ? (
+          <Grid container>
+            <Grid item xs={9}>
+              <Grid item xs={12} ml={3}>
+                {menuData === "Dashboard" ? (
+                  <Typography variant="h4">Dashboard</Typography>
+                ) : (
+                  ""
+                )}
+                {menuData === "Patient Reports" ? (
+                  <Typography variant="h4">Patient Reports</Typography>
+                ) : (
+                  ""
+                )}
+              </Grid>
+              <Grid item xs={12} ml={3}>
+                <div role="presentation" onClick={handleClick}>
+                  <Breadcrumbs aria-label="breadcrumb">
                     <StyledBreadcrumb
                       component="a"
                       onClick={() => {
-                        setMenuData("Patient Reports");
+                        setMenuData("Dashboard");
                       }}
-                      label="Patient Reports"
-                      icon={<MedicalInformationIcon fontSize="small" />}
+                      label="Dashboard"
+                      icon={<HomeIcon fontSize="small" />}
                     />
-                  ) : (
-                    ""
-                  )}
-                </Breadcrumbs>
-              </div>
+
+                    {menuData === "Patient Reports" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("Patient Reports");
+                        }}
+                        label="Patient Reports"
+                        icon={<MedicalInformationIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Breadcrumbs>
+                </div>
+              </Grid>
+            </Grid>
+            <Grid item xs={3}>
+              <Grid item xs={12} textAlign="right" mr={3}>
+                <Typography variant="h6">{formattedDate}</Typography>
+                <Typography variant="h3" color="text.secondary">
+                  {currentTime}
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

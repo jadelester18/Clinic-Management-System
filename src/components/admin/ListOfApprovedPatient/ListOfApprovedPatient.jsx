@@ -30,6 +30,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Paper from "@mui/material/Paper";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -75,7 +76,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const NewRegisteredUser = () => {
+const ListOfApprovedPatient = () => {
   return (
     <Box>
       <Card>
@@ -100,8 +101,8 @@ const NewRegisteredUser = () => {
                 size="small"
               />
             </Grid>
-            <Grid item md={6}></Grid>
-            <Grid item color="red" ali>
+            <Grid item xs={4} sm={4} md={1} lg={3.5} xl={5.5}></Grid>
+            <Grid item color="red">
               <CircleIcon />{" "}
             </Grid>
             <Grid item>
@@ -112,6 +113,12 @@ const NewRegisteredUser = () => {
             </Grid>
             <Grid item>
               <Typography>Verified</Typography>
+            </Grid>
+            <Grid item color="gold">
+              <CircleIcon />{" "}
+            </Grid>
+            <Grid item>
+              <Typography>Approved</Typography>
             </Grid>
           </Grid>
         </CardContent>
@@ -156,7 +163,7 @@ const NewRegisteredUser = () => {
   );
 };
 
-export default NewRegisteredUser;
+export default ListOfApprovedPatient;
 
 function Row(props) {
   const { row } = props;
@@ -253,11 +260,11 @@ const rows = [
   createData(
     "Gon Freecss",
     <Grid container spacing={1} justifyContent={"right"}>
-      <Grid item color="red">
-        <CircleIcon />
+      <Grid item color="gold">
+        <VerifiedIcon />
       </Grid>
-      <Grid item color="red">
-        <Typography> Disabled</Typography>
+      <Grid item color="gold">
+        <Typography> Approved</Typography>
       </Grid>
     </Grid>,
     "Pio Del Pilar, Makati City, Philippines",
