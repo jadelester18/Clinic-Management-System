@@ -54,6 +54,10 @@ import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import MasksIcon from "@mui/icons-material/Masks";
 import VaccinesIcon from "@mui/icons-material/Vaccines";
+import ListOfApprovedPatient from "../../components/admin/ListOfApprovedPatient/ListOfApprovedPatient";
+import ListOfNurses from "../../components/admin/ListOfNurses/ListOfNurses";
+import ListOfDoctors from "../../components/admin/ListOfDoctors/ListOfDoctors";
+import dayjs from "dayjs";
 
 const drawerWidth = 240;
 
@@ -177,7 +181,15 @@ const messageExamples = [
 ];
 
 function AdminHome({ toggleMode, mode }) {
+  //For Theme
   const theme = useTheme();
+  const neutralLight = theme.palette.neutral.light;
+  const dark = theme.palette.neutral.dark;
+  const main = theme.palette.neutral.main;
+  const background = theme.palette.background.default;
+  const primaryLight = theme.palette.primary.light;
+  const alt = theme.palette.background.alt;
+  const landingPageBg = theme.palette.background.landingPageBg;
   //For Drawer
   const [open, setOpen] = React.useState(false);
 
@@ -262,12 +274,31 @@ function AdminHome({ toggleMode, mode }) {
     setMessages(refreshMessages());
   }, [setMessages]);
 
+  //Getting the current date
+  const currentDate = new Date().toLocaleString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const formattedDate = currentDate.replace(",", " |");
+  // console.log(formattedDate); // Output: "Monday | May 15, 2023"
+
+  //Current Time
+  const currentTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+  // console.log(currentTime); // Output: "4:26 PM"
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="fixed">
-          <Toolbar>
+          <Toolbar sx={{ backgroundColor: landingPageBg }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -618,104 +649,117 @@ function AdminHome({ toggleMode, mode }) {
           <Divider />
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Grid container ml={2}>
-            <Grid item xs={12}>
-              {menuData === "Dashboard" ? (
-                <Typography variant="h4">Dashboard</Typography>
-              ) : (
-                ""
-              )}
-              {menuData === "New Registered User" ? (
-                <Typography variant="h4">New Registered User</Typography>
-              ) : (
-                ""
-              )}
-              {menuData === "List Of Approved Patient" ? (
-                <Typography variant="h4">List Of Approved Patient</Typography>
-              ) : (
-                ""
-              )}
-              {menuData === "List Of Nurses" ? (
-                <Typography variant="h4">List Of Nurses</Typography>
-              ) : (
-                ""
-              )}
-              {menuData === "List Of Doctors" ? (
-                <Typography variant="h4">List Of Doctors</Typography>
-              ) : (
-                ""
-              )}
-            </Grid>
-            <Grid item xs={12}>
-              <div role="presentation" onClick={handleClick}>
-                <Breadcrumbs aria-label="breadcrumb">
-                  <StyledBreadcrumb
-                    component="a"
-                    onClick={() => {
-                      setMenuData("Dashboard");
-                    }}
-                    label="Dashboard"
-                    icon={<HomeIcon fontSize="small" />}
-                  />
+          <Grid container>
+            <Grid item xs={9}>
+              <Grid item xs={12} ml={3}>
+                {menuData === "Dashboard" ? (
+                  <Typography variant="h4">Dashboard</Typography>
+                ) : (
+                  ""
+                )}
+                {menuData === "New Registered User" ? (
+                  <Typography variant="h4">New Registered User</Typography>
+                ) : (
+                  ""
+                )}
+                {menuData === "List Of Approved Patient" ? (
+                  <Typography variant="h4">List Of Approved Patient</Typography>
+                ) : (
+                  ""
+                )}
+                {menuData === "List Of Nurses" ? (
+                  <Typography variant="h4">List Of Nurses</Typography>
+                ) : (
+                  ""
+                )}
+                {menuData === "List Of Doctors" ? (
+                  <Typography variant="h4">List Of Doctors</Typography>
+                ) : (
+                  ""
+                )}
+              </Grid>
 
-                  {menuData === "New Registered User" ? (
+              <Grid item xs={12} ml={3}>
+                <div role="presentation" onClick={handleClick}>
+                  <Breadcrumbs aria-label="breadcrumb">
                     <StyledBreadcrumb
                       component="a"
                       onClick={() => {
-                        setMenuData("New Registered User");
+                        setMenuData("Dashboard");
                       }}
-                      label="New Registered User"
-                      icon={<AccessibilityNewIcon fontSize="small" />}
+                      label="Dashboard"
+                      icon={<HomeIcon fontSize="small" />}
                     />
-                  ) : (
-                    ""
-                  )}
-                  {menuData === "List Of Approved Patient" ? (
-                    <StyledBreadcrumb
-                      component="a"
-                      onClick={() => {
-                        setMenuData("List Of Approved Patient");
-                      }}
-                      label="List Of Approved Patient"
-                      icon={<AccessibilityNewIcon fontSize="small" />}
-                    />
-                  ) : (
-                    ""
-                  )}
-                  {menuData === "List Of Nurses" ? (
-                    <StyledBreadcrumb
-                      component="a"
-                      onClick={() => {
-                        setMenuData("List Of Nurses");
-                      }}
-                      label="List Of Nurses"
-                      icon={<AccessibilityNewIcon fontSize="small" />}
-                    />
-                  ) : (
-                    ""
-                  )}
-                  {menuData === "List Of Doctors" ? (
-                    <StyledBreadcrumb
-                      component="a"
-                      onClick={() => {
-                        setMenuData("List Of Doctors");
-                      }}
-                      label="List Of Doctors"
-                      icon={<AccessibilityNewIcon fontSize="small" />}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </Breadcrumbs>
-              </div>
+
+                    {menuData === "New Registered User" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("New Registered User");
+                        }}
+                        label="New Registered User"
+                        icon={<AccessibilityNewIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                    {menuData === "List Of Approved Patient" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("List Of Approved Patient");
+                        }}
+                        label="List Of Approved Patient"
+                        icon={<VerifiedIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                    {menuData === "List Of Nurses" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("List Of Nurses");
+                        }}
+                        label="List Of Nurses"
+                        icon={<MasksIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                    {menuData === "List Of Doctors" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("List Of Doctors");
+                        }}
+                        label="List Of Doctors"
+                        icon={<VaccinesIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </Breadcrumbs>
+                </div>
+              </Grid>
+            </Grid>
+            <Grid item xs={3}>
+              <Grid item xs={12} textAlign="right" mr={3}>
+                <Typography variant="h6">{formattedDate}</Typography>
+                <Typography variant="h3" color="text.secondary">
+                  {currentTime}
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             {menuData === "Dashboard" && <AdminDashboard />}
             {menuData === "New Registered User" && <NewRegisteredUser />}
-            {menuData === "List Of Approved Patient" && <NewRegisteredUser />}
-            {menuData === "List Of Nurses" && <NewRegisteredUser />}
-            {menuData === "List Of Doctors" && <NewRegisteredUser />}
+            {menuData === "List Of Approved Patient" && (
+              <ListOfApprovedPatient />
+            )}
+            {menuData === "List Of Nurses" && <ListOfNurses />}
+            {menuData === "List Of Doctors" && <ListOfDoctors />}
           </Box>
         </Box>
       </Box>
