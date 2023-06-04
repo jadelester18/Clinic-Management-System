@@ -1,7 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-import * as hmoService from "../../../../redux/GetApiCalls/hmo";
+import * as hmoService from "../../redux/GetApiCalls/hmo";
 
 export default function SelectHmo({ value, onSelect }) {
   const [hmoList, setHmoList] = useState([]);

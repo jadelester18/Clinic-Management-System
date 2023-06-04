@@ -20,8 +20,8 @@ import PropTypes from "prop-types";
 
 import * as doctorService from "../../../../redux/PostApiCalls/doctor";
 import { useSelector } from "react-redux";
-import SelectHmo from "./SelectHmo";
-import SelectSpecialization from "./SelectSpecialization";
+import SelectHmo from "../../../general/SelectHmo";
+import SelectSpecialization from "../../../general/SelectSpecialization";
 
 function TablePaginationActions(props) {
   const theme = useTheme();

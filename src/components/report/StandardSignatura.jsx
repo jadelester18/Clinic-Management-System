@@ -1,7 +1,7 @@
 import { Grid, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
-import SelectPackaging from "./SelectPackaging";
 import * as util from "../../redux/util";
+import SelectPackaging from "../general/SelectPackaging";
 
 export default function StandardSignatura({ form, onSigChange }) {
   return (

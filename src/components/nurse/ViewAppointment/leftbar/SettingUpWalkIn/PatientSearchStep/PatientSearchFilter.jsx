@@ -2,7 +2,7 @@ import { Grid, TextField, Typography } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import React from "react";
-import SelectBirthdate from "./SelectBirthdate";
+import SelectBirthdate from "../../../../../general/SelectBirthdate";
 
 export default function PatientSearchFilter({ form, onInput }) {
   return (

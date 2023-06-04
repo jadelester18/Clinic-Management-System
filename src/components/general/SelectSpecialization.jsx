@@ -1,7 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-import * as specializationService from "../../../../redux/GetApiCalls/specialization";
+import * as specializationService from "../../redux/GetApiCalls/specialization";
 
 export default function SelectSpecialization({ value, onSelect }) {
   const [specializations, setSpecializations] = useState([]);

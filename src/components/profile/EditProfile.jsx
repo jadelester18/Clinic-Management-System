@@ -27,9 +27,9 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import InfoIcon from "@mui/icons-material/Info";
 import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
 import dayjs from "dayjs";
-import SelectHonorific from "../nurse/ViewAppointment/leftbar/SettingUpWalkIn/SetFormForWalkIn/SelectHonorific";
 import SelectCountry from "../general/SelectCountry";
 import { countries } from "../../pages/addressDb/adress";
+import SelectHonorific from "../general/SelectHonorific";
 
 const EditProfile = ({ doctor, closeEditProfile, onSave }) => {
   const [form, setForm] = useState({

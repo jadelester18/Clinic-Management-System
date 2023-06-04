@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import * as util from "../../../redux/util";
-import SelectCheckInStatus from "../../nurse/ViewAppointment/content/QueueList/SelectCheckInStatus";
 import * as appointmentSvc from "../../../redux/GetApiCalls/appointment";
 import { green } from "@mui/material/colors";
 

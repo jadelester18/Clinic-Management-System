@@ -36,9 +36,9 @@ import {
   provinces,
   cities,
 } from "../../../../../../pages/addressDb/adress";
-import SelectHonorific from "./SelectHonorific";
-import SelectBirthdate from "../PatientSearchStep/SelectBirthdate";
-import SelectGender from "./SelectGender";
+import SelectHonorific from "../../../../../general/SelectHonorific";
+import SelectBirthdate from "../../../../../general/SelectBirthdate";
+import SelectGender from "../../../../../general/SelectGender";
 
 const CreatingNewWalkIn = ({ patient }) => {
   const [form, setForm] = useState({

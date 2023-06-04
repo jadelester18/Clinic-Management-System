@@ -14,8 +14,8 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import SelectFormulation from "./SelectFormulation";
-import StandardSignatura from "./StandardSignatura";
+import SelectFormulation from "../general/SelectFormulation";
+import StandardSignatura from ".././report/StandardSignatura";
 
 const STANDARD_SIG = {
   action: "",

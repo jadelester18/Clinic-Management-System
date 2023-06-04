@@ -18,7 +18,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import ArticleIcon from "@mui/icons-material/Article";
 import * as util from "../../../../../redux/util";
 import * as appointmentSvc from "../../../../../redux/GetApiCalls/appointment";
-import SelectCheckInStatus from "./SelectCheckInStatus";
+import SelectCheckInStatus from "../../../../general/SelectCheckInStatus";
 import PatientInfoDialog from "../../../ViewNewAppointment/righbar/PatientInfoDialog";
 import { green } from "@mui/material/colors";
 import ReportDialog from "./ReportDialog";

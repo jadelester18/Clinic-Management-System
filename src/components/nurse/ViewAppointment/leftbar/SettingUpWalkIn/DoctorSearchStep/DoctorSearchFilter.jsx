@@ -6,8 +6,8 @@ import {
   Checkbox,
 } from "@mui/material";
 import React from "react";
-import SelectHmo from "../../../../../patient/appointment/ViewAllDoctors/SelectHmo";
-import SelectSpecialization from "../../../../../patient/appointment/ViewAllDoctors/SelectSpecialization";
+import SelectHmo from "../../../../../general/SelectHmo";
+import SelectSpecialization from "../../../../../general/SelectSpecialization";
 
 export default function DoctorSearchFilter({ query, onSelect, onTextInput }) {
   return (

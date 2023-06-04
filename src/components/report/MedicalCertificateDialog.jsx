@@ -13,13 +13,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import MedicalCertificateForm from "./MedicalCertificateForm";
-import SelectDate from "./SelectDate";
+import SelectDate from "../general/SelectDate";
 import dayjs from "dayjs";
-import SelectMedCertPurpose from "./SelectMedCertPurpose";
-import SelectMedCertType from "./SelectMedCertType";
 import { DEFAULT_DATE_FORMAT } from "../../redux/default";
 import { useReactToPrint } from "react-to-print";
+import MedicalCertificateForm from "./MedicalCertificateForm";
+import SelectMedCertPurpose from "../general/SelectMedCertPurpose";
+import SelectMedCertType from "../general/SelectMedCertType";
 
 export default function MedicalCertificateDialog({ open, onClose, report }) {
   const { details, queue, medicalCertificate } = report;
