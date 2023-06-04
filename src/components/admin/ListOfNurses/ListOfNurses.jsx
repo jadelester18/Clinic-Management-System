@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -8,7 +8,9 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import {
+  Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   Grid,
@@ -20,6 +22,8 @@ import {
 } from "@mui/material";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import * as nurseService from "../../../redux/GetApiCalls/nurse";
+import * as util from "../../../redux/util";
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -66,31 +70,38 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const columns = [
-  { id: "name", label: "Name", minWidth: 170 },
-  { id: "code", label: "ISO\u00a0Code", minWidth: 100 },
+  { id: "Avatar", label: "Avatar", minWidth: 170 },
+  { id: "Name", label: "Name", minWidth: 100 },
   {
-    id: "population",
-    label: "Population",
+    id: "Address",
+    label: "Address",
     minWidth: 170,
     align: "right",
-    format: (value) => value.toLocaleString("en-US"),
+    // format: (value) => value.toLocaleString("en-US"),
   },
   {
-    id: "size",
-    label: "Size\u00a0(km\u00b2)",
+    id: "Email",
+    label: "Email",
     minWidth: 170,
     align: "right",
-    format: (value) => value.toLocaleString("en-US"),
+    // format: (value) => value.toLocaleString("en-US"),
   },
   {
-    id: "density",
-    label: "Density",
+    id: "Contact",
+    label: "Contact",
+    minWidth: 170,
+    align: "right",
+    // format: (value) => value.toFixed(2),
+  },
+  {
+    id: "Register At",
+    label: "Register At",
     minWidth: 170,
     align: "right",
     format: (value) => value.toFixed(2),
   },
   {
-    id: "action",
+    id: "Action",
     label: "Action",
     minWidth: 170,
     align: "right",
@@ -103,246 +114,60 @@ function createData(name, code, population, size, action) {
   return { name, code, population, size, density, action };
 }
 
-const rows = [
-  createData(
-    "India",
-    "IN",
-    1324171354,
-    3287263,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "China",
-    "CN",
-    1403500365,
-    9596961,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Italy",
-    "IT",
-    60483973,
-    301340,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "United States",
-    "US",
-    327167434,
-    9833520,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Canada",
-    "CA",
-    37602103,
-    9984670,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Australia",
-    "AU",
-    25475400,
-    7692024,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Germany",
-    "DE",
-    83019200,
-    357578,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Ireland",
-    "IE",
-    4857000,
-    70273,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Mexico",
-    "MX",
-    126577691,
-    1972550,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Japan",
-    "JP",
-    126317000,
-    377973,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "France",
-    "FR",
-    67022000,
-    640679,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "United Kingdom",
-    "GB",
-    67545757,
-    242495,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Russia",
-    "RU",
-    146793744,
-    17098246,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Nigeria",
-    "NG",
-    200962417,
-    923768,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-  createData(
-    "Brazil",
-    "BR",
-    210147125,
-    8515767,
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-];
-
 export default function ListOfNurses() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  //For Page and Rows
+  const [nurses, setNurses] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  console.log("nurse object", nurses);
+
+  const searchNurse = async () => {
+    try {
+      const { data: nursePage } = await nurseService.searchNurse({
+        firstName: firstName ? firstName : null,
+        lastName: lastName ? lastName : null,
+        pageNo: page,
+        pageSize: rowsPerPage,
+      });
+      console.log("Search Nurse Result", nursePage);
+      setNurses(nursePage.content);
+      setCount(nursePage.totalElements);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Fetching the Nurse list
+  useEffect(() => {
+    // Make the API call to fetch the list of Nurse
+    searchNurse();
+  }, [firstName, lastName, page, rowsPerPage]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
+    setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const handleChangeFirstName = (event) => {
+    setfirstName(event.target.value);
+  };
+
+  const handleChangeLastName = (event) => {
+    setLastName(event.target.value);
+  };
+
+  // const rows = [
+  //   createData(nurses.firstName, "IN", 1324171354, 3287263)
+  // ];
 
   return (
     <Box>
@@ -362,6 +187,7 @@ export default function ListOfNurses() {
                 variant="outlined"
                 size="small"
                 fullWidth
+                onChange={handleChangeFirstName}
               />{" "}
             </Grid>
             <Grid item xs={12} md={2}>
@@ -371,6 +197,7 @@ export default function ListOfNurses() {
                 variant="outlined"
                 size="small"
                 fullWidth
+                onChange={handleChangeLastName}
               />
             </Grid>
           </Grid>
@@ -394,26 +221,32 @@ export default function ListOfNurses() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
+                {nurses
+                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((nurse) => {
                     return (
                       <TableRow
                         hover
                         role="checkbox"
                         tabIndex={-1}
-                        key={row.code}
+                        key={nurse.id}
                       >
-                        {columns.map((column) => {
-                          const value = row[column.id];
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              {column.format && typeof value === "number"
-                                ? column.format(value)
-                                : value}
-                            </TableCell>
-                          );
-                        })}
+                        <TableCell>
+                          <Avatar>
+                            {nurse.avatarUrl === null || ""
+                              ? nurse.firstName.charAt(0)
+                              : nurse.avatarUrl}
+                          </Avatar>
+                        </TableCell>
+                        <TableCell>{util.name(nurse)}</TableCell>
+                        <TableCell>{util.fullAddress(nurse.address)}</TableCell>
+                        <TableCell>{nurse.email}</TableCell>
+                        <TableCell>{nurse.contactNo}</TableCell>
+                        <TableCell>{nurse.registeredAt}</TableCell>
+                        <TableCell>
+                          <Button>Edit</Button>
+                          <Button>Disable</Button>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -423,7 +256,7 @@ export default function ListOfNurses() {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={rows.length}
+            count={count}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
