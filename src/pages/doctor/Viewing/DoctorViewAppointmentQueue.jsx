@@ -15,6 +15,7 @@ import * as reportSvc from "../../../redux/GetApiCalls/report";
 import LoadingScreen from "../../../components/LoadingScreen";
 import { SnackBarContext } from "../../../context/SnackBarContext";
 import * as util from "../../../redux/util";
+import MedicalCertificateDialog from "../../../components/report/MedicalCertificateDialog";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -32,6 +33,9 @@ function DoctorViewAppointmentQueue() {
 
   const [isLoading, setIsLoading] = useState(false);
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
+
+  const [reportForMc, setReportForMc] = useState(false);
+  const isMedCertOpen = !!reportForMc;
 
   async function fetchQueues() {
     try {
@@ -147,49 +151,63 @@ function DoctorViewAppointmentQueue() {
   }, [selectedPatient]);
 
   return (
-    <Box>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="center"
-        alignItems="center"
-        // spacing={2}
-      >
-        <Grid container spacing={0}>
-          <Grid item xs={12}>
-            <Stack
-              direction={{ xs: "column", sm: "column", md: "row" }}
-              justifyContent={{ xs: "center", md: "flex-start" }}
-              alignItems={{ xs: "center", md: "flex-start" }}
-              spacing={4}
-            >
-              <Grid item lg={3}>
-                <Box
-                  flex={2}
-                  sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
-                >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <QueueCalendar date={date} onDateChange={setDate} />
+    <>
+      <Box>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="center"
+          alignItems="center"
+          // spacing={2}
+        >
+          <Grid container spacing={0}>
+            <Grid item xs={12}>
+              <Stack
+                direction={{ xs: "column", sm: "column", md: "row" }}
+                justifyContent={{ xs: "center", md: "flex-start" }}
+                alignItems={{ xs: "center", md: "flex-start" }}
+                spacing={4}
+              >
+                <Grid item lg={3}>
+                  <Box
+                    flex={2}
+                    sx={{ display: { xs: "block", sm: "block", lg: "block" } }}
+                  >
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <QueueCalendar date={date} onDateChange={setDate} />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <QueueCards
+                          queues={queues}
+                          onSelect={setSelectedPatient}
+                          onFinish={handleFinish}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                      <QueueCards
-                        queues={queues}
-                        onSelect={setSelectedPatient}
-                        onFinish={handleFinish}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Grid>
-              <Grid item lg={9}>
-                <PatientReports reports={reports} onSave={handleSaveReport} />
-                {isLoading && <LoadingScreen open={isLoading} />}
-              </Grid>
-            </Stack>
+                  </Box>
+                </Grid>
+                <Grid item lg={9}>
+                  <PatientReports
+                    reports={reports}
+                    onSave={handleSaveReport}
+                    onViewMc={setReportForMc}
+                    onViewReferral={() => {}}
+                  />
+                  {isLoading && <LoadingScreen open={isLoading} />}
+                </Grid>
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-      </Stack>
-    </Box>
+        </Stack>
+      </Box>
+      {isMedCertOpen && (
+        <MedicalCertificateDialog
+          open={isMedCertOpen}
+          onClose={() => setReportForMc(null)}
+          report={reportForMc}
+        />
+      )}
+    </>
   );
 }
 

@@ -24,3 +24,15 @@ export const CONSULTATION_TYPES = [
   { value: "FOLLOW_UP", text: "Follow-up" },
   { value: "CLEARANCE", text: "Clearance" },
 ];
+
+export const MED_CERT_PURPOSES = [
+  { value: "WORK", text: "Work" },
+  { value: "SCHOOL", text: "School" },
+  { value: "TRAVEL", text: "Travel" },
+  { value: "OTHERS", text: "Any reason" },
+];
+
+export const MED_CERT_TYPES = [
+  { value: "FIT", text: "Fit" },
+  { value: "UNFIT", text: "Unfit" },
+];
