@@ -272,7 +272,6 @@ const rows = [
     "+639123456789",
     "sample@gmail.com",
     <Box flexDirection={"row"}>
-      {/* <Stack direction="row" spacing={1} alignItems="center"> */}
       <IconButton sx={{ color: "green" }}>
         <SaveAsIcon />
       </IconButton>

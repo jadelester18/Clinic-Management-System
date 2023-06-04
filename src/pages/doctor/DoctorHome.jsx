@@ -40,7 +40,14 @@ import {
   emphasize,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
-import { ExpandLess, ExpandMore, StarBorder } from "@mui/icons-material";
+import {
+  ExpandLess,
+  ExpandMore,
+  Rotate90DegreesCcw,
+  Rotate90DegreesCcwTwoTone,
+  RotateLeft,
+  StarBorder,
+} from "@mui/icons-material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
@@ -53,6 +60,7 @@ import DoctorViewAppointmentQueue from "../doctor/Viewing/DoctorViewAppointmentQ
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/UserReducer";
 import DoctorDashboard from "./Dashboard/DoctorDashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -322,7 +330,7 @@ function DoctorHome({ toggleMode, mode }) {
             <Box sx={{ flexGrow: 1 }} />
             <DarkMode toggleMode={toggleMode} mode={mode} />
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Notification">
                 <IconButton
                   aria-label={notificationsLabel(100)}
                   size="large"
@@ -419,7 +427,7 @@ function DoctorHome({ toggleMode, mode }) {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt="Remy Sharp"
@@ -443,13 +451,6 @@ function DoctorHome({ toggleMode, mode }) {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem
-                  onClick={handleCloseUserMenu}
-                  component={Link}
-                  to={`/profile/${id}`}
-                >
-                  <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
                 <MenuItem
                   onClick={() => {
                     handleCloseUserMenu();
@@ -499,99 +500,145 @@ function DoctorHome({ toggleMode, mode }) {
           </DrawerHeader>
           <Divider />
           <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("Dashboard")}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
+            <Tooltip title="Dashboard">
+              <ListItem
+                disablePadding
+                sx={{ display: "block" }}
+                onClick={() => setMenuData("Dashboard")}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Dashboard"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Dashboard"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
           </List>
           <Divider />
           <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("Patient Reports")}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
+            <Tooltip title="Patient Reports">
+              <ListItem
+                disablePadding
+                sx={{ display: "block" }}
+                onClick={() => setMenuData("Patient Reports")}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <MedicalInformationIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Patient Reports"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <MedicalInformationIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Patient Reports"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
           </List>
           <Divider />
-          <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("Patient Reports")}
-            >
-              {/* <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon
+          <List
+            sx={{
+              marginTop: "auto",
+            }}
+          >
+            <Tooltip title="Doctor is In/Out">
+              <ListItem disablePadding sx={{ display: "block" }}>
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <MedicalInformationIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Patient Reports"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton> */}
-              <Switch defaultChecked>
-                <ListItemText
-                  primary="Patient Reports"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </Switch>
-            </ListItem>
+                  {open ? (
+                    <Switch
+                      defaultChecked
+                      color="primary"
+                      inputProps={{ "aria-label": "toggle switch" }}
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 0 : "auto",
+                        justifyContent: "center",
+                        // marginRight: "auto",
+                      }}
+                    />
+                  ) : (
+                    <Switch
+                      defaultChecked
+                      color="primary"
+                      inputProps={{ "aria-label": "toggle switch" }}
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 0 : "auto",
+                        justifyContent: "center",
+                        transform: "rotate(90deg)",
+                      }}
+                    />
+                  )}
+                  <ListItemText
+                    primary="Doctor is In/Out"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
+          </List>{" "}
+          <Divider />
+          <List>
+            <Tooltip title="Settings">
+              <ListItem disablePadding sx={{ display: "block" }}>
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                  component={Link}
+                  to={`/profile/${id}`}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Settings"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
           </List>
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

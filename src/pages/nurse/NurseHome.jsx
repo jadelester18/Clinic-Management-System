@@ -47,7 +47,7 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import { Link } from "react-router-dom";
 import DarkMode from "../../components/theme/DarkMode";
 import NurseViewAppointmentQueue from "./viewAppointment/NurseViewAppointmentQueue";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/UserReducer";
 import NurseViewNewAppointment from "./viewNewAppointment/NurseViewNewAppointment";
 import NurseDashboard from "./dashboard/NurseDashboard";
@@ -56,6 +56,7 @@ import StreetviewIcon from "@mui/icons-material/Streetview";
 import ViewInArIcon from "@mui/icons-material/ViewInAr";
 import HomeIcon from "@mui/icons-material/Home";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -204,6 +205,11 @@ function handleClick(event) {
 }
 
 function NurseHome({ toggleMode, mode }) {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let user = userLoggedinDetails?.user?.user;
+  let id = userLoggedinDetails?.user?.user?.id;
+
   //For Theme
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -350,7 +356,7 @@ function NurseHome({ toggleMode, mode }) {
             <Box sx={{ flexGrow: 1 }} />
             <DarkMode toggleMode={toggleMode} mode={mode} />
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Notification">
                 <IconButton
                   aria-label={notificationsLabel(100)}
                   size="large"
@@ -447,7 +453,7 @@ function NurseHome({ toggleMode, mode }) {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip title="Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt="Remy Sharp"
@@ -471,13 +477,13 @@ function NurseHome({ toggleMode, mode }) {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem
+                {/* <MenuItem
                   onClick={handleCloseUserMenu}
                   component={Link}
                   to={`/profile`}
                 >
                   <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem
                   onClick={() => {
                     handleCloseUserMenu();
@@ -527,97 +533,133 @@ function NurseHome({ toggleMode, mode }) {
           </DrawerHeader>
           <Divider />
           <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("Dashboard")}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
+            <Tooltip title="Dashboard">
+              <ListItem
+                disablePadding
+                sx={{ display: "block" }}
+                onClick={() => setMenuData("Dashboard")}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Dashboard"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Dashboard"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
           </List>
           <Divider />
 
           <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("New Appointment")}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
+            <Tooltip title="New Appointment">
+              <ListItem
+                disablePadding
+                sx={{ display: "block" }}
+                onClick={() => setMenuData("New Appointment")}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <StreetviewIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="New Appointment"
-                  secondary="for approval"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <StreetviewIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="New Appointment"
+                    secondary="for approval"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
           </List>
           <Divider />
 
           <List>
-            <ListItem
-              disablePadding
-              sx={{ display: "block" }}
-              onClick={() => setMenuData("Appointments")}
-            >
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
+            <Tooltip title="Reception">
+              <ListItem
+                disablePadding
+                sx={{ display: "block" }}
+                onClick={() => setMenuData("Appointments")}
               >
-                <ListItemIcon
+                <ListItemButton
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
                   }}
                 >
-                  <ViewInArIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Appointments"
-                  secondary="approved schedules"
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <ViewInArIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Appointments"
+                    secondary="approved schedules"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
+          </List>
+          <Divider />
+          <List sx={{ marginTop: "auto" }}>
+            <Tooltip title="Settings">
+              <ListItem disablePadding sx={{ display: "block" }}>
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                  component={Link}
+                  // to={`/profile/${id}`}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Settings"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
           </List>
           <Divider />
         </Drawer>
