@@ -18,3 +18,11 @@ export function updatePrescriptionList(reportDetailsId, prescriptionDtos) {
     prescriptionDtos
   );
 }
+
+export function createMedCert(reportId, dto) {
+  return http.post(`/reports/${reportId}/medical-certificate`, dto);
+}
+
+export function updateMedCert(medCertId, dto) {
+  return http.put(`/medical-certificates/${medCertId}`, dto);
+}

@@ -20,8 +20,15 @@ import { useReactToPrint } from "react-to-print";
 import MedicalCertificateForm from "./MedicalCertificateForm";
 import SelectMedCertPurpose from "../general/SelectMedCertPurpose";
 import SelectMedCertType from "../general/SelectMedCertType";
+import LoadingScreen from "../LoadingScreen";
 
-export default function MedicalCertificateDialog({ open, onClose, report }) {
+export default function MedicalCertificateDialog({
+  open,
+  onClose,
+  report,
+  onSave,
+  isSaving,
+}) {
   const { details, queue, medicalCertificate } = report;
   const [form, setForm] = useState({
     isEdited: false,
@@ -66,9 +73,29 @@ export default function MedicalCertificateDialog({ open, onClose, report }) {
     }
   }
 
+  function handleSave() {
+    if (medicalCertificate) {
+      onSave(medicalCertificate.id, form);
+    } else {
+      onSave(null, form);
+    }
+  }
+
+  function isFormInvalid() {
+    if (!form.isEdited && !!report.medicalCertificate) {
+      return true;
+    }
+    return false;
+  }
+
   useEffect(() => {
-    if (report && medicalCertificate) {
-      setForm({ ...form, ...medicalCertificate });
+    if (report && report.medicalCertificate) {
+      console.log("TEST SUCCESSFUL");
+      setForm({
+        ...form,
+        ...report.medicalCertificate,
+        date: dayjs(report.medicalCertificate.date),
+      });
     }
   }, [report]);
 
@@ -130,27 +157,35 @@ export default function MedicalCertificateDialog({ open, onClose, report }) {
             <MedicalCertificate
               certificate={{
                 ...form,
-                date: form.date.format(DEFAULT_DATE_FORMAT),
+                date: form.date?.format(DEFAULT_DATE_FORMAT),
               }}
               componentRef={componentRef}
             />
           </Grid>
-          <MedicalCertificateForm
-            certificate={{
-              ...form,
-              date: form.date.format(DEFAULT_DATE_FORMAT),
-            }}
-          />
         </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button variant="outlined" onClick={onClose}>
-          Close
-        </Button>
-        <Button variant="contained" onClick={handlePrint}>
-          Print
+      <DialogActions sx={{ justifyContent: "space-between" }}>
+        <Stack direction={`row`} spacing={1}>
+          <Button variant="outlined" onClick={onClose}>
+            Close
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handlePrint}
+            disabled={!report.medicalCertificate}
+          >
+            Print
+          </Button>
+        </Stack>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={isFormInvalid()}
+        >
+          Save
         </Button>
       </DialogActions>
+      {isSaving && <LoadingScreen open={isSaving} />}
     </Dialog>
   );
 }

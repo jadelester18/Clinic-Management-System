@@ -136,6 +136,35 @@ function DoctorViewAppointmentQueue() {
     }
   }
 
+  async function handleAddMc(medCertId, form) {
+    setIsLoading(true);
+    const dto = convertFormToMcDto(form);
+    try {
+      if (medCertId) {
+        const { data } = await reportSvc.updateMedCert(medCertId, dto);
+      } else {
+        const { data } = await reportSvc.createMedCert(reportForMc.id, dto);
+      }
+      fetchReports();
+      onShowSuccess("Medical Certificate saved!");
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function convertFormToMcDto(form) {
+    return {
+      purpose: form.purpose,
+      type: form.type,
+      remarks: form.remarks,
+      date: form.date.format(DEFAULT_DATE_FORMAT),
+      totalRestDays: form.totalRestDays,
+    };
+  }
+
   useEffect(() => {
     if (date) {
       fetchQueues();
@@ -205,6 +234,8 @@ function DoctorViewAppointmentQueue() {
           open={isMedCertOpen}
           onClose={() => setReportForMc(null)}
           report={reportForMc}
+          onSave={handleAddMc}
+          isSaving={isLoading}
         />
       )}
     </>

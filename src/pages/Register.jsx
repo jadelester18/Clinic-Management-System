@@ -64,9 +64,11 @@ function Register({ handleCloseRegister }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [country, setCountry] = React.useState([]);
-  const [province, setProvince] = React.useState([]);
-  const [city, setCity] = React.useState([]);
+  const [country, setCountry] = React.useState("");
+  const [province, setProvince] = React.useState("");
+  console.log("province", province);
+  const [city, setCity] = React.useState("");
+  console.log("city", city);
   const [barangay, setBarangay] = React.useState([]);
   const [street, setStreet] = React.useState("");
   const [postalCode, setPostalCode] = React.useState("");
@@ -282,13 +284,18 @@ function Register({ handleCloseRegister }) {
   const [selectedProvince, setSelectedProvince] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
 
-  const handleProvinceChange = (event) => {
-    setSelectedProvince(event);
+  const handleProvinceChange = (value) => {
+    if (value) {
+      setSelectedProvince(value.id);
 
-    const filteredCities = cities.filter(
-      (city) => city.province_code === event
-    );
-    setFilteredCities(filteredCities);
+      const filteredCities = cities.filter(
+        (city) => city.province_code === value.id
+      );
+      setFilteredCities(filteredCities);
+    } else {
+      setFilteredCities([]);
+      setCity("");
+    }
   };
 
   return (
@@ -346,7 +353,7 @@ function Register({ handleCloseRegister }) {
                   <MenuItem value={"Ms."}>Ms.</MenuItem>
                   <MenuItem value={"Mx."}>Mx.</MenuItem>
                 </Select>
-                <FormHelperText>{fieldErrors.honorific || ""}</FormHelperText>
+                <FormHelperText>{fieldErrors.honorific || " "}</FormHelperText>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -357,7 +364,7 @@ function Register({ handleCloseRegister }) {
                 label="First Name"
                 autoComplete="First Name"
                 onChange={(e) => setFirstName(e.target.value)}
-                helperText={fieldErrors.firstName || ""}
+                helperText={fieldErrors.firstName || " "}
                 error={Boolean(fieldErrors.firstName)}
               />
             </Grid>
@@ -369,7 +376,7 @@ function Register({ handleCloseRegister }) {
                 label="Middle Name"
                 autoComplete="Middle Name"
                 onChange={(e) => setMiddleName(e.target.value)}
-                helperText={fieldErrors.middleName || ""}
+                helperText={fieldErrors.middleName || " "}
                 error={Boolean(fieldErrors.middleName)}
               />
             </Grid>
@@ -381,7 +388,7 @@ function Register({ handleCloseRegister }) {
                 label="Last Name"
                 autoComplete="Last Name"
                 onChange={(e) => setLastName(e.target.value)}
-                helperText={fieldErrors.lastName || ""}
+                helperText={fieldErrors.lastName || " "}
                 error={Boolean(fieldErrors.lastName)}
               />
             </Grid>
@@ -392,7 +399,7 @@ function Register({ handleCloseRegister }) {
                 label="Suffix"
                 autoComplete="Suffix"
                 onChange={(e) => setSuffixName(e.target.value)}
-                helperText={fieldErrors.suffixName || ""}
+                helperText={fieldErrors.suffixName || " "}
                 error={Boolean(fieldErrors.suffixName)}
               />
             </Grid>
@@ -401,9 +408,9 @@ function Register({ handleCloseRegister }) {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   label="BirthDate"
-                  value={birthDate ? dayjs(birthDate).format("YYYY-MM-DD") : ""}
+                  value={birthDate ? dayjs(birthDate) : null}
                   onChange={(newValue) =>
-                    setBirthDate(dayjs(newValue).format("YYYY-MM-DD"))
+                    setBirthDate(newValue.format("YYYY-MM-DD"))
                   }
                   renderInput={(props) => (
                     <TextField
@@ -418,7 +425,7 @@ function Register({ handleCloseRegister }) {
                 />
               </LocalizationProvider>
               <FormHelperText sx={{ color: "red" }}>
-                {fieldErrors.birthDate || ""}
+                {fieldErrors.birthDate || " "}
               </FormHelperText>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -440,7 +447,7 @@ function Register({ handleCloseRegister }) {
                   <MenuItem value={"MALE"}>Male</MenuItem>
                   <MenuItem value={"FEMALE"}>Female</MenuItem>
                 </Select>
-                <FormHelperText>{fieldErrors.gender || ""}</FormHelperText>
+                <FormHelperText>{fieldErrors.gender || " "}</FormHelperText>
               </FormControl>
             </Grid>
           </Grid>
@@ -513,7 +520,7 @@ function Register({ handleCloseRegister }) {
                 />
               </Stack>
               <FormHelperText sx={{ color: "red" }}>
-                {fieldErrors.contactNo || ""}
+                {fieldErrors.contactNo || " "}
               </FormHelperText>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
@@ -524,7 +531,7 @@ function Register({ handleCloseRegister }) {
                 label="Email"
                 autoComplete="email"
                 onChange={(e) => setEmail(e.target.value)}
-                helperText={fieldErrors.email || ""}
+                helperText={fieldErrors.email || " "}
                 error={Boolean(fieldErrors.email)}
               />
             </Grid>
@@ -549,7 +556,7 @@ function Register({ handleCloseRegister }) {
                   ),
                 }}
                 onChange={(e) => setPassword(e.target.value)}
-                helperText={fieldErrors.password || ""}
+                helperText={fieldErrors.password || " "}
                 error={Boolean(fieldErrors.password)}
               />
             </Grid>
@@ -574,7 +581,7 @@ function Register({ handleCloseRegister }) {
                   ),
                 }}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                helperText={fieldErrors.confirmPassword || ""}
+                helperText={fieldErrors.confirmPassword || " "}
                 error={Boolean(fieldErrors.confirmPassword)}
               />
             </Grid>
@@ -599,7 +606,12 @@ function Register({ handleCloseRegister }) {
                   a.label.localeCompare(b.label)
                 )}
                 autoHighlight
-                onChange={(event, value) => setCountry(value.label)}
+                value={
+                  country ? countries.find((c) => c.label === country) : null
+                }
+                onChange={(event, value) =>
+                  setCountry(value ? value.label : "")
+                }
                 getOptionLabel={(option) => option.label}
                 renderOption={(props, option) => (
                   <Box
@@ -621,7 +633,7 @@ function Register({ handleCloseRegister }) {
                   <TextField
                     {...params}
                     label="Choose a country"
-                    helperText={fieldErrors.country || ""}
+                    helperText={fieldErrors.country || " "}
                     error={Boolean(fieldErrors.country)}
                     inputProps={{
                       ...params.inputProps,
@@ -638,8 +650,8 @@ function Register({ handleCloseRegister }) {
                 options={provinces}
                 autoHighlight
                 onChange={(event, value) => {
-                  setProvince(value.name);
-                  handleProvinceChange(value.id);
+                  setProvince(value ? value.name : "");
+                  handleProvinceChange(value);
                 }}
                 getOptionLabel={(option) => option.name}
                 renderOption={(props, option) => (
@@ -655,7 +667,7 @@ function Register({ handleCloseRegister }) {
                   <TextField
                     {...params}
                     label="Choose a province"
-                    helperText={fieldErrors.province || ""}
+                    helperText={fieldErrors.province || " "}
                     error={Boolean(fieldErrors.province)}
                     inputProps={{
                       ...params.inputProps,
@@ -671,7 +683,10 @@ function Register({ handleCloseRegister }) {
                 autoWidth
                 options={filteredCities}
                 autoHighlight
-                onChange={(event, value) => setCity(value.name)}
+                value={
+                  city ? filteredCities.find((c) => c.name === city) : null
+                }
+                onChange={(event, value) => setCity(value ? value.name : "")}
                 getOptionLabel={(option) => option.name}
                 renderOption={(props, option) => (
                   <Box
@@ -686,7 +701,7 @@ function Register({ handleCloseRegister }) {
                   <TextField
                     {...params}
                     label="Choose a city"
-                    helperText={fieldErrors.city || ""}
+                    helperText={fieldErrors.city || " "}
                     error={Boolean(fieldErrors.city)}
                     inputProps={{
                       ...params.inputProps,
@@ -704,7 +719,7 @@ function Register({ handleCloseRegister }) {
                 label="Barangay"
                 autoComplete="barangay"
                 onChange={(e) => setBarangay(e.target.value)}
-                helperText={fieldErrors.barangay || ""}
+                helperText={fieldErrors.barangay || " "}
                 error={Boolean(fieldErrors.barangay)}
               />
             </Grid>
@@ -716,7 +731,7 @@ function Register({ handleCloseRegister }) {
                 label="Zone/Street"
                 autoComplete="Street"
                 onChange={(e) => setStreet(e.target.value)}
-                helperText={fieldErrors.street || ""}
+                helperText={fieldErrors.street || " "}
                 error={Boolean(fieldErrors.street)}
               />
             </Grid>
@@ -728,7 +743,7 @@ function Register({ handleCloseRegister }) {
                 label="postal Code"
                 autoComplete="postalCode"
                 onChange={(e) => setPostalCode(e.target.value)}
-                helperText={fieldErrors.postalCode || ""}
+                helperText={fieldErrors.postalCode || " "}
                 error={Boolean(fieldErrors.postalCode)}
               />
             </Grid>
@@ -756,14 +771,14 @@ function Register({ handleCloseRegister }) {
                 options={idTypeIdList}
                 autoHighlight
                 onChange={(event, value) => setIdTypeId(value?.id)}
-                helperText={fieldErrors.idTypeId || ""}
+                helperText={fieldErrors.idTypeId || " "}
                 error={Boolean(fieldErrors.idTypeId)}
                 getOptionLabel={(option) => option?.type}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="ID Type"
-                    helperText={fieldErrors.idTypeId || ""}
+                    helperText={fieldErrors.idTypeId || " "}
                     error={Boolean(fieldErrors.idTypeId)}
                     inputProps={{
                       ...params.inputProps,
@@ -781,7 +796,7 @@ function Register({ handleCloseRegister }) {
                 label="ID Number"
                 autoComplete="idNumber"
                 onChange={(e) => setIdNumber(e.target.value)}
-                helperText={fieldErrors.idNumber || ""}
+                helperText={fieldErrors.idNumber || " "}
                 error={Boolean(fieldErrors.idNumber)}
               />
             </Grid>
@@ -806,7 +821,7 @@ function Register({ handleCloseRegister }) {
                 />
               </Button>
               <FormHelperText sx={{ color: "red" }}>
-                {fieldErrors.idFileUrl || ""}
+                {fieldErrors.idFileUrl || " "}
               </FormHelperText>
               <Typography variant="body2">Show Selected File:</Typography>
               {filePreview && (

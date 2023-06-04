@@ -280,7 +280,7 @@ function App() {
               )
             }
           />
-
+          <Route path="page-not-found" element={<PageNotFound />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </ThemeProvider>
