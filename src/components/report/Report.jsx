@@ -4,6 +4,8 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  Dialog,
+  DialogContent,
   Grid,
   TextField,
   Tooltip,
@@ -20,11 +22,13 @@ import { grey } from "@mui/material/colors";
 import ConsultationSection from "./ConsultationSection";
 import { useSelector } from "react-redux";
 import PrescriptionsSection from "./PrescriptionsSection";
+import MedicalCertificate from "../../pages/MedicalCertificate";
+import MedicalCertificateDialog from "./MedicalCertificateDialog";
 
 const INTEGER_TYPES = ["respiratoryRateBPM", "heartRateBPM"];
 const DOUBLE_TYPES = ["temperatureC", "oxygenSaturation"];
 
-export default function Report({ report, onSave }) {
+export default function Report({ report, onSave, onViewMc, onViewReferral }) {
   const loginDetails = useSelector((state) => state.user?.user);
 
   const userIsNurse = loginDetails.user.role === "ROLE_NURSE";
@@ -53,7 +57,6 @@ export default function Report({ report, onSave }) {
     prescriptions: [],
     prescriptionsHasEdits: false,
   });
-  console.log(form);
 
   function handleTextInput(event) {
     const { name, value } = event.target;
@@ -246,7 +249,12 @@ export default function Report({ report, onSave }) {
               container
               item
               spacing={1}
-              sx={{ border: 1, borderColor: grey[500], borderRadius: 3, p: 2 }}
+              sx={{
+                border: 1,
+                borderColor: grey[500],
+                borderRadius: 3,
+                p: 2,
+              }}
             >
               <Grid item xs={12}>
                 <LabProceduresSection
@@ -293,12 +301,9 @@ export default function Report({ report, onSave }) {
         >
           Save
         </Button>
-        {!report?.medicalCertificate && userIsDoctor && (
-          <Button variant="outlined">GENERATE MC</Button>
-        )}
-        {report?.medicalCertificate && (
-          <Button variant="outlined">VIEW MC</Button>
-        )}
+        <Button variant="outlined" onClick={() => onViewMc(report)}>
+          VIEW MC
+        </Button>
         <Button variant="outlined">VIEW REFERRAL</Button>
       </CardActions>
     </Card>

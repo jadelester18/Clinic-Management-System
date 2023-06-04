@@ -2,6 +2,7 @@ import {
   CHECK_IN_STATUS,
   CONSULTATION_TYPES,
   DISPLAY_DATE_FORMAT,
+  MED_CERT_PURPOSES,
   QUEUE_TYPE,
 } from "./default";
 import dayjs from "dayjs";
@@ -152,4 +153,9 @@ export function checkInStatus(statusValue) {
 
 export function consultationType(typeValue) {
   return CONSULTATION_TYPES.find((type) => type.value === typeValue).text;
+}
+
+export function medCertPurpose(purposeValue) {
+  return MED_CERT_PURPOSES.find((purpose) => purpose.value === purposeValue)
+    .text;
 }

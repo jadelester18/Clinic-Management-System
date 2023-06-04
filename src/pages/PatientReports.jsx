@@ -49,7 +49,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import * as util from "../redux/util";
 import ReportSummary from "../components/report/ReportSummary";
 
-const PatientReports = ({ reports, onSave }) => {
+const PatientReports = ({ reports, onSave, onViewMc, onViewReferral }) => {
   //For Stepper
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -90,7 +90,12 @@ const PatientReports = ({ reports, onSave }) => {
                       <ReportSummary report={report} />
                     </AccordionSummary>
                     <AccordionDetails>
-                      <Report report={report} onSave={onSave} />
+                      <Report
+                        report={report}
+                        onSave={onSave}
+                        onViewMc={onViewMc}
+                        onViewReferral={onViewReferral}
+                      />
                     </AccordionDetails>
                   </Accordion>
                   <Stack direction="row" my={1}>
