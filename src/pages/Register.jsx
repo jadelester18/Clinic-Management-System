@@ -5,6 +5,10 @@ import {
   Button,
   Container,
   CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   FormHelperText,
   Grid,
@@ -31,6 +35,15 @@ import { countries, provinces, cities } from "./addressDb/adress.js";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import Joi from "joi";
+import app from "../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import CloseIcon from "@mui/icons-material/Close";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 function Register({ handleCloseRegister }) {
   //For Country Code
@@ -61,6 +74,52 @@ function Register({ handleCloseRegister }) {
   const [idTypeId, setIdTypeId] = React.useState("");
   const [idNumber, setIdNumber] = React.useState("");
   const [idFileUrl, setIdFileUrl] = React.useState("");
+
+  //For Viewing File Selected
+  const [fileName, setFileName] = useState("");
+  const [filePreview, setFilePreview] = useState(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setIdFileUrl(file);
+    setFileName(file?.name);
+
+    if (file.type === "application/pdf") {
+      // setFilePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFilePreview(null);
+    }
+  };
+
+  const handleViewClick = () => {
+    setViewModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setViewModalOpen(false);
+  };
+
+  const handleRemoveClick = () => {
+    setIdFileUrl(null);
+    setFileName("");
+    setFilePreview(null);
+  };
+
+  const handleViewInNewTab = () => {
+    window.open(URL.createObjectURL(idFileUrl), "_blank");
+  };
 
   //For Handling the Joi Error message
   const [fieldErrors, setFieldErrors] = useState({});
@@ -740,15 +799,27 @@ function Register({ handleCloseRegister }) {
                 Upload ID
                 <input
                   hidden
-                  accept="image/*"
+                  accept=".pdf, image/*"
                   type="file"
-                  onChange={(e) => setIdFileUrl(e.target.value)}
+                  onChange={handleFileChange}
                   error={Boolean(fieldErrors.idFileUrl)}
                 />
               </Button>
               <FormHelperText sx={{ color: "red" }}>
                 {fieldErrors.idFileUrl || ""}
               </FormHelperText>
+              <Typography variant="body2">Show Selected File:</Typography>
+              {filePreview && (
+                <Box display="flex" alignItems="center" mt={2}>
+                  <Typography>{fileName}</Typography>
+                  <IconButton onClick={handleViewClick}>
+                    <VisibilityIcon />
+                  </IconButton>
+                  <IconButton onClick={handleRemoveClick}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+              )}
             </Grid>
           </Grid>
           <Button
@@ -765,6 +836,31 @@ function Register({ handleCloseRegister }) {
           </Button>
         </Box>
       </Box>
+      <Dialog open={viewModalOpen} onClose={handleCloseModal}>
+        <DialogTitle>File Preview</DialogTitle>
+        <DialogContent>
+          {filePreview && (
+            <>
+              {filePreview.startsWith("/") ? (
+                <img src={filePreview} alt={fileName} />
+              ) : (
+                <iframe src={filePreview} width="100%" height="500px" />
+              )}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleViewInNewTab}
+            sx={{ mr: "auto" }}
+          >
+            View in Full Resolution
+          </Button>
+          <Button onClick={handleCloseModal}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

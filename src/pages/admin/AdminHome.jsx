@@ -46,7 +46,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import { Link } from "react-router-dom";
 import DarkMode from "../../components/theme/DarkMode";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/UserReducer";
 import AdminDashboard from "./Dashboard/AdminDashboard";
 import NewRegisteredUser from "../../components/admin/ListOfNewRegistered/NewRegisteredUser";
@@ -58,6 +58,7 @@ import ListOfApprovedPatient from "../../components/admin/ListOfApprovedPatient/
 import ListOfNurses from "../../components/admin/ListOfNurses/ListOfNurses";
 import ListOfDoctors from "../../components/admin/ListOfDoctors/ListOfDoctors";
 import dayjs from "dayjs";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -181,6 +182,11 @@ const messageExamples = [
 ];
 
 function AdminHome({ toggleMode, mode }) {
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userObject = userLoggedinDetails?.user;
+  let user = userLoggedinDetails?.user?.user;
+  let id = userLoggedinDetails?.user?.user?.id;
+
   //For Theme
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
@@ -443,13 +449,6 @@ function AdminHome({ toggleMode, mode }) {
                 onClose={handleCloseUserMenu}
               >
                 <MenuItem
-                  onClick={handleCloseUserMenu}
-                  component={Link}
-                  to={`/profile`}
-                >
-                  <Typography textAlign="center">Profile</Typography>
-                </MenuItem>
-                <MenuItem
                   onClick={() => {
                     handleCloseUserMenu();
                     handleClickOpenConfirmation();
@@ -647,6 +646,35 @@ function AdminHome({ toggleMode, mode }) {
             </ListItem>
           </List>
           <Divider />
+          <List sx={{ marginTop: "auto" }}>
+            <Tooltip title="Settings">
+              <ListItem disablePadding sx={{ display: "block" }}>
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? "initial" : "center",
+                    px: 2.5,
+                  }}
+                  component={Link}
+                  // to={`/profile/${id}`}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Settings"
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
+          </List>
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Grid container>

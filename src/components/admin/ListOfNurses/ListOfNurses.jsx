@@ -1,33 +1,23 @@
-import React, { useState } from "react";
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
 import {
   Box,
-  Button,
   Card,
   CardContent,
-  CardHeader,
-  Collapse,
-  FormControlLabel,
-  FormGroup,
   Grid,
   IconButton,
-  Modal,
-  Stack,
   Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
   TextField,
   Typography,
   styled,
 } from "@mui/material";
-import CircleIcon from "@mui/icons-material/Circle";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import Paper from "@mui/material/Paper";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 
@@ -35,6 +25,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
   height: 16,
   padding: 0,
+  //   display: "flex",
   "&:active": {
     "& .MuiSwitch-thumb": {
       width: 15,
@@ -74,153 +65,283 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const ListOfNurses = () => {
-  const [openMedCert, setOpenMedCert] = useState(false);
+const columns = [
+  { id: "name", label: "Name", minWidth: 170 },
+  { id: "code", label: "ISO\u00a0Code", minWidth: 100 },
+  {
+    id: "population",
+    label: "Population",
+    minWidth: 170,
+    align: "right",
+    format: (value) => value.toLocaleString("en-US"),
+  },
+  {
+    id: "size",
+    label: "Size\u00a0(km\u00b2)",
+    minWidth: 170,
+    align: "right",
+    format: (value) => value.toLocaleString("en-US"),
+  },
+  {
+    id: "density",
+    label: "Density",
+    minWidth: 170,
+    align: "right",
+    format: (value) => value.toFixed(2),
+  },
+  {
+    id: "action",
+    label: "Action",
+    minWidth: 170,
+    align: "right",
+    format: (value) => value.toFixed(2),
+  },
+];
 
-  const handleOpenMedCert = () => setOpenMedCert(true);
-  const handleCloseMedCert = () => setOpenMedCert(false);
+function createData(name, code, population, size, action) {
+  const density = population / size;
+  return { name, code, population, size, density, action };
+}
 
-  const rows = [
-    createData(
-      "Gon Freecss",
-      "Pio Del Pilar, Makati City, Philippines",
-      "Jan 13, 1998",
-      "+639123456789",
-      "sample@gmail.com",
-      <Box flexDirection={"row"}>
-        <IconButton sx={{ color: "green" }}>
-          <SaveAsIcon />
-        </IconButton>
-        <IconButton sx={{ color: "red" }}>
-          <RemoveCircleIcon />
-        </IconButton>
-        <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-      </Box>
-    ),
-  ];
+const rows = [
+  createData(
+    "India",
+    "IN",
+    1324171354,
+    3287263,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "China",
+    "CN",
+    1403500365,
+    9596961,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Italy",
+    "IT",
+    60483973,
+    301340,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "United States",
+    "US",
+    327167434,
+    9833520,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Canada",
+    "CA",
+    37602103,
+    9984670,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Australia",
+    "AU",
+    25475400,
+    7692024,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Germany",
+    "DE",
+    83019200,
+    357578,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Ireland",
+    "IE",
+    4857000,
+    70273,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Mexico",
+    "MX",
+    126577691,
+    1972550,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Japan",
+    "JP",
+    126317000,
+    377973,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "France",
+    "FR",
+    67022000,
+    640679,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "United Kingdom",
+    "GB",
+    67545757,
+    242495,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Russia",
+    "RU",
+    146793744,
+    17098246,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Nigeria",
+    "NG",
+    200962417,
+    923768,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+  createData(
+    "Brazil",
+    "BR",
+    210147125,
+    8515767,
+    <Box flexDirection={"row"}>
+      <IconButton sx={{ color: "green" }}>
+        <SaveAsIcon />
+      </IconButton>
+      <IconButton sx={{ color: "red" }}>
+        <RemoveCircleIcon />
+      </IconButton>
+      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
+    </Box>
+  ),
+];
 
-  function createData(name, address, birthdate, contact, email, action) {
-    return {
-      name,
-      address,
-      birthdate,
-      contact,
-      email,
-      action,
-      history: [
-        {
-          idType: "11091700",
-          idNumber: "11091700",
-          date: "2023/04/01",
-          actionViewReport: (
-            <Button variant="contained" onClick={handleOpenMedCert}>
-              View Report
-            </Button>
-          ),
-        },
-        {
-          idType: "11091700",
-          idNumber: "11091700",
-          date: "2023/04/01",
-          actionViewReport: (
-            <Button variant="contained" onClick={handleOpenMedCert}>
-              View Report
-            </Button>
-          ),
-        },
-      ],
-    };
-  }
+export default function ListOfNurses() {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  function Row(props) {
-    const { row } = props;
-    const [open, setOpen] = useState(false);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-    return (
-      <React.Fragment>
-        <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-          <TableCell>
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setOpen(!open)}
-            >
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
-          <TableCell component="th" scope="row">
-            {row.name}
-          </TableCell>
-          <TableCell align="right">{row.address}</TableCell>
-          <TableCell align="right">{row.birthdate}</TableCell>
-          <TableCell align="right">{row.contact}</TableCell>
-          <TableCell align="right">{row.email}</TableCell>
-          <TableCell align="right">{row.action}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box sx={{ margin: 1 }}>
-                <Typography variant="h6" gutterBottom component="div">
-                  History
-                </Typography>
-                <Table size="small" aria-label="purchases">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Nurse ID</TableCell>
-                      <TableCell>Patient Assessed (IC No.)</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell align="right">Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {row.history.map((historyRow) => (
-                      <TableRow key={historyRow.idType}>
-                        <TableCell component="th" scope="row">
-                          {historyRow.idType}
-                        </TableCell>
-                        <TableCell>{historyRow.idNumber}</TableCell>
-                        <TableCell>{historyRow.date}</TableCell>
-                        <TableCell align="right">
-                          {historyRow.actionViewReport}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-        <Modal
-          open={openMedCert}
-          onClose={handleCloseMedCert}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={styleMedCert}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Text in a modal
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
-          </Box>
-        </Modal>
-      </React.Fragment>
-    );
-  }
-
-  const styleMedCert = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
   };
 
   return (
@@ -255,36 +376,61 @@ const ListOfNurses = () => {
           </Grid>
         </CardContent>
       </Card>
-      <Card sx={{ mt: 1 }}>
+      <Card sx={{ mt: 2 }}>
         <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TableContainer component={Paper}>
-                <Table aria-label="collapsible table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell />
-                      <TableCell>Name</TableCell>
-                      <TableCell align="right">Address</TableCell>
-                      <TableCell align="right">Birthdate</TableCell>
-                      <TableCell align="right">Contact</TableCell>
-                      <TableCell align="right">Email</TableCell>
-                      <TableCell align="right">Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <Row key={row.name} row={row} />
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-          </Grid>
+          <TableContainer sx={{ maxHeight: 440 }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{ minWidth: column.minWidth }}
+                    >
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.code}
+                      >
+                        {columns.map((column) => {
+                          const value = row[column.id];
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.format && typeof value === "number"
+                                ? column.format(value)
+                                : value}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </CardContent>
       </Card>
     </Box>
   );
-};
-
-export default ListOfNurses;
+}
