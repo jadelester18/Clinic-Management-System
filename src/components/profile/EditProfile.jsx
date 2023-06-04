@@ -17,7 +17,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
 import { PhotoCamera, Visibility, VisibilityOff } from "@mui/icons-material";
@@ -26,8 +26,19 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import InfoIcon from "@mui/icons-material/Info";
 import CameraEnhanceIcon from "@mui/icons-material/CameraEnhance";
+import dayjs from "dayjs";
+import SelectHonorific from "../nurse/ViewAppointment/leftbar/SettingUpWalkIn/SetFormForWalkIn/SelectHonorific";
+import SelectCountry from "../general/SelectCountry";
+import { countries } from "../../pages/addressDb/adress";
 
-const EditProfile = ({ closeEditProfile }) => {
+const EditProfile = ({ doctor, closeEditProfile, onSave }) => {
+  const [form, setForm] = useState({
+    honorific: "",
+    country: null,
+  });
+  console.log("form in editprofile", form);
+  console.log("doctor in editprofile", doctor);
+
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
@@ -36,10 +47,6 @@ const EditProfile = ({ closeEditProfile }) => {
 
   // For Select/Dropdown Honorific
   const [honorific, setHonorific] = React.useState("");
-
-  const handleChangeHonorific = (event) => {
-    setHonorific(event.target.value);
-  };
 
   // For Select/Dropdown Sex
   const [sex, setSex] = React.useState("");
@@ -65,6 +72,41 @@ const EditProfile = ({ closeEditProfile }) => {
   const handleMouseLeave = () => {
     setIsHovered(false);
   };
+
+  const handleSave = () => {
+    onSave(form);
+  };
+
+  const handleSelect = (event, value, property) => {
+    switch (property) {
+      case "honorific":
+        setForm({ ...form, honorific: value });
+        break;
+      case "country":
+        setForm({ ...form, country: value });
+        break;
+      default:
+        throw new Error("Invalid input");
+    }
+  };
+
+  const handleTextInput = (event) => {
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  useEffect(() => {
+    if (doctor) {
+      setForm({
+        ...doctor,
+        ...doctor.address,
+        birthDate: dayjs(doctor.birthDate),
+        country: countries.find(
+          (country) => country.label === doctor.address.country
+        ),
+      });
+    }
+  }, [doctor]);
 
   return (
     <Container component="main">
@@ -132,16 +174,24 @@ const EditProfile = ({ closeEditProfile }) => {
             justifyContent="space-evenly"
             alignItems="center"
           >
-            <FormControl sx={{ minWidth: 120, m: 1 }}>
+            <SelectHonorific
+              value={form.honorific}
+              onSelect={(event) =>
+                handleSelect(event, event.target.value, "honorific")
+              }
+            />
+            {/* <FormControl sx={{ minWidth: 120, m: 1 }}>
               <InputLabel id="demo-simple-select-autowidth-label">
                 Honorific
               </InputLabel>
               <Select
                 labelId="demo-simple-select-autowidth-label"
                 id="demo-simple-select-autowidth"
-                value={honorific}
+                value={form.honorific}
                 label="Honorific"
-                onChange={handleChangeHonorific}
+                onChange={(event) =>
+                  handleSelect(event, event.target.value, "honorific")
+                }
                 autoWidth
               >
                 <MenuItem value={"Mr."}>Mr.</MenuItem>
@@ -149,13 +199,14 @@ const EditProfile = ({ closeEditProfile }) => {
                 <MenuItem value={"Ms."}>Ms.</MenuItem>
                 <MenuItem value={"Mx."}>Mx.</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl> */}
             <TextField
               margin="normal"
               // error={!!errors.email}
               // helperText={errors.email}
-              name="fname"
-              // onChange={handleChange}
+              value={form.firstName}
+              name="firstName"
+              onChange={handleTextInput}
               // value={form.email}
               fullWidth
               // id="email"
@@ -317,7 +368,11 @@ const EditProfile = ({ closeEditProfile }) => {
             justifyContent="space-evenly"
             alignItems="center"
           >
-            <FormControl sx={{ width: "25ch" }}>
+            <SelectCountry
+              value={form.country}
+              onChange={(event, value) => handleSelect(event, value, "country")}
+            />
+            {/* <FormControl sx={{ width: "25ch" }}>
               <InputLabel id="demo-simple-select-autowidth-label">
                 Country
               </InputLabel>
@@ -332,7 +387,7 @@ const EditProfile = ({ closeEditProfile }) => {
                 <MenuItem value={"Philippines"}>Philippines</MenuItem>
                 <MenuItem value={"China"}>China</MenuItem>
               </Select>
-            </FormControl>
+            </FormControl> */}
             <FormControl sx={{ width: "25ch" }}>
               <InputLabel id="demo-simple-select-autowidth-label">
                 Province
@@ -436,9 +491,7 @@ const EditProfile = ({ closeEditProfile }) => {
             sx={{ mt: 3, mb: 2 }}
             // onClick={handleSubmit}
             // disabled={isFormInvalid()}
-            onClick={() => {
-              closeEditProfile();
-            }}
+            onClick={handleSave}
           >
             Submit
           </Button>

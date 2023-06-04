@@ -1,9 +1,10 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React from "react";
 
-const HONORIFICS = ["Mr.", "Ms.", "Mrs.", "Mx."];
+const HONORIFICS = ["Mr.", "Ms.", "Mrs.", "Mx.", "Dr."];
 
 export default function SelectHonorific({ value, onSelect }) {
+  console.log("honorific value", value);
   return (
     <FormControl fullWidth>
       <InputLabel>Honorific</InputLabel>

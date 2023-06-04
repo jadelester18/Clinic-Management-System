@@ -12,7 +12,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import EditProfile from "../components/profile/EditProfile";
 import LeftBarProfile from "../components/profile/LeftBarProfile";
 import VideoProfileContent from "../components/profile/VideoProfileContent";
@@ -22,6 +22,10 @@ import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import * as profileData from "../redux/GetApiCalls/profile";
+import { SnackBarContext } from "../context/SnackBarContext";
+import * as doctorSvc from "../redux/PostApiCalls/doctor";
+import { DEFAULT_DATE_FORMAT } from "../redux/default";
+import LoadingScreen from "../components/LoadingScreen";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -40,6 +44,14 @@ function Profile() {
   const userLoggedinDetails = useSelector((state) => state.user);
   let userObject = userLoggedinDetails?.user;
   let user = userLoggedinDetails?.user?.user;
+  const currentDoctor = userLoggedinDetails?.user?.person;
+  console.log("userloggedindetails", userLoggedinDetails);
+
+  const [form, setForm] = useState({});
+  console.log("form", form);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
   //For Open/Close Edit Profile Modal
   const [openEditProfile, setOpenEditProfile] = React.useState(false);
@@ -63,6 +75,45 @@ function Profile() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSave = async (form) => {
+    setIsLoading(true);
+    const updateDoctorDto = convertFormToDto(form);
+    try {
+      const { data } = await doctorSvc.updateDoctor(
+        currentDoctor.id,
+        updateDoctorDto
+      );
+      fetchProfileData();
+      handleCloseEditProfile();
+      onShowSuccess("Doctor updated!");
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const convertFormToDto = (form) => {
+    return {
+      honorific: form.honorific,
+      firstName: form.firstName,
+      middleName: form.middleName,
+      lastName: form.lastName,
+      suffixName: form.suffixName,
+      gender: form.gender,
+      birthDate: form.birthDate.format(DEFAULT_DATE_FORMAT),
+      contactNo: form.contactNo,
+      street: form.street,
+      barangay: form.barangay,
+      city: form.city,
+      province: form.province,
+      country: form.country.label,
+      postalCode: form.postalCode,
+      email: form.email,
+    };
   };
 
   useEffect(() => {
@@ -314,7 +365,12 @@ function Profile() {
           maxWidth={"lg"}
         >
           <DialogContent>
-            <EditProfile closeEditProfile={handleCloseEditProfile} />
+            <EditProfile
+              closeEditProfile={handleCloseEditProfile}
+              onSave={handleSave}
+              doctor={profile}
+            />
+            {isLoading && <LoadingScreen open={isLoading} />}
           </DialogContent>
         </Dialog>
       </Box>

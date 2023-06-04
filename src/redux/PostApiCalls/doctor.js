@@ -11,3 +11,7 @@ export function getAvailableSlots(doctorId, date) {
 export function getDoctorStatusList(date) {
   return http.get(`/doctors/status/${date}`);
 }
+
+export function updateDoctor(doctorId, updateDoctorDto) {
+  return http.put(`/doctors/${doctorId}`, updateDoctorDto);
+}
