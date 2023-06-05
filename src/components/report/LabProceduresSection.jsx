@@ -3,18 +3,27 @@ import {
   FormControlLabel,
   FormGroup,
   Grid,
+  IconButton,
+  Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import * as labProcedureSvc from "../../redux/GetApiCalls/labProcedure";
+import PrintIcon from "@mui/icons-material/Print";
 
-export default function LabProceduresSection({ form, onChange, disabled }) {
+export default function LabProceduresSection({
+  form,
+  onChange,
+  disabled,
+  onPrint,
+  disablePrint,
+}) {
   const [labProcedures, setLabProcedures] = useState([]);
 
   async function fetchLabProcedures() {
     try {
       const { data } = await labProcedureSvc.getLabProcedures();
-      console.log("LAB PROCEDURES", data);
       setLabProcedures(data);
     } catch (error) {
       console.error(error);
@@ -36,9 +45,16 @@ export default function LabProceduresSection({ form, onChange, disabled }) {
 
   return (
     <>
-      <Typography variant="body1" sx={{ my: 1 }}>
-        Laboratory procedures
-      </Typography>
+      <Stack direction={`row`} alignItems={`center`} spacing={2}>
+        <Typography variant="body1" sx={{ my: 1 }}>
+          Laboratory procedures
+        </Typography>
+        <Tooltip title="Print referral">
+          <IconButton color="primary" onClick={onPrint} disabled={disablePrint}>
+            <PrintIcon />
+          </IconButton>
+        </Tooltip>
+      </Stack>
       <Grid item xs={12}>
         <FormGroup>
           <Grid container direction="row" alignItems="center">

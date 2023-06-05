@@ -4,6 +4,7 @@ import * as util from "../../redux/util";
 import dayjs from "dayjs";
 import { DoctorSignature } from "../general/DoctorSignature";
 import { Prescription } from "./Prescription";
+import { PatientInfoClinicForm } from "./PatientInfoClinicForm";
 
 export default function PrescriptionForm({ report }) {
   const { details, queue } = report;
@@ -15,38 +16,8 @@ export default function PrescriptionForm({ report }) {
   )} year/s old`;
   return (
     <>
-      <Box mt={5} ml={15} mr={10}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="subtitle1">Patient:</Typography>
-            <Typography variant="subtitle1">{util.name(patient)}</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="subtitle1">Address:</Typography>
-            <Typography variant="subtitle1">
-              {util.fullAddress(patient.address)}
-            </Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="subtitle1">Date:</Typography>
-            <Typography variant="subtitle1">
-              {util.date(dayjs(queue.date))}
-            </Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="subtitle1">Age:</Typography>
-            <Typography variant="subtitle1">{patientAge}</Typography>
-            <Divider />
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="subtitle1">Gender:</Typography>
-            <Typography variant="subtitle1">{patient.gender}</Typography>
-            <Divider />
-          </Grid>
-        </Grid>
+      <Box mt={5} ml={10} mr={10}>
+        <PatientInfoClinicForm patient={patient} date={queue.date} />
         <Grid container spacing={2} mt={5}>
           <Grid item xs={2}>
             <svg

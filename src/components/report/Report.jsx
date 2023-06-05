@@ -22,6 +22,7 @@ import PrescriptionsSection from "./PrescriptionsSection";
 import ClinicForm from "../general/ClinicForm";
 import PrescriptionForm from "../general/PrescriptionForm";
 import { useReactToPrint } from "react-to-print";
+import { ReferralForm } from "../general/ReferralForm";
 
 const INTEGER_TYPES = ["respiratoryRateBPM", "heartRateBPM"];
 const DOUBLE_TYPES = ["temperatureC", "oxygenSaturation"];
@@ -36,11 +37,18 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
   const visitIsFinished = report?.queue.checkInStatus === "FINISHED";
 
   const hasPrescriptions = report?.details?.prescriptions.length > 0;
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
+  const componentRefRx = useRef();
+  const handlePrintRx = useReactToPrint({
     pageStyle: "@page {size: 10in 13in}",
-    content: () => componentRef.current,
+    content: () => componentRefRx.current,
     documentTitle: "Prescription.pdf",
+  });
+
+  const componentRefReferral = useRef();
+  const handlePrintReferral = useReactToPrint({
+    pageStyle: "@page {size: 10in 13in}",
+    content: () => componentRefReferral.current,
+    documentTitle: "Referral.pdf",
   });
 
   const patient = report?.queue.patient;
@@ -299,6 +307,8 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                     form={form}
                     onChange={handleSpecialInput}
                     disabled={!userIsDoctor || visitIsFinished}
+                    onPrint={handlePrintReferral}
+                    disablePrint={isViewReferralDisabled()}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -323,7 +333,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                     onAdd={handleAddPrescription}
                     onRemove={handleRemovePrescription}
                     disabled={!userIsDoctor || visitIsFinished}
-                    onPrint={handlePrint}
+                    onPrint={handlePrintRx}
                     disablePrint={!hasPrescriptions}
                   />
                 </Grid>
@@ -352,16 +362,22 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
           >
             VIEW MC
           </Button>
-          <Button variant="outlined" disabled={isViewReferralDisabled()}>
-            VIEW REFERRAL
-          </Button>
         </CardActions>
       </Card>
-      <Box display={`none`}>
-        <ClinicForm componentRef={componentRef}>
-          {report && <PrescriptionForm report={report} />}
-        </ClinicForm>
-      </Box>
+      {hasPrescriptions && (
+        <Box display={`none`}>
+          <ClinicForm componentRef={componentRefRx}>
+            {report && <PrescriptionForm report={report} />}
+          </ClinicForm>
+        </Box>
+      )}
+      {!isViewReferralDisabled() && (
+        <Box display={`none`}>
+          <ClinicForm componentRef={componentRefReferral}>
+            {report && <ReferralForm report={report} />}
+          </ClinicForm>
+        </Box>
+      )}
     </>
   );
 }

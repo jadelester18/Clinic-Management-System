@@ -11,9 +11,10 @@ const ClinicForm = ({ certificate, componentRef, children }) => {
         component={Paper}
         // ml={"25%"}
         mt={5}
+        // py={5}
       >
         <Box ref={componentRef}>
-          <Box ml={10} mr={10}>
+          <Box ml={10} mr={10} mt={5}>
             <Grid container spacing={2}>
               <Grid item xs={12} textAlign={"center"}>
                 <Typography variant="h4" sx={{ fontWeight: 1000 }}>
@@ -31,7 +32,7 @@ const ClinicForm = ({ certificate, componentRef, children }) => {
             </Grid>
             <Divider
               variant="middle"
-              sx={{ borderBottomWidth: 5, border: "1px solid black" }}
+              sx={{ borderBottomWidth: 5, border: "1px solid black", mt: 3 }}
             />
           </Box>
           {children}
