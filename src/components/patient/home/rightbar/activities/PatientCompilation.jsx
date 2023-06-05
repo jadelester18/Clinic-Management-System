@@ -3,6 +3,8 @@ import {
   AccordionDetails,
   AccordionSummary,
   Avatar,
+  Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -42,10 +44,23 @@ const PatientCompilation = () => {
         //   </IconButton>
         // }
         // title="Shrimp and Chorizo Paella"
-        subheader={<Typography variant="h6">Compilation</Typography>}
+        subheader={<Typography variant="h6">Appointment History</Typography>}
       />
       <CardContent>
-        <div>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "27rem",
+            overflowY: "scroll",
+            "&::-webkit-scrollbar": {
+              width: "0.4em",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#888",
+            },
+          }}
+        >
           <Accordion
             expanded={expanded === "panel1"}
             onChange={handleChange("panel1")}
@@ -56,18 +71,26 @@ const PatientCompilation = () => {
               id="panel1bh-header"
             >
               <Typography sx={{ width: "33%", flexShrink: 0 }}>
-                APPOINTMENTS LIST
+                APPOINTMENTS 1
               </Typography>
               <Typography sx={{ color: "text.secondary" }}>
-                I am an accordion
+                June 25, 2023
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
-                feugiat. Aliquam eget maximus est, id dignissim quam.
-              </Typography>
-            </AccordionDetails>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
           </Accordion>
           <Accordion
             expanded={expanded === "panel2"}
@@ -79,66 +102,400 @@ const PatientCompilation = () => {
               id="panel2bh-header"
             >
               <Typography sx={{ width: "33%", flexShrink: 0 }}>
-                FORMS
+                APPOINTMENTS 2
               </Typography>
               <Typography sx={{ color: "text.secondary" }}>
-                You are currently not an owner
+                April 25, 2023
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Donec placerat, lectus sed mattis semper, neque lectus feugiat
-                lectus, varius pulvinar diam eros in elit. Pellentesque
-                convallis laoreet laoreet.
-              </Typography>
-            </AccordionDetails>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
           </Accordion>
           <Accordion
-            expanded={expanded === "panel3"}
-            onChange={handleChange("panel3")}
+            expanded={expanded === "panel1"}
+            onChange={handleChange("panel1")}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3bh-content"
-              id="panel3bh-header"
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
             >
               <Typography sx={{ width: "33%", flexShrink: 0 }}>
-                PRESCRIPTIONS
+                APPOINTMENTS 1
               </Typography>
               <Typography sx={{ color: "text.secondary" }}>
-                Filtering has been entirely disabled for whole web server
+                June 25, 2023
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Nunc vitae orci ultricies, auctor nunc in, volutpat nisl.
-                Integer sit amet egestas eros, vitae egestas augue. Duis vel est
-                augue.
-              </Typography>
-            </AccordionDetails>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
           </Accordion>
           <Accordion
-            expanded={expanded === "panel4"}
-            onChange={handleChange("panel4")}
+            expanded={expanded === "panel2"}
+            onChange={handleChange("panel2")}
           >
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel4bh-content"
-              id="panel4bh-header"
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
             >
               <Typography sx={{ width: "33%", flexShrink: 0 }}>
-                VIEW RESULTS
+                APPOINTMENTS 2
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                April 25, 2023
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Nunc vitae orci ultricies, auctor nunc in, volutpat nisl.
-                Integer sit amet egestas eros, vitae egestas augue. Duis vel est
-                augue.
-              </Typography>
-            </AccordionDetails>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
           </Accordion>
-        </div>
+          <Accordion
+            expanded={expanded === "panel1"}
+            onChange={handleChange("panel1")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 1
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                June 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel2"}
+            onChange={handleChange("panel2")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 2
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                April 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel1"}
+            onChange={handleChange("panel1")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 1
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                June 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel2"}
+            onChange={handleChange("panel2")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 2
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                April 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel1"}
+            onChange={handleChange("panel1")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 1
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                June 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel2"}
+            onChange={handleChange("panel2")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 2
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                April 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel1"}
+            onChange={handleChange("panel1")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 1
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                June 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel2"}
+            onChange={handleChange("panel2")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 2
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                April 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel1"}
+            onChange={handleChange("panel1")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1bh-content"
+              id="panel1bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 1
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                June 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+          <Accordion
+            expanded={expanded === "panel2"}
+            onChange={handleChange("panel2")}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel2bh-content"
+              id="panel2bh-header"
+            >
+              <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                APPOINTMENTS 2
+              </Typography>
+              <Typography sx={{ color: "text.secondary" }}>
+                April 25, 2023
+              </Typography>
+            </AccordionSummary>
+            <Button>
+              <AccordionDetails>
+                <Typography
+                  align="left"
+                  fontFamily="sans-serif"
+                  textTransform="none"
+                  color="text.primary"
+                >
+                  Donec placerat, lectus sed mattis semper, neque lectus feugiat
+                  lectus, varius pulvinar diam eros in elit. Pellentesque
+                  convallis laoreet laoreet.
+                </Typography>
+              </AccordionDetails>
+            </Button>
+          </Accordion>
+        </Box>
       </CardContent>
     </Card>
   );

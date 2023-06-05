@@ -372,8 +372,11 @@ function Navbar({ toggleMode, mode }) {
               <MenuItem
                 onClick={() => {
                   handleCloseUserMenu();
-                  handleClickOpenConfirmation();
+                  handleLogout();
                 }}
+                autoFocus
+                component={Link}
+                to={`/`}
               >
                 <Typography textAlign="center">Logout</Typography>
               </MenuItem>
@@ -514,36 +517,6 @@ function Navbar({ toggleMode, mode }) {
             </Grid>
           </Grid>{" "}
         </DialogContent>
-      </Dialog>
-      {/* For Confirmation Logout */}
-      <Dialog
-        open={openConfirmation}
-        onClose={handleClickCloseConfirmation}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Are you sure you want to logout?"}
-        </DialogTitle>
-        {/* <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            This will reflect to that date.
-          </DialogContentText>
-        </DialogContent> */}
-        <DialogActions>
-          <Button onClick={handleClickCloseConfirmation}>Disagree</Button>
-          <Button
-            onClick={() => {
-              handleClickCloseConfirmation();
-              handleLogout();
-            }}
-            autoFocus
-            component={Link}
-            to={`/`}
-          >
-            Agree
-          </Button>
-        </DialogActions>
       </Dialog>
     </AppBar>
   );

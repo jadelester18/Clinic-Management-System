@@ -487,39 +487,17 @@ function NurseHome({ toggleMode, mode }) {
                 <MenuItem
                   onClick={() => {
                     handleCloseUserMenu();
-                    handleClickOpenConfirmation();
+                    handleLogout();
                   }}
+                  autoFocus
+                  component={Link}
+                  to={`/`}
                 >
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
               </Menu>
             </Box>
           </Toolbar>
-          {/* For Confirmation Logout */}
-          <Dialog
-            open={openConfirmation}
-            onClose={handleClickCloseConfirmation}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">
-              {"Are you sure you want to logout?"}
-            </DialogTitle>
-            <DialogActions>
-              <Button onClick={handleClickCloseConfirmation}>Disagree</Button>
-              <Button
-                onClick={() => {
-                  handleClickCloseConfirmation();
-                  handleLogout();
-                }}
-                autoFocus
-                component={Link}
-                to={`/`}
-              >
-                Agree
-              </Button>
-            </DialogActions>
-          </Dialog>
         </AppBar>
         <Drawer variant="permanent" open={open}>
           <DrawerHeader>

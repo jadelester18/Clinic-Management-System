@@ -33,6 +33,7 @@ function Login({ handleCloseLogin }) {
 
       // put accessToken in localStorage
       localStorage.setItem("accessToken", res.data.token);
+      handleCloseLogin();
     } catch (error) {
       // setErrorMessage(error.response.data.message);
       dispatch(loginFailure(eroor));
@@ -174,7 +175,6 @@ function Login({ handleCloseLogin }) {
             sx={{ mt: 3, mb: 2 }}
             onClick={() => {
               handleSubmit();
-              handleCloseLogin();
             }}
             // disabled={isFormInvalid()}
           >
