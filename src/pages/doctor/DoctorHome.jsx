@@ -17,7 +17,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Avatar,
   Badge,
@@ -61,6 +61,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/UserReducer";
 import DoctorDashboard from "./Dashboard/DoctorDashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
+import * as doctorSvc from "../../redux/GetApiCalls/doctor";
+import { SnackBarContext } from "../../context/SnackBarContext";
 
 const drawerWidth = 240;
 
@@ -188,6 +190,41 @@ function DoctorHome({ toggleMode, mode }) {
   let userObject = userLoggedinDetails?.user;
   let user = userLoggedinDetails?.user?.user;
   let id = userLoggedinDetails?.user?.user?.id;
+
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
+
+  const [profile, setProfile] = useState(null);
+  // const [isIn, setIsIn] = useState(false);
+  const fetchProfile = async () => {
+    try {
+      const { data } = await doctorSvc.getProfile();
+      console.log("DOCTOR PROFILE", data);
+      setProfile(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleToggleChange = async (event) => {
+    try {
+      const isIn = event.target.checked;
+      const { data } = await doctorSvc.updateDoctorAvailability(isIn);
+      console.log("updated doctor", data);
+      setProfile(data);
+      onShowSuccess(
+        isIn
+          ? "You are now accepting patients!"
+          : "You are currently unavailable"
+      );
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   //For Theme
   const theme = useTheme();
@@ -557,7 +594,8 @@ function DoctorHome({ toggleMode, mode }) {
                 >
                   {open ? (
                     <Switch
-                      defaultChecked
+                      checked={profile ? profile.isIn : false}
+                      onChange={handleToggleChange}
                       color="primary"
                       inputProps={{ "aria-label": "toggle switch" }}
                       sx={{
@@ -569,7 +607,8 @@ function DoctorHome({ toggleMode, mode }) {
                     />
                   ) : (
                     <Switch
-                      defaultChecked
+                      checked={profile ? profile.isIn : false}
+                      onChange={handleToggleChange}
                       color="primary"
                       inputProps={{ "aria-label": "toggle switch" }}
                       sx={{
