@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -8,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import VitalSignsSection from "./VitalSignsSection";
 import PatientSection from "./PatientSection";
 import LabProceduresSection from "./LabProceduresSection";
@@ -18,6 +19,9 @@ import { grey } from "@mui/material/colors";
 import ConsultationSection from "./ConsultationSection";
 import { useSelector } from "react-redux";
 import PrescriptionsSection from "./PrescriptionsSection";
+import ClinicForm from "../general/ClinicForm";
+import PrescriptionForm from "../general/PrescriptionForm";
+import { useReactToPrint } from "react-to-print";
 
 const INTEGER_TYPES = ["respiratoryRateBPM", "heartRateBPM"];
 const DOUBLE_TYPES = ["temperatureC", "oxygenSaturation"];
@@ -30,6 +34,14 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
   const userIsPatient = loginDetails.user.role === "ROLE_PATIENT";
 
   const visitIsFinished = report?.queue.checkInStatus === "FINISHED";
+
+  const hasPrescriptions = report?.details?.prescriptions.length > 0;
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    pageStyle: "@page {size: 10in 13in}",
+    content: () => componentRef.current,
+    documentTitle: "Prescription.pdf",
+  });
 
   const patient = report?.queue.patient;
   const [form, setForm] = useState({
@@ -170,174 +182,186 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
   }, [report]);
 
   return (
-    <Card item>
-      <CardHeader
-        title="Visitation Report"
-        subheader={util.date(report?.queue?.date)}
-      />
-      <CardContent>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            {patient && <PatientSection patient={patient} />}
-          </Grid>
-          <Grid item xs={12}>
-            <ConsultationSection
-              form={form}
-              onChange={(event) => {
-                handleSpecialInput(event, null, "consultationType");
-              }}
-              disabled={userIsPatient || visitIsFinished}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <ReportSectionHeader
-              title="Chief complaint & observed symptoms"
-              helpText="A concise statement of the symptoms that caused a patient to seek medical care."
-            />
+    <>
+      <Card item>
+        <CardHeader
+          title="Visitation Report"
+          subheader={util.date(report?.queue?.date)}
+        />
+        <CardContent>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
-                value={form.chiefComplaint}
-                onChange={handleTextInput}
-                size="small"
-                name="chiefComplaint"
-                fullWidth
-                multiline
-                InputProps={{ readOnly: userIsPatient || visitIsFinished }}
+              {patient && <PatientSection patient={patient} />}
+            </Grid>
+            <Grid item xs={12}>
+              <ConsultationSection
+                form={form}
+                onChange={(event) => {
+                  handleSpecialInput(event, null, "consultationType");
+                }}
+                disabled={userIsPatient || visitIsFinished}
               />
             </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <ReportSectionHeader
-              title="Medical History"
-              helpText="Allergies, illnesses, surgeries, immunizations, test results, etc."
-            />
             <Grid item xs={12}>
-              <TextField
-                value={form.medicalHistory}
-                onChange={handleTextInput}
-                size="small"
-                name="medicalHistory"
-                fullWidth
-                multiline
-                InputProps={{ readOnly: userIsPatient || visitIsFinished }}
+              <ReportSectionHeader
+                title="Chief complaint & observed symptoms"
+                helpText="A concise statement of the symptoms that caused a patient to seek medical care."
               />
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <VitalSignsSection
-              form={form}
-              onInput={handleTextInput}
-              disabled={userIsPatient || visitIsFinished}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <ReportSectionHeader
-              title="Diagnosis"
-              helpText="The identified disease, condition, or injury based on signs and symptoms"
-            />
-            <Grid item xs={12}>
-              <TextField
-                value={form.diagnosis}
-                onChange={handleTextInput}
-                size="small"
-                name="diagnosis"
-                fullWidth
-                multiline
-                InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <ReportSectionHeader
-              title="Prognosis"
-              helpText="The likely outcome or course of a disease"
-            />
-            <Grid item xs={12}>
-              <TextField
-                value={form.prognosis}
-                onChange={handleTextInput}
-                size="small"
-                name="prognosis"
-                fullWidth
-                multiline
-                InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <ReportSectionHeader
-              title="Management"
-              helpText="Treatment plan for the condition or disease"
-            />
-            <Grid
-              container
-              item
-              spacing={1}
-              sx={{
-                border: 1,
-                borderColor: grey[500],
-                borderRadius: 3,
-                p: 2,
-              }}
-            >
               <Grid item xs={12}>
-                <LabProceduresSection
-                  form={form}
-                  onChange={handleSpecialInput}
-                  disabled={!userIsDoctor || visitIsFinished}
+                <TextField
+                  value={form.chiefComplaint}
+                  onChange={handleTextInput}
+                  size="small"
+                  name="chiefComplaint"
+                  fullWidth
+                  multiline
+                  InputProps={{ readOnly: userIsPatient || visitIsFinished }}
                 />
               </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <ReportSectionHeader
+                title="Medical History"
+                helpText="Allergies, illnesses, surgeries, immunizations, test results, etc."
+              />
+
               <Grid item xs={12}>
-                <ReportSectionHeader title="Others" />
+                <TextField
+                  value={form.medicalHistory}
+                  onChange={handleTextInput}
+                  size="small"
+                  name="medicalHistory"
+                  fullWidth
+                  multiline
+                  InputProps={{ readOnly: userIsPatient || visitIsFinished }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <VitalSignsSection
+                form={form}
+                onInput={handleTextInput}
+                disabled={userIsPatient || visitIsFinished}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <ReportSectionHeader
+                title="Diagnosis"
+                helpText="The identified disease, condition, or injury based on signs and symptoms"
+              />
+              <Grid item xs={12}>
+                <TextField
+                  value={form.diagnosis}
+                  onChange={handleTextInput}
+                  size="small"
+                  name="diagnosis"
+                  fullWidth
+                  multiline
+                  InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <ReportSectionHeader
+                title="Prognosis"
+                helpText="The likely outcome or course of a disease"
+              />
+              <Grid item xs={12}>
+                <TextField
+                  value={form.prognosis}
+                  onChange={handleTextInput}
+                  size="small"
+                  name="prognosis"
+                  fullWidth
+                  multiline
+                  InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
+                />
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <ReportSectionHeader
+                title="Management"
+                helpText="Treatment plan for the condition or disease"
+              />
+              <Grid
+                container
+                item
+                spacing={1}
+                sx={{
+                  border: 1,
+                  borderColor: grey[500],
+                  borderRadius: 3,
+                  p: 2,
+                }}
+              >
                 <Grid item xs={12}>
-                  <TextField
-                    value={form.management}
-                    onChange={handleTextInput}
-                    size="small"
-                    name="management"
-                    fullWidth
-                    multiline
-                    InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
+                  <LabProceduresSection
+                    form={form}
+                    onChange={handleSpecialInput}
+                    disabled={!userIsDoctor || visitIsFinished}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ReportSectionHeader title="Others" />
+                  <Grid item xs={12}>
+                    <TextField
+                      value={form.management}
+                      onChange={handleTextInput}
+                      size="small"
+                      name="management"
+                      fullWidth
+                      multiline
+                      InputProps={{
+                        readOnly: !userIsDoctor || visitIsFinished,
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  <PrescriptionsSection
+                    form={form}
+                    onAdd={handleAddPrescription}
+                    onRemove={handleRemovePrescription}
+                    disabled={!userIsDoctor || visitIsFinished}
+                    onPrint={handlePrint}
+                    disablePrint={!hasPrescriptions}
                   />
                 </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <PrescriptionsSection
-                  form={form}
-                  onAdd={handleAddPrescription}
-                  onRemove={handleRemovePrescription}
-                  disabled={!userIsDoctor || visitIsFinished}
-                />
-              </Grid>
+            </Grid>
+            <Grid item xs={12} sx={{ textAlign: "right" }}>
+              <Typography variant="caption">Attending Physician</Typography>
+              <Typography variant="body1">{util.name(form.doctor)}</Typography>
             </Grid>
           </Grid>
-          <Grid item xs={12} sx={{ textAlign: "right" }}>
-            <Typography variant="caption">Attending Physician</Typography>
-            <Typography variant="body1">{util.name(form.doctor)}</Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-      <CardActions>
-        {!userIsPatient && (
+        </CardContent>
+        <CardActions>
+          {!userIsPatient && (
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={isSaveDisabled()}
+            >
+              Save
+            </Button>
+          )}
           <Button
-            variant="contained"
-            onClick={handleSave}
-            disabled={isSaveDisabled()}
+            variant="outlined"
+            onClick={() => onViewMc(report)}
+            disabled={isViewMcDisabled()}
           >
-            Save
+            VIEW MC
           </Button>
-        )}
-        <Button
-          variant="outlined"
-          onClick={() => onViewMc(report)}
-          disabled={isViewMcDisabled()}
-        >
-          VIEW MC
-        </Button>
-        <Button variant="outlined" disabled={isViewReferralDisabled()}>
-          VIEW REFERRAL
-        </Button>
-      </CardActions>
-    </Card>
+          <Button variant="outlined" disabled={isViewReferralDisabled()}>
+            VIEW REFERRAL
+          </Button>
+        </CardActions>
+      </Card>
+      <Box display={`none`}>
+        <ClinicForm componentRef={componentRef}>
+          {report && <PrescriptionForm report={report} />}
+        </ClinicForm>
+      </Box>
+    </>
   );
 }

@@ -8,7 +8,7 @@ export default function ReportSectionHeader({ title, helpText }) {
       direction: "row",
       spacing: 1,
       alignItems: "center",
-      width: "100%",
+      // width: "100%",
       my: 2,
     },
   };
