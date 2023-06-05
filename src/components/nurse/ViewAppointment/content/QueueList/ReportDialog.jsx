@@ -4,6 +4,7 @@ import Report from "../../../../report/Report";
 import { SnackBarContext } from "../../../../../context/SnackBarContext";
 import * as reportSvc from "../../../../../redux/GetApiCalls/report";
 import LoadingScreen from "../../../../LoadingScreen";
+import MedicalCertificateDialog from "../../../../report/MedicalCertificateDialog";
 
 export default function ReportDialog({
   open,
@@ -13,9 +14,10 @@ export default function ReportDialog({
   isSaving,
 }) {
   const [report, setReport] = useState(null);
-  console.log("reportId", reportId);
 
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
+
+  const [mcIsOpen, setMcIsOpen] = useState(false);
 
   async function fetchReport() {
     try {
@@ -36,8 +38,21 @@ export default function ReportDialog({
   return (
     <Dialog open={open} onClose={onClose} maxWidth={"lg"} fullWidth={true}>
       <DialogContent>
-        {report && <Report report={report} onSave={onSave} />}
+        {report && (
+          <Report
+            report={report}
+            onSave={onSave}
+            onViewMc={() => setMcIsOpen(true)}
+          />
+        )}
         {isSaving && <LoadingScreen open={isSaving} />}
+        {report && mcIsOpen && (
+          <MedicalCertificateDialog
+            open={mcIsOpen}
+            onClose={() => setMcIsOpen(false)}
+            report={report}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={onClose}>

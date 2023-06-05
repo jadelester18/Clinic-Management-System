@@ -36,3 +36,9 @@ export const MED_CERT_TYPES = [
   { value: "FIT", text: "Fit" },
   { value: "UNFIT", text: "Unfit" },
 ];
+
+export const APPOINTMENT_STATUS = [
+  { value: "PENDING_APPROVAL", text: "Pending" },
+  { value: "APPROVED", text: "Approved" },
+  { value: "CANCELLED", text: "Cancelled" },
+];

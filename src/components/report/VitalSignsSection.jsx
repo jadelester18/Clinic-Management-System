@@ -9,7 +9,7 @@ import React from "react";
 import ReportSectionHeader from "./ReportSectionHeader";
 import * as util from "../../redux/util";
 
-export default function VitalSignsSection({ form, onInput }) {
+export default function VitalSignsSection({ form, onInput, disabled }) {
   return (
     <>
       <ReportSectionHeader
@@ -30,6 +30,7 @@ export default function VitalSignsSection({ form, onInput }) {
               endAdornment: (
                 <InputAdornment position="end">mmHg</InputAdornment>
               ),
+              readOnly: disabled,
             }}
           />
         </Grid>
@@ -44,6 +45,7 @@ export default function VitalSignsSection({ form, onInput }) {
             required
             InputProps={{
               endAdornment: <InputAdornment position="end">°C</InputAdornment>,
+              readOnly: disabled,
             }}
           />
         </Grid>
@@ -58,6 +60,7 @@ export default function VitalSignsSection({ form, onInput }) {
             required
             InputProps={{
               endAdornment: <InputAdornment position="end">BPM</InputAdornment>,
+              readOnly: disabled,
             }}
           />
         </Grid>
@@ -72,6 +75,7 @@ export default function VitalSignsSection({ form, onInput }) {
             required
             InputProps={{
               endAdornment: <InputAdornment position="end">BPM</InputAdornment>,
+              readOnly: disabled,
             }}
           />
         </Grid>
@@ -86,6 +90,7 @@ export default function VitalSignsSection({ form, onInput }) {
             required
             InputProps={{
               endAdornment: <InputAdornment position="end">%</InputAdornment>,
+              readOnly: disabled,
             }}
           />
         </Grid>

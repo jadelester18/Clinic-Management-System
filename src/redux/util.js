@@ -1,4 +1,5 @@
 import {
+  APPOINTMENT_STATUS,
   CHECK_IN_STATUS,
   CONSULTATION_TYPES,
   DISPLAY_DATE_FORMAT,
@@ -158,4 +159,8 @@ export function consultationType(typeValue) {
 export function medCertPurpose(purposeValue) {
   return MED_CERT_PURPOSES.find((purpose) => purpose.value === purposeValue)
     .text;
+}
+
+export function appointmentStatus(statusValue) {
+  return APPOINTMENT_STATUS.find((status) => status.value === statusValue).text;
 }

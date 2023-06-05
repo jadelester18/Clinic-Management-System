@@ -28,8 +28,8 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
   const userIsNurse = loginDetails.user.role === "ROLE_NURSE";
   const userIsDoctor = loginDetails.user.role === "ROLE_DOCTOR";
   const userIsPatient = loginDetails.user.role === "ROLE_PATIENT";
-  // let userObject = userLoggedinDetails?.user;
-  // let user = userLoggedinDetails?.user?.user;
+
+  const visitIsFinished = report?.queue.checkInStatus === "FINISHED";
 
   const patient = report?.queue.patient;
   const [form, setForm] = useState({
@@ -136,6 +136,15 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
     return !form.management && form.labProcedures.length === 0;
   }
 
+  function isSaveDisabled() {
+    return !form.formIsEdited || visitIsFinished || userIsPatient;
+  }
+
+  function handleSave() {
+    onSave(report.id, form);
+    setForm({ ...form, formIsEdited: false });
+  }
+
   useEffect(() => {
     if (report) {
       const { details } = report;
@@ -177,6 +186,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
               onChange={(event) => {
                 handleSpecialInput(event, null, "consultationType");
               }}
+              disabled={userIsPatient || visitIsFinished}
             />
           </Grid>
           <Grid item xs={12}>
@@ -192,6 +202,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 name="chiefComplaint"
                 fullWidth
                 multiline
+                InputProps={{ readOnly: userIsPatient || visitIsFinished }}
               />
             </Grid>
           </Grid>
@@ -208,11 +219,16 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 name="medicalHistory"
                 fullWidth
                 multiline
+                InputProps={{ readOnly: userIsPatient || visitIsFinished }}
               />
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <VitalSignsSection form={form} onInput={handleTextInput} />
+            <VitalSignsSection
+              form={form}
+              onInput={handleTextInput}
+              disabled={userIsPatient || visitIsFinished}
+            />
           </Grid>
           <Grid item xs={12}>
             <ReportSectionHeader
@@ -227,7 +243,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 name="diagnosis"
                 fullWidth
                 multiline
-                InputProps={{ readOnly: !userIsDoctor }}
+                InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
               />
             </Grid>
           </Grid>
@@ -244,7 +260,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 name="prognosis"
                 fullWidth
                 multiline
-                InputProps={{ readOnly: !userIsDoctor }}
+                InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
               />
             </Grid>
           </Grid>
@@ -268,7 +284,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 <LabProceduresSection
                   form={form}
                   onChange={handleSpecialInput}
-                  disabled={!userIsDoctor}
+                  disabled={!userIsDoctor || visitIsFinished}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -281,7 +297,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                     name="management"
                     fullWidth
                     multiline
-                    InputProps={{ readOnly: !userIsDoctor }}
+                    InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
                   />
                 </Grid>
               </Grid>
@@ -290,7 +306,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                   form={form}
                   onAdd={handleAddPrescription}
                   onRemove={handleRemovePrescription}
-                  disabled={!userIsDoctor}
+                  disabled={!userIsDoctor || visitIsFinished}
                 />
               </Grid>
             </Grid>
@@ -302,13 +318,15 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
         </Grid>
       </CardContent>
       <CardActions>
-        <Button
-          variant="contained"
-          onClick={() => onSave(report.id, form)}
-          disabled={!form.formIsEdited}
-        >
-          Save
-        </Button>
+        {!userIsPatient && (
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={isSaveDisabled()}
+          >
+            Save
+          </Button>
+        )}
         <Button
           variant="outlined"
           onClick={() => onViewMc(report)}

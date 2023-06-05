@@ -21,6 +21,7 @@ import MedicalCertificateForm from "./MedicalCertificateForm";
 import SelectMedCertPurpose from "../general/SelectMedCertPurpose";
 import SelectMedCertType from "../general/SelectMedCertType";
 import LoadingScreen from "../LoadingScreen";
+import { useSelector } from "react-redux";
 
 export default function MedicalCertificateDialog({
   open,
@@ -29,6 +30,9 @@ export default function MedicalCertificateDialog({
   onSave,
   isSaving,
 }) {
+  const loginDetails = useSelector((state) => state.user?.user);
+
+  const userIsDoctor = loginDetails.user.role === "ROLE_DOCTOR";
   const { details, queue, medicalCertificate } = report;
   const [form, setForm] = useState({
     isEdited: false,
@@ -104,55 +108,59 @@ export default function MedicalCertificateDialog({
       <DialogTitle>MEDICAL CERTIFICATE</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} alignItems={`center`} my={2}>
-          <Grid item xs={12}>
-            <Box sx={{ width: { xs: "100%", md: "20%" } }}>
-              <SelectDate
-                value={form.date}
-                onChange={(event) => handleChange(event, "date")}
-              />
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <SelectMedCertPurpose
-              value={form.purpose}
-              onChange={(event) => handleChange(event, "purpose")}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <SelectMedCertType
-              value={form.type}
-              onChange={(event) => handleChange(event, "type")}
-            />
-          </Grid>
-          {form.type === "UNFIT" && (
-            <Grid item xs={12} md={6}>
-              <Stack>
-                <TextField
-                  value={form.totalRestDays}
-                  onChange={(event) => handleChange(event, "totalRestDays")}
-                  label="If unfit, indicate no. of required rest days:"
-                  variant="outlined"
+          {userIsDoctor && (
+            <>
+              <Grid item xs={12}>
+                <Box sx={{ width: { xs: "100%", md: "20%" } }}>
+                  <SelectDate
+                    value={form.date}
+                    onChange={(event) => handleChange(event, "date")}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <SelectMedCertPurpose
+                  value={form.purpose}
+                  onChange={(event) => handleChange(event, "purpose")}
                 />
-              </Stack>
-            </Grid>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <SelectMedCertType
+                  value={form.type}
+                  onChange={(event) => handleChange(event, "type")}
+                />
+              </Grid>
+              {form.type === "UNFIT" && (
+                <Grid item xs={12} md={6}>
+                  <Stack>
+                    <TextField
+                      value={form.totalRestDays}
+                      onChange={(event) => handleChange(event, "totalRestDays")}
+                      label="If unfit, indicate no. of required rest days:"
+                      variant="outlined"
+                    />
+                  </Stack>
+                </Grid>
+              )}
+              <Grid item xs={12} md={6}>
+                <Stack>
+                  <TextField
+                    value={form.remarks}
+                    onChange={(event) => handleChange(event, "remarks")}
+                    label="Additional remarks"
+                    variant="outlined"
+                    multiline
+                  />
+                </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Divider />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6">PRINT PREVIEW</Typography>
+              </Grid>
+            </>
           )}
-          <Grid item xs={12} md={6}>
-            <Stack>
-              <TextField
-                value={form.remarks}
-                onChange={(event) => handleChange(event, "remarks")}
-                label="Additional remarks"
-                variant="outlined"
-                multiline
-              />
-            </Stack>
-          </Grid>
-          <Grid item xs={12}>
-            <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="h6">PRINT PREVIEW</Typography>
-          </Grid>
           <Grid item xs={12}>
             <MedicalCertificate
               certificate={{
@@ -177,13 +185,15 @@ export default function MedicalCertificateDialog({
             Print
           </Button>
         </Stack>
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={isFormInvalid()}
-        >
-          Save
-        </Button>
+        {userIsDoctor && (
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={isFormInvalid()}
+          >
+            Save
+          </Button>
+        )}
       </DialogActions>
       {isSaving && <LoadingScreen open={isSaving} />}
     </Dialog>
