@@ -116,6 +116,7 @@ function NurseViewAppointmentQueue() {
       });
       console.log(data);
       fetchQueues();
+      fetchDoctorStatusList();
     } catch (error) {
       console.error(error);
       onShowFail(error.response.data.message);

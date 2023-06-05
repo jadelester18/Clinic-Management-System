@@ -4,15 +4,11 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Dialog,
-  DialogContent,
   Grid,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import HelpIcon from "@mui/icons-material/Help";
 import VitalSignsSection from "./VitalSignsSection";
 import PatientSection from "./PatientSection";
 import LabProceduresSection from "./LabProceduresSection";
@@ -22,8 +18,6 @@ import { grey } from "@mui/material/colors";
 import ConsultationSection from "./ConsultationSection";
 import { useSelector } from "react-redux";
 import PrescriptionsSection from "./PrescriptionsSection";
-import MedicalCertificate from "../../pages/MedicalCertificate";
-import MedicalCertificateDialog from "./MedicalCertificateDialog";
 
 const INTEGER_TYPES = ["respiratoryRateBPM", "heartRateBPM"];
 const DOUBLE_TYPES = ["temperatureC", "oxygenSaturation"];
@@ -126,6 +120,20 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
       prescriptionsHasEdits: true,
       formIsEdited: true,
     });
+  }
+
+  function isViewMcDisabled() {
+    if (userIsDoctor) {
+      const patientIsExamined =
+        !!report.details.diagnosis && !!report.details.prognosis;
+      return !patientIsExamined;
+    } else {
+      return !report.medicalCertificate;
+    }
+  }
+
+  function isViewReferralDisabled() {
+    return !form.management && form.labProcedures.length === 0;
   }
 
   useEffect(() => {
@@ -264,15 +272,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <PrescriptionsSection
-                  form={form}
-                  onAdd={handleAddPrescription}
-                  onRemove={handleRemovePrescription}
-                  disabled={!userIsDoctor}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ReportSectionHeader title="Additional remarks" />
+                <ReportSectionHeader title="Others" />
                 <Grid item xs={12}>
                   <TextField
                     value={form.management}
@@ -284,6 +284,14 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                     InputProps={{ readOnly: !userIsDoctor }}
                   />
                 </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <PrescriptionsSection
+                  form={form}
+                  onAdd={handleAddPrescription}
+                  onRemove={handleRemovePrescription}
+                  disabled={!userIsDoctor}
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -301,10 +309,16 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
         >
           Save
         </Button>
-        <Button variant="outlined" onClick={() => onViewMc(report)}>
+        <Button
+          variant="outlined"
+          onClick={() => onViewMc(report)}
+          disabled={isViewMcDisabled()}
+        >
           VIEW MC
         </Button>
-        <Button variant="outlined">VIEW REFERRAL</Button>
+        <Button variant="outlined" disabled={isViewReferralDisabled()}>
+          VIEW REFERRAL
+        </Button>
       </CardActions>
     </Card>
   );

@@ -36,7 +36,7 @@ export default function ReportDialog({
   return (
     <Dialog open={open} onClose={onClose} maxWidth={"lg"} fullWidth={true}>
       <DialogContent>
-        <Report report={report} onSave={onSave} />
+        {report && <Report report={report} onSave={onSave} />}
         {isSaving && <LoadingScreen open={isSaving} />}
       </DialogContent>
       <DialogActions>

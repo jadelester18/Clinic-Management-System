@@ -20,7 +20,9 @@ export default function ReportSummary({ report }) {
       </Grid>
       <Grid item>
         <Typography variant="body2">Examined by</Typography>
-        <Typography variant="body1">{util.name(report.doctor)}</Typography>
+        <Typography variant="body1">
+          {details.diagnosis ? util.name(report.doctor) : "Not yet examined"}
+        </Typography>
       </Grid>
     </Grid>
   );
