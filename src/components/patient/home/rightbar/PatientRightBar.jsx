@@ -27,7 +27,6 @@ const DEFAULT_PAGE_SIZE = 5;
 const PatientRightBar = ({ currentPatient }) => {
   const [reports, setReports] = useState([]);
   const [appointments, setAppointments] = useState([]);
-  const prescriptions = reports[0]?.prescriptions;
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -148,7 +147,7 @@ const PatientRightBar = ({ currentPatient }) => {
                   mt={4}
                 >
                   <Grid item lg={5}>
-                    <PatientMedication />
+                    <PatientMedication report={reports[0]} />
                   </Grid>
                   <Grid item lg={7}>
                     <Card sx={styles.card}>

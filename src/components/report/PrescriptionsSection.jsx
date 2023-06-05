@@ -14,6 +14,7 @@ import { grey } from "@mui/material/colors";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PrescriptionDialog from "./PrescriptionDialog";
 import * as util from "../../redux/util";
+import { Prescription } from "../general/Prescription";
 
 export default function PrescriptionsSection({
   form,
@@ -49,17 +50,7 @@ export default function PrescriptionsSection({
           form.prescriptions.map((prescription, index) => (
             <Fragment key={prescription.id}>
               <Grid item xs={10}>
-                <Stack sx={styles.outline}>
-                  <Stack direction={`row`} justifyContent={`space-between`}>
-                    <Typography variant="body2">
-                      {prescription.formulation}
-                    </Typography>
-                    <Typography variant="body2">{`# ${prescription.subscription}`}</Typography>
-                  </Stack>
-                  <Typography variant="caption">{`Sig. ${util.signatura(
-                    prescription.signatura
-                  )}`}</Typography>
-                </Stack>
+                <Prescription prescription={prescription} outlined={true} />
               </Grid>
               {!disabled && (
                 <Grid item xs={2}>

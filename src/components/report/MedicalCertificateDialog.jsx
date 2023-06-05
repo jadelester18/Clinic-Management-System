@@ -22,6 +22,7 @@ import SelectMedCertPurpose from "../general/SelectMedCertPurpose";
 import SelectMedCertType from "../general/SelectMedCertType";
 import LoadingScreen from "../LoadingScreen";
 import { useSelector } from "react-redux";
+import ClinicForm from "../general/ClinicForm";
 
 export default function MedicalCertificateDialog({
   open,
@@ -162,13 +163,14 @@ export default function MedicalCertificateDialog({
             </>
           )}
           <Grid item xs={12}>
-            <MedicalCertificate
-              certificate={{
-                ...form,
-                date: form.date?.format(DEFAULT_DATE_FORMAT),
-              }}
-              componentRef={componentRef}
-            />
+            <ClinicForm componentRef={componentRef}>
+              <MedicalCertificateForm
+                certificate={{
+                  ...form,
+                  date: form.date?.format(DEFAULT_DATE_FORMAT),
+                }}
+              />
+            </ClinicForm>
           </Grid>
         </Grid>
       </DialogContent>

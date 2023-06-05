@@ -1,13 +1,15 @@
-import { Box, Divider, Grid, Typography } from "@mui/material";
+import { Box, Divider, Grid, Typography, Stack } from "@mui/material";
 import React from "react";
 import * as util from "../../redux/util";
 import dayjs from "dayjs";
 import { DoctorSignature } from "../general/DoctorSignature";
+import { Prescription } from "./Prescription";
 
-export default function MedicalCertificateForm({ certificate }) {
-  const { patient, date, report, purpose, type, totalRestDays, remarks } =
-    certificate;
-  const patientAge = `${dayjs(date).diff(
+export default function PrescriptionForm({ report }) {
+  const { details, queue } = report;
+  const prescriptions = details.prescriptions;
+  const patient = queue.patient;
+  const patientAge = `${dayjs(queue.date).diff(
     patient.birthDate,
     "year"
   )} year/s old`;
@@ -30,7 +32,7 @@ export default function MedicalCertificateForm({ certificate }) {
           <Grid item xs={6}>
             <Typography variant="subtitle1">Date:</Typography>
             <Typography variant="subtitle1">
-              {util.date(dayjs(date))}
+              {util.date(dayjs(queue.date))}
             </Typography>
             <Divider />
           </Grid>
@@ -46,7 +48,7 @@ export default function MedicalCertificateForm({ certificate }) {
           </Grid>
         </Grid>
         <Grid container spacing={2} mt={5}>
-          {/* <Grid item xs={2}>
+          <Grid item xs={2}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="100"
@@ -62,41 +64,16 @@ export default function MedicalCertificateForm({ certificate }) {
                 clip-rule="evenodd"
               ></path>
             </svg>
-          </Grid> */}
-          <Grid item xs={12}>
-            <Typography variant="body1"> To Whom It May Concern:</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body1">
-              {`This is to certify that ${util.name(patient)}, ${patientAge} ${
-                patient.gender
-              }, has been under my medical care/attention for ${
-                report.details.diagnosis
-              }.`}
-            </Typography>
-          </Grid>
-          {type === "FIT" && (
-            <Grid item xs={12}>
-              <Typography variant="body1">
-                {`I have conducted a medical evaluation of the patient and can confirm that they are now fit for ${util.medCertPurpose(
-                  purpose
-                )} without restrictions, effective ${util.date(dayjs(date))}.`}
-              </Typography>
-            </Grid>
-          )}
-          {type === "UNFIT" && (
-            <Grid item xs={12}>
-              <Typography variant="body1">
-                {`Based on the patient's medical condition, I consider that a period of absence from ${util.medCertPurpose(
-                  purpose
-                )} for ${totalRestDays} day/s starting on ${util.date(
-                  dayjs(date)
-                )} is absolutely necessary for the restoration of the patient's health.`}
-              </Typography>
-            </Grid>
-          )}
-          <Grid item xs={12}>
-            <Typography variant="body1">{remarks}</Typography>
+            <Stack>
+              {prescriptions.map((prescription) => (
+                <Prescription
+                  prescription={prescription}
+                  key={prescription.id}
+                />
+              ))}
+            </Stack>
           </Grid>
         </Grid>
         <Grid container mt={10} justifyContent={`end`}>
