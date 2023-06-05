@@ -128,6 +128,20 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
     });
   }
 
+  function isViewMcDisabled() {
+    if (userIsDoctor) {
+      const patientIsExamined =
+        !!report.details.diagnosis && !!report.details.prognosis;
+      return !patientIsExamined;
+    } else {
+      return !report.medicalCertificate;
+    }
+  }
+
+  function isViewReferralDisabled() {
+    return !form.management && form.labProcedures.length === 0;
+  }
+
   useEffect(() => {
     if (report) {
       const { details } = report;
@@ -264,15 +278,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <PrescriptionsSection
-                  form={form}
-                  onAdd={handleAddPrescription}
-                  onRemove={handleRemovePrescription}
-                  disabled={!userIsDoctor}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <ReportSectionHeader title="Additional remarks" />
+                <ReportSectionHeader title="Others" />
                 <Grid item xs={12}>
                   <TextField
                     value={form.management}
@@ -284,6 +290,14 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                     InputProps={{ readOnly: !userIsDoctor }}
                   />
                 </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <PrescriptionsSection
+                  form={form}
+                  onAdd={handleAddPrescription}
+                  onRemove={handleRemovePrescription}
+                  disabled={!userIsDoctor}
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -301,10 +315,16 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
         >
           Save
         </Button>
-        <Button variant="outlined" onClick={() => onViewMc(report)}>
+        <Button
+          variant="outlined"
+          onClick={() => onViewMc(report)}
+          disabled={isViewMcDisabled()}
+        >
           VIEW MC
         </Button>
-        <Button variant="outlined">VIEW REFERRAL</Button>
+        <Button variant="outlined" disabled={isViewReferralDisabled()}>
+          VIEW REFERRAL
+        </Button>
       </CardActions>
     </Card>
   );

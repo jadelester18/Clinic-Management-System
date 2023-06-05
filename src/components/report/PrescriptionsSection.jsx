@@ -45,34 +45,40 @@ export default function PrescriptionsSection({
     <>
       <ReportSectionHeader title={`Prescriptions`} />
       <Grid container spacing={2}>
-        {form.prescriptions.map((prescription, index) => (
-          <Fragment key={prescription.id}>
-            <Grid item xs={10}>
-              <Stack sx={styles.outline}>
-                <Stack direction={`row`} justifyContent={`space-between`}>
-                  <Typography variant="body2">
-                    {prescription.formulation}
-                  </Typography>
-                  <Typography variant="body2">{`# ${prescription.subscription}`}</Typography>
+        {form.prescriptions.length > 0 ? (
+          form.prescriptions.map((prescription, index) => (
+            <Fragment key={prescription.id}>
+              <Grid item xs={10}>
+                <Stack sx={styles.outline}>
+                  <Stack direction={`row`} justifyContent={`space-between`}>
+                    <Typography variant="body2">
+                      {prescription.formulation}
+                    </Typography>
+                    <Typography variant="body2">{`# ${prescription.subscription}`}</Typography>
+                  </Stack>
+                  <Typography variant="caption">{`Sig. ${util.signatura(
+                    prescription.signatura
+                  )}`}</Typography>
                 </Stack>
-                <Typography variant="caption">{`Sig. ${util.signatura(
-                  prescription.signatura
-                )}`}</Typography>
-              </Stack>
-            </Grid>
-            {!disabled && (
-              <Grid item xs={2}>
-                <Box sx={styles.buttonBox}>
-                  <Tooltip title="Remove prescription">
-                    <IconButton color="error" onClick={() => onRemove(index)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
               </Grid>
-            )}
-          </Fragment>
-        ))}
+              {!disabled && (
+                <Grid item xs={2}>
+                  <Box sx={styles.buttonBox}>
+                    <Tooltip title="Remove prescription">
+                      <IconButton color="error" onClick={() => onRemove(index)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Grid>
+              )}
+            </Fragment>
+          ))
+        ) : (
+          <Grid item xs={12}>
+            <Typography variant="body2">None</Typography>
+          </Grid>
+        )}
         {!disabled && (
           <Grid item xs={12} md={10}>
             <TextField

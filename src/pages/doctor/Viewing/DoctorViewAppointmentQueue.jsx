@@ -34,7 +34,7 @@ function DoctorViewAppointmentQueue() {
   const [isLoading, setIsLoading] = useState(false);
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
-  const [reportForMc, setReportForMc] = useState(false);
+  const [reportForMc, setReportForMc] = useState(null);
   const isMedCertOpen = !!reportForMc;
 
   async function fetchQueues() {
@@ -82,7 +82,9 @@ function DoctorViewAppointmentQueue() {
             prescriptionDtos
           );
       }
+
       fetchReports();
+
       onShowSuccess("Report updated!");
     } catch (error) {
       console.error(error);
@@ -142,8 +144,10 @@ function DoctorViewAppointmentQueue() {
     try {
       if (medCertId) {
         const { data } = await reportSvc.updateMedCert(medCertId, dto);
+        setReportForMc(data);
       } else {
         const { data } = await reportSvc.createMedCert(reportForMc.id, dto);
+        setReportForMc(data);
       }
       fetchReports();
       onShowSuccess("Medical Certificate saved!");
@@ -168,6 +172,7 @@ function DoctorViewAppointmentQueue() {
   useEffect(() => {
     if (date) {
       fetchQueues();
+      setReports([]);
     }
   }, [date]);
 
