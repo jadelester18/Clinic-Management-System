@@ -39,6 +39,7 @@ import {
 import SelectHonorific from "../../../../../general/SelectHonorific";
 import SelectBirthdate from "../../../../../general/SelectBirthdate";
 import SelectGender from "../../../../../general/SelectGender";
+import SelectCountry from "../../../../../general/SelectCountry";
 
 const CreatingNewWalkIn = ({ patient }) => {
   const [form, setForm] = useState({
@@ -75,16 +76,16 @@ const CreatingNewWalkIn = ({ patient }) => {
     setFilteredCities(filteredCities);
   };
 
-  function handleSelect(event, origin) {
+  function handleSelect(event, value, origin) {
     switch (origin) {
       case "honorific":
-        setForm({ ...form, honorific: event.target.value });
+        setForm({ ...form, honorific: value });
         break;
       case "birthDate":
-        setForm({ ...form, birthDate: event });
+        setForm({ ...form, birthDate: value });
         break;
       case "gender":
-        setForm({ ...form, gender: event.target.value });
+        setForm({ ...form, gender: value });
         break;
       default:
         throw new Error("Invalid input");
@@ -261,42 +262,11 @@ const CreatingNewWalkIn = ({ patient }) => {
             </Grid>
             {/* TODO: COUNTRY */}
             <Grid item xs={4}>
-              <Autocomplete
-                id="country-select-demo"
-                autoWidth
-                size="small"
-                options={countries.sort((a, b) =>
-                  a.label.localeCompare(b.label)
-                )}
-                autoHighlight
-                onChange={(event, value) => setCountry(value.label)}
-                getOptionLabel={(option) => option.label}
-                renderOption={(props, option) => (
-                  <Box
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...props}
-                  >
-                    <img
-                      loading="lazy"
-                      width="20"
-                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                      alt=""
-                    />
-                    {option.label}
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose a country"
-                    inputProps={{
-                      ...params.inputProps,
-                      autoComplete: "new-password",
-                    }}
-                  />
-                )}
+              <SelectCountry
+                value={form.country}
+                onSelect={(event, value) =>
+                  handleSelect(event, value, "country")
+                }
               />
             </Grid>
             {/* TODO: ADDRESS */}

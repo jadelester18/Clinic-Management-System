@@ -4,15 +4,11 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Dialog,
-  DialogContent,
   Grid,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import HelpIcon from "@mui/icons-material/Help";
 import VitalSignsSection from "./VitalSignsSection";
 import PatientSection from "./PatientSection";
 import LabProceduresSection from "./LabProceduresSection";
@@ -22,8 +18,6 @@ import { grey } from "@mui/material/colors";
 import ConsultationSection from "./ConsultationSection";
 import { useSelector } from "react-redux";
 import PrescriptionsSection from "./PrescriptionsSection";
-import MedicalCertificate from "../../pages/MedicalCertificate";
-import MedicalCertificateDialog from "./MedicalCertificateDialog";
 
 const INTEGER_TYPES = ["respiratoryRateBPM", "heartRateBPM"];
 const DOUBLE_TYPES = ["temperatureC", "oxygenSaturation"];
