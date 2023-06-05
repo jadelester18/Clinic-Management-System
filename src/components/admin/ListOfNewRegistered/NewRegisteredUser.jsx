@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -22,20 +23,18 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import React from "react";
 import CircleIcon from "@mui/icons-material/Circle";
-import PropTypes from "prop-types";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Paper from "@mui/material/Paper";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import * as patientService from "../../../redux/GetApiCalls/patient";
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
   height: 16,
   padding: 0,
-  //   display: "flex",
   "&:active": {
     "& .MuiSwitch-thumb": {
       width: 15,
@@ -76,6 +75,49 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const NewRegisteredUser = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [patients, setPatients] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    searchPatients();
+  }, [firstName, lastName, page, rowsPerPage]);
+
+  const searchPatients = async () => {
+    try {
+      const { data: patientPage } = await patientService.searchPatients({
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
+        pageNo: page,
+        pageSize: rowsPerPage,
+      });
+      setPatients(patientPage.content);
+      setCount(patientPage.totalElements);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangeFirstName = (event) => {
+    setFirstName(event.target.value);
+  };
+
+  const handleChangeLastName = (event) => {
+    setLastName(event.target.value);
+  };
+
   return (
     <Box>
       <Card>
@@ -86,21 +128,25 @@ const NewRegisteredUser = () => {
             </Grid>
             <Grid item>
               <TextField
-                id="outlined-basic"
+                id="firstName"
                 label="First Name"
                 variant="outlined"
                 size="small"
+                value={firstName}
+                onChange={handleChangeFirstName}
               />
             </Grid>
             <Grid item>
               <TextField
-                id="outlined-basic"
+                id="lastName"
                 label="Last Name"
                 variant="outlined"
                 size="small"
+                value={lastName}
+                onChange={handleChangeLastName}
               />
             </Grid>
-            <Grid item md={6}></Grid>
+            <Grid item md={6} />
             <Grid item color="red" ali>
               <CircleIcon />{" "}
             </Grid>
@@ -134,8 +180,8 @@ const NewRegisteredUser = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
-                    <Row key={row.name} row={row} />
+                  {patients.map((patient) => (
+                    <Row key={patient.id} patient={patient} />
                   ))}
                 </TableBody>
               </Table>
@@ -143,11 +189,11 @@ const NewRegisteredUser = () => {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={rows.length}
-              // rowsPerPage={rowsPerPage}
-              // page={page}
-              // onPageChange={handleChangePage}
-              // onRowsPerPageChange={handleChangeRowsPerPage}
+              count={count}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Paper>
         </CardContent>
@@ -158,12 +204,11 @@ const NewRegisteredUser = () => {
 
 export default NewRegisteredUser;
 
-function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
+function Row({ patient }) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
@@ -175,14 +220,17 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {patient.firstName}
         </TableCell>
-        <TableCell align="right">{row.status}</TableCell>
-        <TableCell align="right">{row.address}</TableCell>
-        <TableCell align="right">{row.birthdate}</TableCell>
-        <TableCell align="right">{row.contact}</TableCell>
-        <TableCell align="right">{row.email}</TableCell>
-        <TableCell align="right">{row.action}</TableCell>
+        <TableCell align="right">{patient.status}</TableCell>
+        <TableCell align="right">{patient.address.street}</TableCell>
+        <TableCell align="right">{patient.birthDate}</TableCell>
+        <TableCell align="right">{patient.contactNo}</TableCell>
+        <TableCell align="right">{patient.email}</TableCell>
+        <TableCell align="right">
+          <Button>Approve</Button>
+          <Button>Reject</Button>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -197,82 +245,74 @@ function Row(props) {
                     <TableCell>ID Type</TableCell>
                     <TableCell>ID No.</TableCell>
                     <TableCell align="right">Action</TableCell>
-                    {/* <TableCell align="right">Total price ($)</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.idType}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.idType}
+                  {Array.isArray(patient.idInformation) ? (
+                    patient.idInformation.map((idInfo) => (
+                      <TableRow key={idInfo.id}>
+                        <TableCell component="th" scope="row">
+                          {idInfo.idType.type}
+                        </TableCell>
+                        <TableCell>{idInfo.idNumber}</TableCell>
+                        <TableCell align="right">
+                          <Button href={idInfo.idFileUrl} target="_blank">
+                            View ID
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3}>
+                        No ID information available
                       </TableCell>
-                      <TableCell>{historyRow.idNumber}</TableCell>
-                      <TableCell align="right">{historyRow.viewId}</TableCell>
-                      {/* <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell> */}
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 
 //For Contents with sub Content
-function createData(name, status, address, birthdate, contact, email, action) {
-  return {
-    name,
-    status,
-    address,
-    birthdate,
-    contact,
-    email,
-    action,
-    history: [
-      {
-        idType: "Passport",
-        idNumber: "11091700",
-        viewId: <Button variant="contained">View</Button>,
-      },
-      {
-        idType: "Drivers License",
-        idNumber: "11091700",
-        viewId: <Button variant="contained">View</Button>,
-      },
-    ],
-  };
-}
+// function createData(
+//   firstName,
+//   status,
+//   address,
+//   birthDate,
+//   contactNo,
+//   email,
+//   action,
+//   idInformation
+// ) {
+//   return {
+//     firstName,
+//     status,
+//     address,
+//     birthDate,
+//     contactNo,
+//     email,
+//     action,
+//     idInformation,
+//   };
+// }
 
-//For the Main Content
-const rows = [
-  createData(
-    "Gon Freecss",
-    <Grid container spacing={1} justifyContent={"right"}>
-      <Grid item color="red">
-        <CircleIcon />
-      </Grid>
-      <Grid item color="red">
-        <Typography> Disabled</Typography>
-      </Grid>
-    </Grid>,
-    "Pio Del Pilar, Makati City, Philippines",
-    "Jan 13, 1998",
-    "+639123456789",
-    "sample@gmail.com",
-    <Box flexDirection={"row"}>
-      {/* <Stack direction="row" spacing={1} alignItems="center"> */}
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-];
+// NewRegisteredUser.propTypes = {
+//   patients: PropTypes.array.isRequired,
+//   count: PropTypes.number.isRequired,
+//   page: PropTypes.number.isRequired,
+//   rowsPerPage: PropTypes.number.isRequired,
+//   setPatients: PropTypes.func.isRequired,
+//   setCount: PropTypes.func.isRequired,
+//   setPage: PropTypes.func.isRequired,
+//   setRowsPerPage: PropTypes.func.isRequired,
+// };
+
+// Row.propTypes = {
+//   patient: PropTypes.object.isRequired,
+// };

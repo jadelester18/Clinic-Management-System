@@ -251,6 +251,7 @@ function Register({ handleCloseRegister }) {
 
     console.log(data);
     signup(dispatch, data);
+    handleCloseRegister();
   };
 
   // Rest of the component code...
@@ -843,7 +844,6 @@ function Register({ handleCloseRegister }) {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             onClick={() => {
-              handleCloseRegister();
               handleClick();
             }}
           >

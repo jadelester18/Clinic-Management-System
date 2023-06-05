@@ -273,12 +273,14 @@ const PatientLeftBar = () => {
           <List sx={{ width: "100%", maxWidth: 360 }} dense>
             <ListItem disablePadding>
               {/* <ListItemButton> */}
-              <ListItemAvatar>
+              {/* <ListItemAvatar>
                 <Avatar
                   src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU`}
                 />
-              </ListItemAvatar>
-              <ListItemText variant="subtitle1" primary="Intellicare" />
+              </ListItemAvatar> */}
+              {userPatientDetails?.hmoCards.map((hmo) => (
+                <ListItemText variant="subtitle1" primary={hmo} />
+              ))}
               {/* </ListItemButton> */}
             </ListItem>
             <Divider variant="inset" component="li" />
