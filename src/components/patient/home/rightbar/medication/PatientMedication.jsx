@@ -39,49 +39,47 @@ const PatientMedication = ({ report }) => {
   });
   return (
     <>
-      <Card sx={{ maxWidth: { md: 400 }, borderRadius: 10, boxShadow: 10 }}>
-        <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: green[500] }} aria-label="recipe">
-              <MedicationLiquidIcon />
-            </Avatar>
-          }
-          subheader={<Typography variant="h6">Prescription</Typography>}
-          action={
-            <Tooltip title="Print prescription">
-              <IconButton
-                color="primary"
-                disabled={!hasPrescriptions}
-                onClick={handlePrint}
-              >
-                <PrintIcon />
-              </IconButton>
-            </Tooltip>
-          }
-        />
-        <Divider variant="middle" />
-        <CardContent>
-          <Box sx={{ maxWidth: 400 }}>
-            {report && hasPrescriptions ? (
-              report.details?.prescriptions.map((prescription) => (
-                <>
-                  <Prescription
-                    key={prescription.id}
-                    prescription={prescription}
-                  />
-                  <Divider variant="middle" />
-                </>
-              ))
-            ) : (
-              <Box>
-                <Typography variant="body1">
-                  No prescriptions at this time
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </CardContent>
-      </Card>
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: green[500] }} aria-label="recipe">
+            <MedicationLiquidIcon />
+          </Avatar>
+        }
+        subheader={<Typography variant="h6">Prescription</Typography>}
+        action={
+          <Tooltip title="Print prescription">
+            <IconButton
+              color="primary"
+              disabled={!hasPrescriptions}
+              onClick={handlePrint}
+            >
+              <PrintIcon />
+            </IconButton>
+          </Tooltip>
+        }
+      />
+      <Divider variant="middle" />
+      <CardContent>
+        <Box sx={{ maxWidth: 400 }}>
+          {report && hasPrescriptions ? (
+            report.details?.prescriptions.map((prescription) => (
+              <>
+                <Prescription
+                  key={prescription.id}
+                  prescription={prescription}
+                />
+                <Divider variant="middle" />
+              </>
+            ))
+          ) : (
+            <Box>
+              <Typography variant="body1">
+                No prescriptions at this time
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </CardContent>
       <Box display={`none`}>
         <ClinicForm componentRef={componentRef}>
           {report && <PrescriptionForm report={report} />}
