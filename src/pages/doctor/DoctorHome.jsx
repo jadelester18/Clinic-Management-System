@@ -323,7 +323,12 @@ function DoctorHome({ toggleMode, mode }) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ fontFamily: "Archer ", fontWeight: 1000 }}
+            >
               Grand Budapest Clinic
             </Typography>
             {/* For Dark Mode Toggle Button */}
