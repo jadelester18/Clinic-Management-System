@@ -66,9 +66,7 @@ function Register({ handleCloseRegister }) {
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [country, setCountry] = React.useState("");
   const [province, setProvince] = React.useState("");
-  console.log("province", province);
   const [city, setCity] = React.useState("");
-  console.log("city", city);
   const [barangay, setBarangay] = React.useState([]);
   const [street, setStreet] = React.useState("");
   const [postalCode, setPostalCode] = React.useState("");
@@ -82,62 +80,16 @@ function Register({ handleCloseRegister }) {
   const [filePreview, setFilePreview] = useState(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    setIdFileUrl(file);
-    setFileName(file?.name);
-
-    if (file.type === "application/pdf") {
-      // setFilePreview(URL.createObjectURL(file));
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setFilePreview(null);
-    }
-  };
-
-  const handleViewClick = () => {
-    setViewModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setViewModalOpen(false);
-  };
-
-  const handleRemoveClick = () => {
-    setIdFileUrl(null);
-    setFileName("");
-    setFilePreview(null);
-  };
-
-  const handleViewInNewTab = () => {
-    window.open(URL.createObjectURL(idFileUrl), "_blank");
-  };
-
-  //For Handling the Joi Error message
-  const [fieldErrors, setFieldErrors] = useState({});
-
-  console.log(fieldErrors);
-
   // Update contactNo whenever code or phone change
   React.useEffect(() => {
     setContactNo(code + phone);
   }, [code, phone]);
 
-  //For Form Register
-  const dispatch = useDispatch();
-  const handleClick = (e) => {
-    // e.preventDefault();
+  //For Handling the Joi Error message
+  const [fieldErrors, setFieldErrors] = useState({});
 
+  //For Checking Real Time the Input of User if valid
+  const handleInputChange = (fieldName, value) => {
     // Joi validation schema
     const schema = Joi.object({
       honorific: Joi.string().required(),
@@ -213,6 +165,120 @@ function Register({ handleCloseRegister }) {
       idFileUrl: Joi.string().required(),
     });
 
+    // Update the field value in state
+    switch (fieldName) {
+      case "honorific":
+        setHonorific(value);
+        break;
+      case "firstName":
+        setFirstName(value);
+        break;
+      case "middleName":
+        setMiddleName(value);
+        break;
+      case "lastName":
+        setLastName(value);
+        break;
+      case "suffixName":
+        setSuffixName(value);
+        break;
+      case "birthDate":
+        setBirthDate(value);
+        break;
+      case "gender":
+        setGender(value);
+        break;
+      case "contactNo":
+        setContactNo(value);
+        break;
+      case "email":
+        setEmail(value);
+        break;
+      case "password":
+        setPassword(value);
+        break;
+      case "confirmPassword":
+        setConfirmPassword(value);
+        break;
+      case "country":
+        setCountry(value);
+        break;
+      case "province":
+        setProvince(value);
+        break;
+      case "city":
+        setCity(value);
+        break;
+      case "barangay":
+        setBarangay(value);
+        break;
+      case "street":
+        setStreet(value);
+        break;
+      case "postalCode":
+        setPostalCode(value);
+        break;
+      case "idTypeId":
+        setIdTypeId(value);
+        break;
+      case "idNumber":
+        setIdNumber(value);
+        break;
+      case "idFileUrl":
+        setIdFileUrl(value);
+        break;
+      default:
+        break;
+    }
+
+    // Validate the input using Joi
+    const { error } = schema.validate(
+      {
+        honorific,
+        firstName,
+        middleName,
+        lastName,
+        suffixName,
+        birthDate,
+        gender,
+        contactNo,
+        email,
+        password,
+        confirmPassword,
+        country,
+        province,
+        city,
+        barangay,
+        street,
+        postalCode,
+        idTypeId,
+        idNumber,
+        idFileUrl,
+      },
+      { abortEarly: false }
+    );
+    // Update the field error in state
+    if (error) {
+      const errorMessages = {};
+      error.details.forEach((err) => {
+        const fieldName = err.path[0];
+        const errorMessage = err.message;
+        errorMessages[fieldName] = errorMessage;
+      });
+      setFieldErrors(errorMessages);
+    } else {
+      setFieldErrors({});
+      handleCloseRegister();
+    }
+  };
+
+  //For Form Register
+  const dispatch = useDispatch();
+  const handleClick = (e) => {
+    // e.preventDefault();
+    if (Object.keys(fieldErrors).length > 0) {
+      return;
+    }
     const data = {
       honorific,
       firstName,
@@ -235,26 +301,47 @@ function Register({ handleCloseRegister }) {
       idNumber,
       idFileUrl,
     };
-
-    const { error } = schema.validate(data, { abortEarly: false });
-
-    if (error) {
-      const errorMessages = {};
-      error.details.forEach((err) => {
-        const fieldName = err.path[0];
-        const errorMessage = err.message;
-        errorMessages[fieldName] = errorMessage;
-      });
-      setFieldErrors(errorMessages);
-      return;
-    }
-
-    console.log(data);
     signup(dispatch, data);
-    handleCloseRegister();
   };
 
-  // Rest of the component code...
+  const handleFileChange = (event) => {
+    handleInputChange("idFileUrl", event.target.files[0]);
+    const file = event.target.files[0];
+    setIdFileUrl(file);
+    setFileName(file?.name);
+
+    if (file.type === "application/pdf") {
+      // setFilePreview(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFilePreview(null);
+    }
+  };
+
+  const handleViewClick = () => {
+    setViewModalOpen(true);
+  };
+  const handleCloseModal = () => {
+    setViewModalOpen(false);
+  };
+  const handleRemoveClick = () => {
+    setIdFileUrl(null);
+    setFileName("");
+    setFilePreview(null);
+  };
+  const handleViewInNewTab = () => {
+    window.open(URL.createObjectURL(idFileUrl), "_blank");
+  };
 
   //Fetching the IDs Type
   useEffect(() => {
@@ -268,7 +355,6 @@ function Register({ handleCloseRegister }) {
         console.error(error);
       }
     };
-
     fetchIdTypeIdListData();
   }, []);
 
@@ -279,8 +365,6 @@ function Register({ handleCloseRegister }) {
   };
 
   dayjs.extend(customParseFormat);
-
-  const currentUrl = window.location.href;
 
   const [selectedProvince, setSelectedProvince] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
@@ -346,7 +430,9 @@ function Register({ handleCloseRegister }) {
                   id="demo-simple-select-autowidth"
                   value={honorific}
                   label="Honorific"
-                  onChange={(e) => setHonorific(e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("honorific", e.target.value)
+                  }
                   autoWidth
                 >
                   <MenuItem value={"Mr."}>Mr.</MenuItem>
@@ -364,7 +450,7 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="First Name"
                 autoComplete="First Name"
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
                 helperText={fieldErrors.firstName || " "}
                 error={Boolean(fieldErrors.firstName)}
               />
@@ -376,7 +462,9 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="Middle Name"
                 autoComplete="Middle Name"
-                onChange={(e) => setMiddleName(e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("middleName", e.target.value)
+                }
                 helperText={fieldErrors.middleName || " "}
                 error={Boolean(fieldErrors.middleName)}
               />
@@ -388,7 +476,7 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="Last Name"
                 autoComplete="Last Name"
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
                 helperText={fieldErrors.lastName || " "}
                 error={Boolean(fieldErrors.lastName)}
               />
@@ -399,7 +487,9 @@ function Register({ handleCloseRegister }) {
                 name="suffix"
                 label="Suffix"
                 autoComplete="Suffix"
-                onChange={(e) => setSuffixName(e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("suffixName", e.target.value)
+                }
                 helperText={fieldErrors.suffixName || " "}
                 error={Boolean(fieldErrors.suffixName)}
               />
@@ -410,8 +500,11 @@ function Register({ handleCloseRegister }) {
                 <DatePicker
                   label="BirthDate"
                   value={birthDate ? dayjs(birthDate) : null}
-                  onChange={(newValue) =>
-                    setBirthDate(newValue.format("YYYY-MM-DD"))
+                  onChange={(e) =>
+                    handleInputChange(
+                      "birthDate",
+                      e.target.value.format("YYYY-MM-DD")
+                    )
                   }
                   renderInput={(props) => (
                     <TextField
@@ -443,7 +536,7 @@ function Register({ handleCloseRegister }) {
                   value={gender}
                   label="Gender"
                   autoWidth
-                  onChange={(e) => setGender(e.target.value)}
+                  onChange={(e) => handleInputChange("gender", e.target.value)}
                 >
                   <MenuItem value={"MALE"}>Male</MenuItem>
                   <MenuItem value={"FEMALE"}>Female</MenuItem>
@@ -516,7 +609,9 @@ function Register({ handleCloseRegister }) {
                   inputProps={{
                     maxLength: 10,
                   }}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("contactNo", e.target.value)
+                  }
                   error={Boolean(fieldErrors.contactNo)}
                 />
               </Stack>
@@ -531,7 +626,7 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="Email"
                 autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 helperText={fieldErrors.email || " "}
                 error={Boolean(fieldErrors.email)}
               />
@@ -556,7 +651,7 @@ function Register({ handleCloseRegister }) {
                     </InputAdornment>
                   ),
                 }}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
                 helperText={fieldErrors.password || " "}
                 error={Boolean(fieldErrors.password)}
               />
@@ -581,7 +676,9 @@ function Register({ handleCloseRegister }) {
                     </InputAdornment>
                   ),
                 }}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("confirmPassword", e.target.value)
+                }
                 helperText={fieldErrors.confirmPassword || " "}
                 error={Boolean(fieldErrors.confirmPassword)}
               />
@@ -607,11 +704,11 @@ function Register({ handleCloseRegister }) {
                   a.label.localeCompare(b.label)
                 )}
                 autoHighlight
-                value={
-                  country ? countries.find((c) => c.label === country) : null
-                }
+                // value={
+                //   country ? countries.find((c) => c.label === country) : null
+                // }
                 onChange={(event, value) =>
-                  setCountry(value ? value.label : "")
+                  handleInputChange("country", value ? value.label : "")
                 }
                 getOptionLabel={(option) => option.label}
                 renderOption={(props, option) => (
@@ -651,7 +748,7 @@ function Register({ handleCloseRegister }) {
                 options={provinces}
                 autoHighlight
                 onChange={(event, value) => {
-                  setProvince(value ? value.name : "");
+                  handleInputChange("province", value ? value.name : "");
                   handleProvinceChange(value);
                 }}
                 getOptionLabel={(option) => option.name}
@@ -687,7 +784,9 @@ function Register({ handleCloseRegister }) {
                 value={
                   city ? filteredCities.find((c) => c.name === city) : null
                 }
-                onChange={(event, value) => setCity(value ? value.name : "")}
+                onChange={(event, value) =>
+                  handleInputChange("city", value ? value.name : "")
+                }
                 getOptionLabel={(option) => option.name}
                 renderOption={(props, option) => (
                   <Box
@@ -719,7 +818,7 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="Barangay"
                 autoComplete="barangay"
-                onChange={(e) => setBarangay(e.target.value)}
+                onChange={(e) => handleInputChange("barangay", e.target.value)}
                 helperText={fieldErrors.barangay || " "}
                 error={Boolean(fieldErrors.barangay)}
               />
@@ -731,7 +830,7 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="Zone/Street"
                 autoComplete="Street"
-                onChange={(e) => setStreet(e.target.value)}
+                onChange={(e) => handleInputChange("street", e.target.value)}
                 helperText={fieldErrors.street || " "}
                 error={Boolean(fieldErrors.street)}
               />
@@ -743,7 +842,9 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="postal Code"
                 autoComplete="postalCode"
-                onChange={(e) => setPostalCode(e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("postalCode", e.target.value)
+                }
                 helperText={fieldErrors.postalCode || " "}
                 error={Boolean(fieldErrors.postalCode)}
               />
@@ -771,7 +872,9 @@ function Register({ handleCloseRegister }) {
                 id="id-type-select"
                 options={idTypeIdList}
                 autoHighlight
-                onChange={(event, value) => setIdTypeId(value?.id)}
+                onChange={(event, value) =>
+                  handleInputChange("idTypeId", value ? value.id : "")
+                }
                 helperText={fieldErrors.idTypeId || " "}
                 error={Boolean(fieldErrors.idTypeId)}
                 getOptionLabel={(option) => option?.type}
@@ -796,7 +899,7 @@ function Register({ handleCloseRegister }) {
                 fullWidth
                 label="ID Number"
                 autoComplete="idNumber"
-                onChange={(e) => setIdNumber(e.target.value)}
+                onChange={(e) => handleInputChange("idNumber", e.target.value)}
                 helperText={fieldErrors.idNumber || " "}
                 error={Boolean(fieldErrors.idNumber)}
               />
@@ -846,6 +949,7 @@ function Register({ handleCloseRegister }) {
             onClick={() => {
               handleClick();
             }}
+            disabled={Object.keys(fieldErrors).length > 0}
           >
             Submit
           </Button>
@@ -879,5 +983,4 @@ function Register({ handleCloseRegister }) {
     </Container>
   );
 }
-
 export default Register;
