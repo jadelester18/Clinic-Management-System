@@ -123,7 +123,7 @@ const PatientLeftBar = () => {
   return (
     <Card
       sx={{
-        // maxWidth: { xs: 900, md: 360 },
+        maxWidth: { xs: 900, md: 360 },
         width: { xs: 360, sm: 600, md: 400 },
         justifyContent: "center",
         alignItems: "center",

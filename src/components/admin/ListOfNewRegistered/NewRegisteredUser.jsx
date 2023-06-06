@@ -20,6 +20,7 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -30,6 +31,9 @@ import Paper from "@mui/material/Paper";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import * as patientService from "../../../redux/GetApiCalls/patient";
+import EditIcon from "@mui/icons-material/Edit";
+import BlockIcon from "@mui/icons-material/Block";
+import * as util from "../../../redux/util";
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -95,6 +99,7 @@ const NewRegisteredUser = () => {
         pageSize: rowsPerPage,
       });
       setPatients(patientPage.content);
+      console.log(patientPage);
       setCount(patientPage.totalElements);
     } catch (error) {
       console.error(error);
@@ -147,7 +152,7 @@ const NewRegisteredUser = () => {
               />
             </Grid>
             <Grid item md={6} />
-            <Grid item color="red" ali>
+            <Grid item color="red">
               <CircleIcon />{" "}
             </Grid>
             <Grid item>
@@ -220,16 +225,35 @@ function Row({ patient }) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {patient.firstName}
+          {/* {patient.firstName} */}
+          {util.name(patient)}
         </TableCell>
-        <TableCell align="right">{patient.status}</TableCell>
-        <TableCell align="right">{patient.address.street}</TableCell>
-        <TableCell align="right">{patient.birthDate}</TableCell>
+        <TableCell align="right">
+          {patient.account.enabled === true ? (
+            <Grid item color="green">
+              <CircleIcon />{" "}
+            </Grid>
+          ) : (
+            <Grid item color="red">
+              <CircleIcon />{" "}
+            </Grid>
+          )}
+        </TableCell>
+        {/* <TableCell align="right">{util.fullAddress(patient.address)}</TableCell> */}
+        <TableCell align="right">{util.fullAddress(patient.address)}</TableCell>
+        <TableCell align="right">{util.date(patient.birthDate)}</TableCell>
         <TableCell align="right">{patient.contactNo}</TableCell>
         <TableCell align="right">{patient.email}</TableCell>
         <TableCell align="right">
-          <Button>Approve</Button>
-          <Button>Reject</Button>
+          {/* <Tooltip title="Reject/Block">
+            <IconButton sx={{ color: "green" }}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip> */}
+
+          <Tooltip title="Approve">
+            <Switch checked={patient.account.enabled ? true : false} />
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -248,27 +272,25 @@ function Row({ patient }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {Array.isArray(patient.idInformation) ? (
-                    patient.idInformation.map((idInfo) => (
-                      <TableRow key={idInfo.id}>
-                        <TableCell component="th" scope="row">
-                          {idInfo.idType.type}
-                        </TableCell>
-                        <TableCell>{idInfo.idNumber}</TableCell>
-                        <TableCell align="right">
-                          <Button href={idInfo.idFileUrl} target="_blank">
-                            View ID
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
+                  <TableRow key={patient.id}>
+                    <TableCell component="th" scope="row">
+                      {patient.idInformation.idType.type}
+                    </TableCell>
+                    <TableCell>{patient.idInformation.idNumber}</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        href={patient.idInformation.idFileUrl}
+                        target="_blank"
+                      >
+                        View ID
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  {/* <TableRow>
                       <TableCell colSpan={3}>
                         No ID information available
                       </TableCell>
-                    </TableRow>
-                  )}
+                    </TableRow> */}
                 </TableBody>
               </Table>
             </Box>
@@ -278,41 +300,3 @@ function Row({ patient }) {
     </>
   );
 }
-
-//For Contents with sub Content
-// function createData(
-//   firstName,
-//   status,
-//   address,
-//   birthDate,
-//   contactNo,
-//   email,
-//   action,
-//   idInformation
-// ) {
-//   return {
-//     firstName,
-//     status,
-//     address,
-//     birthDate,
-//     contactNo,
-//     email,
-//     action,
-//     idInformation,
-//   };
-// }
-
-// NewRegisteredUser.propTypes = {
-//   patients: PropTypes.array.isRequired,
-//   count: PropTypes.number.isRequired,
-//   page: PropTypes.number.isRequired,
-//   rowsPerPage: PropTypes.number.isRequired,
-//   setPatients: PropTypes.func.isRequired,
-//   setCount: PropTypes.func.isRequired,
-//   setPage: PropTypes.func.isRequired,
-//   setRowsPerPage: PropTypes.func.isRequired,
-// };
-
-// Row.propTypes = {
-//   patient: PropTypes.object.isRequired,
-// };

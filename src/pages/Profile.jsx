@@ -385,7 +385,7 @@ function Profile() {
           }}
         >
           <LeftBarProfile />
-          <VideoProfileContent />
+          {/* <VideoProfileContent /> */}
         </Stack>
       </Box>
     </Box>

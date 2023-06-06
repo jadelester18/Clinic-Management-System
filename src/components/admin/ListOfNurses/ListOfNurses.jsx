@@ -15,8 +15,10 @@ import {
   CardContent,
   Grid,
   IconButton,
+  Stack,
   Switch,
   TextField,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -24,6 +26,10 @@ import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import * as nurseService from "../../../redux/GetApiCalls/nurse";
 import * as util from "../../../redux/util";
+import EditIcon from "@mui/icons-material/Edit";
+import BlockIcon from "@mui/icons-material/Block";
+import CircleIcon from "@mui/icons-material/Circle";
+import { Circle } from "@mui/icons-material";
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -175,7 +181,26 @@ export default function ListOfNurses() {
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h5" component="div"></Typography>
+              <Stack direction="row" spacing={2}>
+                <Grid item color="gray">
+                  <Circle fontSize="3" />
+                </Grid>
+                <Typography variant="body1" component="div">
+                  Disabled
+                </Typography>
+                <Grid item color="green">
+                  <Circle fontSize="3" />
+                </Grid>
+                <Typography variant="body1" component="div">
+                  Active
+                </Typography>
+                <Grid item color="red">
+                  <Circle fontSize="3" />
+                </Grid>
+                <Typography variant="body1" component="div">
+                  Restricted
+                </Typography>
+              </Stack>
             </Grid>
             <Grid item xs={12} md={2} textAlign={"right"}>
               <Typography>Filter By:</Typography>
@@ -232,11 +257,46 @@ export default function ListOfNurses() {
                         key={nurse.id}
                       >
                         <TableCell>
-                          <Avatar>
-                            {nurse.avatarUrl === null || ""
-                              ? nurse.firstName.charAt(0)
-                              : nurse.avatarUrl}
-                          </Avatar>
+                          <Box sx={{ position: "relative" }}>
+                            <Avatar>
+                              {nurse.avatarUrl === null || ""
+                                ? nurse.firstName.charAt(0)
+                                : nurse.avatarUrl}
+                            </Avatar>
+                            {nurse.account.status === "NEW" ? (
+                              <Typography
+                                variant="contained"
+                                sx={stylesStatus.button}
+                                color="gray"
+                              >
+                                <CircleIcon />
+                              </Typography>
+                            ) : (
+                              ""
+                            )}
+                            {nurse.account.status === "VERIFIED" ? (
+                              <Typography
+                                variant="contained"
+                                sx={stylesStatus.button}
+                                color="green"
+                              >
+                                <CircleIcon />
+                              </Typography>
+                            ) : (
+                              ""
+                            )}
+                            {nurse.account.status === "RESTRICTED" ? (
+                              <Typography
+                                variant="contained"
+                                sx={stylesStatus.button}
+                                color="red"
+                              >
+                                <CircleIcon />
+                              </Typography>
+                            ) : (
+                              ""
+                            )}
+                          </Box>
                         </TableCell>
                         <TableCell>{util.name(nurse)}</TableCell>
                         <TableCell>{util.fullAddress(nurse.address)}</TableCell>
@@ -244,8 +304,25 @@ export default function ListOfNurses() {
                         <TableCell>{nurse.contactNo}</TableCell>
                         <TableCell>{nurse.registeredAt}</TableCell>
                         <TableCell>
-                          <Button>Edit</Button>
-                          <Button>Disable</Button>
+                          <Tooltip title="Reject/Block">
+                            <IconButton sx={{ color: "green" }}>
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Reject/Block">
+                            <IconButton sx={{ color: "red" }}>
+                              <BlockIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Approve">
+                            <Switch
+                              checked={
+                                nurse.account.status === "VERIFIED"
+                                  ? true
+                                  : false
+                              }
+                            />
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     );
@@ -267,3 +344,15 @@ export default function ListOfNurses() {
     </Box>
   );
 }
+
+const stylesStatus = {
+  button: {
+    position: "absolute",
+    top: -25,
+    right: { xs: 80, xl: 90 },
+    zIndex: 1,
+    margin: "1rem",
+    borderRadius: "100%",
+    height: 60,
+  },
+};
