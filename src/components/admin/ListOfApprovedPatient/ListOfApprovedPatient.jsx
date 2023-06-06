@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -19,24 +20,26 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
-import React from "react";
 import CircleIcon from "@mui/icons-material/Circle";
-import PropTypes from "prop-types";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Paper from "@mui/material/Paper";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import * as patientService from "../../../redux/GetApiCalls/patient";
+import EditIcon from "@mui/icons-material/Edit";
+import BlockIcon from "@mui/icons-material/Block";
+import * as util from "../../../redux/util";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
   height: 16,
   padding: 0,
-  //   display: "flex",
   "&:active": {
     "& .MuiSwitch-thumb": {
       width: 15,
@@ -77,6 +80,50 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const ListOfApprovedPatient = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [patients, setPatients] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    searchPatients();
+  }, [firstName, lastName, page, rowsPerPage]);
+
+  const searchPatients = async () => {
+    try {
+      const { data: patientPage } = await patientService.searchPatients({
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
+        pageNo: page,
+        pageSize: rowsPerPage,
+      });
+      setPatients(patientPage.content);
+      console.log(patientPage);
+      setCount(patientPage.totalElements);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangeFirstName = (event) => {
+    setFirstName(event.target.value);
+  };
+
+  const handleChangeLastName = (event) => {
+    setLastName(event.target.value);
+  };
+
   return (
     <Box>
       <Card>
@@ -87,38 +134,42 @@ const ListOfApprovedPatient = () => {
             </Grid>
             <Grid item>
               <TextField
-                id="outlined-basic"
+                id="firstName"
                 label="First Name"
                 variant="outlined"
                 size="small"
+                value={firstName}
+                onChange={handleChangeFirstName}
               />
             </Grid>
             <Grid item>
               <TextField
-                id="outlined-basic"
+                id="lastName"
                 label="Last Name"
                 variant="outlined"
                 size="small"
+                value={lastName}
+                onChange={handleChangeLastName}
               />
             </Grid>
-            <Grid item xs={4} sm={4} md={1} lg={3.5} xl={5.5}></Grid>
-            <Grid item color="red">
-              <CircleIcon />{" "}
+            <Grid item md={5} />
+            <Grid item color="gray">
+              <VerifiedIcon />{" "}
             </Grid>
             <Grid item>
-              <Typography>Disabled</Typography>
-            </Grid>
-            <Grid item color="green">
-              <CircleIcon />{" "}
-            </Grid>
-            <Grid item>
-              <Typography>Verified</Typography>
+              <Typography>New</Typography>
             </Grid>
             <Grid item color="gold">
-              <CircleIcon />{" "}
+              <VerifiedIcon />{" "}
             </Grid>
             <Grid item>
               <Typography>Approved</Typography>
+            </Grid>
+            <Grid item color="red">
+              <VerifiedIcon />{" "}
+            </Grid>
+            <Grid item>
+              <Typography>Restricted</Typography>
             </Grid>
           </Grid>
         </CardContent>
@@ -141,8 +192,8 @@ const ListOfApprovedPatient = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {rows.map((row) => (
-                    <Row key={row.name} row={row} />
+                  {patients.map((patient) => (
+                    <Row key={patient.id} patient={patient} />
                   ))}
                 </TableBody>
               </Table>
@@ -150,11 +201,11 @@ const ListOfApprovedPatient = () => {
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
-              count={rows.length}
-              // rowsPerPage={rowsPerPage}
-              // page={page}
-              // onPageChange={handleChangePage}
-              // onRowsPerPageChange={handleChangeRowsPerPage}
+              count={count}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </Paper>
         </CardContent>
@@ -165,12 +216,11 @@ const ListOfApprovedPatient = () => {
 
 export default ListOfApprovedPatient;
 
-function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
+function Row({ patient }) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
@@ -182,14 +232,54 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {/* {patient.firstName} */}
+          {util.name(patient)}
         </TableCell>
-        <TableCell align="right">{row.status}</TableCell>
-        <TableCell align="right">{row.address}</TableCell>
-        <TableCell align="right">{row.birthdate}</TableCell>
-        <TableCell align="right">{row.contact}</TableCell>
-        <TableCell align="right">{row.email}</TableCell>
-        <TableCell align="right">{row.action}</TableCell>
+        <TableCell align="right">
+          {patient.account.status === "NEW" ? (
+            <Grid item color="gray">
+              <VerifiedIcon />{" "}
+            </Grid>
+          ) : (
+            ""
+          )}{" "}
+          {patient.account.status === "VERIFIED" ? (
+            <Grid item color="gold">
+              <VerifiedIcon />{" "}
+            </Grid>
+          ) : (
+            ""
+          )}{" "}
+          {patient.account.status === "RESTRICTED" ? (
+            <Grid item color="red">
+              <VerifiedIcon />{" "}
+            </Grid>
+          ) : (
+            ""
+          )}
+        </TableCell>
+        {/* <TableCell align="right">{util.fullAddress(patient.address)}</TableCell> */}
+        <TableCell align="right">{util.fullAddress(patient.address)}</TableCell>
+        <TableCell align="right">{util.date(patient.birthDate)}</TableCell>
+        <TableCell align="right">{patient.contactNo}</TableCell>
+        <TableCell align="right">{patient.email}</TableCell>
+        <TableCell align="right">
+          {/* <Tooltip title="Reject/Block">
+            <IconButton sx={{ color: "green" }}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip> */}
+          <Tooltip title="Reject/Block">
+            <IconButton sx={{ color: "red" }}>
+              <BlockIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Approve">
+            <Switch
+              checked={patient.account.status === "VERIFIED" ? true : false}
+            />
+          </Tooltip>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -204,81 +294,34 @@ function Row(props) {
                     <TableCell>ID Type</TableCell>
                     <TableCell>ID No.</TableCell>
                     <TableCell align="right">Action</TableCell>
-                    {/* <TableCell align="right">Total price ($)</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.idType}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.idType}
+                  <TableRow key={patient.id}>
+                    <TableCell component="th" scope="row">
+                      {patient.idInformation.idType.type}
+                    </TableCell>
+                    <TableCell>{patient.idInformation.idNumber}</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        href={patient.idInformation.idFileUrl}
+                        target="_blank"
+                      >
+                        View ID
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  {/* <TableRow>
+                      <TableCell colSpan={3}>
+                        No ID information available
                       </TableCell>
-                      <TableCell>{historyRow.idNumber}</TableCell>
-                      <TableCell align="right">{historyRow.viewId}</TableCell>
-                      {/* <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell> */}
-                    </TableRow>
-                  ))}
+                    </TableRow> */}
                 </TableBody>
               </Table>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
-
-//For Contents with sub Content
-function createData(name, status, address, birthdate, contact, email, action) {
-  return {
-    name,
-    status,
-    address,
-    birthdate,
-    contact,
-    email,
-    action,
-    history: [
-      {
-        idType: "Passport",
-        idNumber: "11091700",
-        viewId: <Button variant="contained">View</Button>,
-      },
-      {
-        idType: "Drivers License",
-        idNumber: "11091700",
-        viewId: <Button variant="contained">View</Button>,
-      },
-    ],
-  };
-}
-
-//For the Main Content
-const rows = [
-  createData(
-    "Gon Freecss",
-    <Grid container spacing={1} justifyContent={"right"}>
-      <Grid item color="gold">
-        <VerifiedIcon />
-      </Grid>
-      <Grid item color="gold">
-        <Typography> Approved</Typography>
-      </Grid>
-    </Grid>,
-    "Pio Del Pilar, Makati City, Philippines",
-    "Jan 13, 1998",
-    "+639123456789",
-    "sample@gmail.com",
-    <Box flexDirection={"row"}>
-      <IconButton sx={{ color: "green" }}>
-        <SaveAsIcon />
-      </IconButton>
-      <IconButton sx={{ color: "red" }}>
-        <RemoveCircleIcon />
-      </IconButton>
-      <AntSwitch defaultChecked inputProps={{ "aria-label": "ant design" }} />
-    </Box>
-  ),
-];

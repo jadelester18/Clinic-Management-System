@@ -51,15 +51,15 @@ const LeftBarProfile = () => {
           <AlternateEmailIcon />
           {profile?.email}
         </Typography>
-        <Button
+        {/* <Button
           variant="contained"
           startIcon={<QuestionAnswerIcon />}
           sx={{ borderRadius: 5, width: 225 }}
           size="large"
         >
           Chat
-        </Button>
-        <Stack
+        </Button> */}
+        {/* <Stack
           direction={{ xs: "column", sm: "row" }}
           justifyContent="center"
           alignItems="center"
@@ -82,7 +82,7 @@ const LeftBarProfile = () => {
             />
             <Typography variant="body2">1235 reviews</Typography>
           </Stack>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Box>
   );

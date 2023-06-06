@@ -15,8 +15,10 @@ import {
   CardContent,
   Grid,
   IconButton,
+  Stack,
   Switch,
   TextField,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -24,50 +26,10 @@ import SaveAsIcon from "@mui/icons-material/SaveAs";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import * as doctorService from "../../../redux/GetApiCalls/doctor";
 import * as util from "../../../redux/util";
-
-const AntSwitch = styled(Switch)(({ theme }) => ({
-  width: 28,
-  height: 16,
-  padding: 0,
-  //   display: "flex",
-  "&:active": {
-    "& .MuiSwitch-thumb": {
-      width: 15,
-    },
-    "& .MuiSwitch-switchBase.Mui-checked": {
-      transform: "translateX(9px)",
-    },
-  },
-  "& .MuiSwitch-switchBase": {
-    padding: 2,
-    "&.Mui-checked": {
-      transform: "translateX(12px)",
-      color: "#fff",
-      "& + .MuiSwitch-track": {
-        opacity: 1,
-        backgroundColor: theme.palette.mode === "dark" ? "#177ddc" : "#1890ff",
-      },
-    },
-  },
-  "& .MuiSwitch-thumb": {
-    boxShadow: "0 2px 4px 0 rgb(0 35 11 / 20%)",
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    transition: theme.transitions.create(["width"], {
-      duration: 200,
-    }),
-  },
-  "& .MuiSwitch-track": {
-    borderRadius: 16 / 2,
-    opacity: 1,
-    backgroundColor:
-      theme.palette.mode === "dark"
-        ? "rgba(255,255,255,.35)"
-        : "rgba(0,0,0,.25)",
-    boxSizing: "border-box",
-  },
-}));
+import EditIcon from "@mui/icons-material/Edit";
+import BlockIcon from "@mui/icons-material/Block";
+import CircleIcon from "@mui/icons-material/Circle";
+import { Circle } from "@mui/icons-material";
 
 const columns = [
   { id: "Avatar", label: "Avatar", minWidth: 170 },
@@ -171,7 +133,26 @@ export default function ListOfDoctors() {
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <Typography variant="h5" component="div"></Typography>
+              <Stack direction="row" spacing={2}>
+                <Grid item color="gray">
+                  <Circle fontSize="3" />
+                </Grid>
+                <Typography variant="body1" component="div">
+                  Disabled
+                </Typography>
+                <Grid item color="green">
+                  <Circle fontSize="3" />
+                </Grid>
+                <Typography variant="body1" component="div">
+                  Active
+                </Typography>
+                <Grid item color="red">
+                  <Circle fontSize="3" />
+                </Grid>
+                <Typography variant="body1" component="div">
+                  Restricted
+                </Typography>
+              </Stack>
             </Grid>
             <Grid item xs={12} md={2} textAlign={"right"}>
               <Typography>Filter By:</Typography>
@@ -219,31 +200,81 @@ export default function ListOfDoctors() {
               <TableBody>
                 {doctors
                   // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((doctor) => {
+                  .map((nurse) => {
                     return (
                       <TableRow
                         hover
                         role="checkbox"
                         tabIndex={-1}
-                        key={doctor.id}
+                        key={nurse.id}
                       >
                         <TableCell>
-                          <Avatar>
-                            {doctor.avatarUrl === null || ""
-                              ? doctor.firstName.charAt(0)
-                              : doctor.avatarUrl}
-                          </Avatar>
+                          <Box sx={{ position: "relative" }}>
+                            <Avatar>
+                              {nurse.avatarUrl === null || ""
+                                ? nurse.firstName.charAt(0)
+                                : nurse.avatarUrl}
+                            </Avatar>
+                            {nurse.account.status === "NEW" ? (
+                              <Typography
+                                variant="contained"
+                                sx={stylesStatus.button}
+                                color="gray"
+                              >
+                                <CircleIcon />
+                              </Typography>
+                            ) : (
+                              ""
+                            )}
+                            {nurse.account.status === "VERIFIED" ? (
+                              <Typography
+                                variant="contained"
+                                sx={stylesStatus.button}
+                                color="green"
+                              >
+                                <CircleIcon />
+                              </Typography>
+                            ) : (
+                              ""
+                            )}
+                            {nurse.account.status === "RESTRICTED" ? (
+                              <Typography
+                                variant="contained"
+                                sx={stylesStatus.button}
+                                color="red"
+                              >
+                                <CircleIcon />
+                              </Typography>
+                            ) : (
+                              ""
+                            )}
+                          </Box>
                         </TableCell>
-                        <TableCell>{util.name(doctor)}</TableCell>
+                        <TableCell>{util.name(nurse)}</TableCell>
+                        <TableCell>{util.fullAddress(nurse.address)}</TableCell>
+                        <TableCell>{nurse.email}</TableCell>
+                        <TableCell>{nurse.contactNo}</TableCell>
+                        <TableCell>{nurse.registeredAt}</TableCell>
                         <TableCell>
-                          {util.fullAddress(doctor.address)}
-                        </TableCell>
-                        <TableCell>{doctor.email}</TableCell>
-                        <TableCell>{doctor.contactNo}</TableCell>
-                        <TableCell>{doctor.registeredAt}</TableCell>
-                        <TableCell>
-                          <Button>Edit</Button>
-                          <Button>Disable</Button>
+                          <Tooltip title="Reject/Block">
+                            <IconButton sx={{ color: "green" }}>
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Reject/Block">
+                            <IconButton sx={{ color: "red" }}>
+                              <BlockIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Approve">
+                            <Switch
+                              checked={
+                                nurse.account.status === "VERIFIED"
+                                  ? true
+                                  : false
+                              }
+                            />
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     );
@@ -265,3 +296,15 @@ export default function ListOfDoctors() {
     </Box>
   );
 }
+
+const stylesStatus = {
+  button: {
+    position: "absolute",
+    top: -25,
+    right: { xs: 80, xl: 90 },
+    zIndex: 1,
+    margin: "1rem",
+    borderRadius: "100%",
+    height: 60,
+  },
+};

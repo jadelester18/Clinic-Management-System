@@ -79,14 +79,14 @@ const DoctorProfileAppointment = ({ profile, scheduleInfo }) => {
                   {profile?.licenseNo}
                 </Typography>
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              {/* <Typography variant="body2" color="text.secondary">
                 Presence
                 <Typography variant="body1" color="text.primary">
                   {profile?.content?.isIn === false
                     ? "Present"
                     : "Absent/Leave"}
                 </Typography>
-              </Typography>
+              </Typography> */}
             </Stack>
           </CardContent>
           <CardActions>
