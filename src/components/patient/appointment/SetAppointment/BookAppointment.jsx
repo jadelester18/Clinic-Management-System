@@ -228,7 +228,7 @@ const BookAppointment = () => {
               setUploadPercent(0);
               // Handle API response
               setSelectedFiles([]); // Clear the selected files
-              alert("Your Post was uploaded successfully");
+              // alert("Your Post was uploaded successfully");
               navigate("/patient");
             })
             .catch((error) => {
