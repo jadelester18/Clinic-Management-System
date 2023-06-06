@@ -46,6 +46,8 @@ import { logout } from "../../redux/UserReducer";
 import * as notificationService from "../../redux/GetApiCalls/notification";
 import LoadingScreen from "../LoadingScreen";
 import { SnackBarContext } from "../../context/SnackBarContext";
+import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
+import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -155,7 +157,7 @@ function Navbar({ toggleMode, mode }) {
     try {
       const { data: notificationPage } = await notificationService.notification(
         {
-          isRead: isRead ? isRead : null,
+          isRead: isRead,
         }
       );
       setMessages(notificationPage);
@@ -179,6 +181,7 @@ function Navbar({ toggleMode, mode }) {
       });
       // setIsRead(true);
       onShowSuccess("Notification Mark Read!");
+      showNotification();
     } catch (error) {
       console.error(error);
       onShowFail(error.response.data.message);
@@ -252,7 +255,12 @@ function Navbar({ toggleMode, mode }) {
                 variant="contained"
                 onClick={handleOpenNotificationMenu}
               >
-                <Badge badgeContent={messages.length} color="secondary">
+                <Badge
+                  badgeContent={
+                    messages.filter((message) => !message.isRead).length
+                  }
+                  color="secondary"
+                >
                   <NotificationImportantIcon />
                 </Badge>
               </IconButton>
@@ -292,7 +300,8 @@ function Navbar({ toggleMode, mode }) {
                     messages.map((primary) => (
                       <ListItemButton
                         key={primary.id}
-                        onClick={handleUpdateNotification(primary.id)}
+                        onClick={() => handleUpdateNotification(primary.id)}
+                        selected={!primary.isRead}
                       >
                         <ListItemText
                           primary={
@@ -352,7 +361,7 @@ function Navbar({ toggleMode, mode }) {
                   <BottomNavigationAction label="All" icon={<RestoreIcon />} />
                   <BottomNavigationAction
                     label="Unread"
-                    icon={<FavoriteIcon />}
+                    icon={<MarkEmailUnreadIcon />}
                   />
                   <BottomNavigationAction
                     label="Already Read"

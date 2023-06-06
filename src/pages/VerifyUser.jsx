@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Navigate,
   useLocation,
@@ -6,25 +6,34 @@ import {
   useParams,
 } from "react-router-dom";
 import { SnackBarContext } from "../context/SnackBarContext";
+import { useDispatch } from "react-redux";
+import { loginStart, loginSuccess } from "../redux/UserReducer";
 
 const VerifyUser = () => {
+  const dispatch = useDispatch();
   let location = useLocation();
   let token = location.pathname.split("/")[2];
   const navigate = useNavigate();
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
-  fetch(`http://localhost:8080/api/v1/auth/verify-email/${token}`, {
-    method: "PUT",
-  })
-    .then((data) => {
-      onShowSuccess("Email verified!");
-      navigate("/");
+  const verifyEmail = () => {
+    // dispatch(loginStart());
+    fetch(`http://localhost:8080/api/v1/auth/verify-email/${token}`, {
+      method: "PUT",
     })
-    .catch((error) => {
-      console.error(error);
-      //   alert("Failed to update Status.");
-      onShowFail(error.response.data.status);
-    });
+      .then((res) => {
+        onShowSuccess("Email verified!");
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error(error);
+        onShowFail(error.response.data.status);
+      });
+  };
+
+  useEffect(() => {
+    verifyEmail();
+  }, []);
 
   return <div>Welcome</div>;
 };
