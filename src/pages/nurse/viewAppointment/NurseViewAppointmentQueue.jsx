@@ -151,7 +151,7 @@ function NurseViewAppointmentQueue() {
         setSelectedStatus("FOR_ASSESSMENT");
         setSelectedDoctor(data.report.doctor);
       }
-
+      fetchDoctorStatusList();
       onShowSuccess("Patient added to queue");
     } catch (error) {
       console.error(error);

@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CalendarSettings from "./calendarConfig/CalendarSettings";
@@ -26,6 +26,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import DoctorProfileAppointment from "./doctorProfile/DoctorProfileAppointment";
+import { SnackBarContext } from "../../../../context/SnackBarContext";
 
 const BookAppointment = () => {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -35,6 +36,8 @@ const BookAppointment = () => {
 
   let location = useLocation();
   let id = location.pathname.split("/")[2];
+
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
   //Fetching the Profile info
   const [profile, setProfile] = React.useState("");
@@ -228,7 +231,7 @@ const BookAppointment = () => {
               setUploadPercent(0);
               // Handle API response
               setSelectedFiles([]); // Clear the selected files
-              alert("Your Post was uploaded successfully");
+              onShowSuccess("Appointment booked! Please wait for approval.");
               navigate("/patient");
             })
             .catch((error) => {
@@ -239,9 +242,38 @@ const BookAppointment = () => {
         .catch((error) => {
           // Handle file upload error
           console.error(error);
+          onShowFail(error.response.data.message);
         });
     } else {
       // No files selected, handle this case accordingly
+      // All files have been uploaded, make the API request
+      fetch(`http://localhost:8080/api/v1/appointments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          date: date,
+          timeSlotId: timeSlotId,
+          remark: remark,
+          doctorId: id,
+          attachmentUrls: [],
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setUploadPercent(0);
+          // Handle API response
+          setSelectedFiles([]); // Clear the selected files
+          onShowSuccess("Appointment booked! Please wait for approval.");
+          navigate("/patient");
+        })
+        .catch((error) => {
+          // Handle API error
+          console.error(error);
+          onShowFail(error.response.data.message);
+        });
     }
   };
 

@@ -24,6 +24,7 @@ export default function AppointmentRow({
   onUpdate,
   onApprove,
   onRevert,
+  onCancel,
 }) {
   const { id, patient, doctor, timeSlot, date, remark, status } = appointment;
 
@@ -131,6 +132,7 @@ export default function AppointmentRow({
           open={isUpdateOpen}
           onClose={() => setIsUpdateOpen(false)}
           onSave={onUpdate}
+          onCancel={onCancel}
         />
       )}
     </>

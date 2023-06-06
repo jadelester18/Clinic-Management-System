@@ -221,6 +221,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                   onChange={handleTextInput}
                   size="small"
                   name="chiefComplaint"
+                  placeholder={`E.g. "Fever, cough, colds, etc.`}
                   fullWidth
                   multiline
                   InputProps={{ readOnly: userIsPatient || visitIsFinished }}
@@ -239,6 +240,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                   onChange={handleTextInput}
                   size="small"
                   name="medicalHistory"
+                  placeholder={`E.g. "Allergic to Mefenamic Acid, Ibuprofen, etc."`}
                   fullWidth
                   multiline
                   InputProps={{ readOnly: userIsPatient || visitIsFinished }}
@@ -263,6 +265,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                   onChange={handleTextInput}
                   size="small"
                   name="diagnosis"
+                  placeholder={`E.g. "Sinusitis, etc."`}
                   fullWidth
                   multiline
                   InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
@@ -280,6 +283,7 @@ export default function Report({ report, onSave, onViewMc, onViewReferral }) {
                   onChange={handleTextInput}
                   size="small"
                   name="prognosis"
+                  placeholder={`E.g. "Full recovery expected upon completion of required medication and rest"`}
                   fullWidth
                   multiline
                   InputProps={{ readOnly: !userIsDoctor || visitIsFinished }}
