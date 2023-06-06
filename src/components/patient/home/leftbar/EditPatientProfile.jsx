@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Joi from "joi";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -34,6 +34,8 @@ export const EditPatientProfile = ({ patient, onSave }) => {
   console.log("pwForm", pwForm);
 
   const [errors, setErrors] = useState({});
+
+  const [profilePic, setProfilePic] = useState(null);
 
   const handlePwChange = (event) => {
     const { name, value } = event.target;
@@ -158,7 +160,7 @@ export const EditPatientProfile = ({ patient, onSave }) => {
             hidden
             accept="image/*"
             type="file"
-            // onChange={(e) => setProfilePic(e.target.files[0])}
+            onChange={(e) => setProfilePic(e.target.files[0])}
           />
         </Button>
         <Typography variant="subtitle2" color="green">

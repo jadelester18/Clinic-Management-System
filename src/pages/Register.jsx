@@ -87,84 +87,85 @@ function Register({ handleCloseRegister }) {
 
   //For Handling the Joi Error message
   const [fieldErrors, setFieldErrors] = useState({});
+  console.log("ERRORS", fieldErrors);
+
+  // Joi validation schema
+  const schema = Joi.object({
+    honorific: Joi.string().required(),
+    firstName: Joi.string().required().min(2).max(50).messages({
+      "string.empty": "First Name is required",
+      "string.min": "First Name should have at least {#limit} characters",
+      "string.max": "First Name should have at most {#limit} characters",
+    }),
+    middleName: Joi.string().min(2).max(50).allow("").messages({
+      "string.min": "Middle Name should have at least {#limit} characters",
+    }),
+    lastName: Joi.string().required().min(2).max(50).messages({
+      "string.empty": "Last Name is required",
+      "string.min": "Last Name should have at least {#limit} characters",
+      "string.max": "Last Name should have at most {#limit} characters",
+    }),
+    suffixName: Joi.string().allow("").max(50).messages({
+      "string.max": "Suffix Name should have at most {#limit} characters",
+    }),
+    birthDate: Joi.string()
+      .required()
+      .custom((value, helpers) => {
+        const isValid = dayjs(value, "YYYY-MM-DD", true).isValid();
+        if (!isValid) {
+          return helpers.message(
+            "Invalid Birth Date format. Please use YYYY-MM-DD"
+          );
+        }
+        return value;
+      }),
+    gender: Joi.string().required().valid("MALE", "FEMALE").messages({
+      "any.only": "Gender must be MALE or FeMALE",
+    }),
+    contactNo: Joi.string()
+      .required()
+      .pattern(/^\+?[0-9]+$/, { name: "numbers" })
+      // .length(10, { name: "Contact Number" })
+      .messages({
+        "string.pattern.base": "Contact Number should contain only numbers",
+        "string.length": "Contact Number should be exactly {#limit} digits",
+      }),
+    email: Joi.string()
+      .required()
+      .email({ tlds: { allow: false } })
+      .messages({
+        "string.empty": "Email is required",
+        "string.email": "Invalid email format",
+      }),
+    password: Joi.string()
+      .required()
+      .pattern(
+        new RegExp(
+          "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
+        )
+      )
+      .messages({
+        "string.empty": "Password is required",
+        "string.pattern.base":
+          "Password must contain at least 8 characters, one lowercase letter, one uppercase letter, one digit, and one special character",
+      }),
+    confirmPassword: Joi.string()
+      .equal(password)
+      .required()
+      .messages({ "any.only": "Passwords do not match" }),
+    country: Joi.string().required(),
+    province: Joi.string().required(),
+    city: Joi.string().required(),
+    barangay: Joi.string().required(),
+    street: Joi.string().required(),
+    postalCode: Joi.string().required(),
+    idTypeId: Joi.number().required(),
+    idNumber: Joi.string().required(),
+    idFileUrl: Joi.string().required(),
+  });
 
   //For Checking Real Time the Input of User if valid
   const handleInputChange = (fieldName, value) => {
-    // Joi validation schema
-    const schema = Joi.object({
-      honorific: Joi.string().required(),
-      firstName: Joi.string().required().min(2).max(50).messages({
-        "string.empty": "First Name is required",
-        "string.min": "First Name should have at least {#limit} characters",
-        "string.max": "First Name should have at most {#limit} characters",
-      }),
-      middleName: Joi.string().min(2).max(50).allow("").messages({
-        "string.min": "Middle Name should have at least {#limit} characters",
-      }),
-      lastName: Joi.string().required().min(2).max(50).messages({
-        "string.empty": "Last Name is required",
-        "string.min": "Last Name should have at least {#limit} characters",
-        "string.max": "Last Name should have at most {#limit} characters",
-      }),
-      suffixName: Joi.string().allow("").max(50).messages({
-        "string.max": "Suffix Name should have at most {#limit} characters",
-      }),
-      birthDate: Joi.string()
-        .required()
-        .custom((value, helpers) => {
-          const isValid = dayjs(value, "YYYY-MM-DD", true).isValid();
-          if (!isValid) {
-            return helpers.message(
-              "Invalid Birth Date format. Please use YYYY-MM-DD"
-            );
-          }
-          return value;
-        }),
-      gender: Joi.string().required().valid("MALE", "FEMALE").messages({
-        "any.only": "Gender must be MALE or FeMALE",
-      }),
-      contactNo: Joi.string()
-        .required()
-        .pattern(/^\+?[0-9]+$/, { name: "numbers" })
-        // .length(10, { name: "Contact Number" })
-        .messages({
-          "string.pattern.base": "Contact Number should contain only numbers",
-          "string.length": "Contact Number should be exactly {#limit} digits",
-        }),
-      email: Joi.string()
-        .required()
-        .email({ tlds: { allow: false } })
-        .messages({
-          "string.empty": "Email is required",
-          "string.email": "Invalid email format",
-        }),
-      password: Joi.string()
-        .required()
-        .pattern(
-          new RegExp(
-            "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})"
-          )
-        )
-        .messages({
-          "string.empty": "Password is required",
-          "string.pattern.base":
-            "Password must contain at least 8 characters, one lowercase letter, one uppercase letter, one digit, and one special character",
-        }),
-      confirmPassword: Joi.string()
-        .valid(Joi.ref("password"))
-        .required()
-        .messages({ "any.only": "Passwords do not match" }),
-      country: Joi.string().required(),
-      province: Joi.string().required(),
-      city: Joi.string().required(),
-      barangay: Joi.string().required(),
-      street: Joi.string().required(),
-      postalCode: Joi.string().required(),
-      idTypeId: Joi.number().required(),
-      idNumber: Joi.string().required(),
-      idFileUrl: Joi.string().required(),
-    });
-
     // Update the field value in state
     switch (fieldName) {
       case "honorific":
@@ -189,7 +190,10 @@ function Register({ handleCloseRegister }) {
         setGender(value);
         break;
       case "contactNo":
-        setContactNo(value);
+        {
+          const numericValue = value.replace(/[^0-9.-]+/g, "");
+          setPhone(numericValue);
+        }
         break;
       case "email":
         setEmail(value);
@@ -232,43 +236,53 @@ function Register({ handleCloseRegister }) {
     }
 
     // Validate the input using Joi
-    const { error } = schema.validate(
-      {
-        honorific,
-        firstName,
-        middleName,
-        lastName,
-        suffixName,
-        birthDate,
-        gender,
-        contactNo,
-        email,
-        password,
-        confirmPassword,
-        country,
-        province,
-        city,
-        barangay,
-        street,
-        postalCode,
-        idTypeId,
-        idNumber,
-        idFileUrl,
-      },
-      { abortEarly: false }
-    );
+    // const { error } = schema.validate(
+    //   {
+    //     honorific,
+    //     firstName,
+    //     middleName,
+    //     lastName,
+    //     suffixName,
+    //     birthDate,
+    //     gender,
+    //     contactNo,
+    //     email,
+    //     password,
+    //     confirmPassword,
+    //     country,
+    //     province,
+    //     city,
+    //     barangay,
+    //     street,
+    //     postalCode,
+    //     idTypeId,
+    //     idNumber,
+    //     idFileUrl,
+    //   },
+    //   { abortEarly: false }
+    // );
     // Update the field error in state
+    // if (error) {
+    //   const errorMessages = {};
+    //   error.details.forEach((err) => {
+    //     const fieldName = err.path[0];
+    //     const errorMessage = err.message;
+    //     errorMessages[fieldName] = errorMessage;
+    //   });
+    //   setFieldErrors(errorMessages);
+    // } else {
+    //   setFieldErrors({});
+    //   handleCloseRegister();
+    // }
+
+    const { error } = schema.extract(fieldName).validate(value);
+    console.log("error", error);
     if (error) {
-      const errorMessages = {};
-      error.details.forEach((err) => {
-        const fieldName = err.path[0];
-        const errorMessage = err.message;
-        errorMessages[fieldName] = errorMessage;
-      });
-      setFieldErrors(errorMessages);
+      setFieldErrors({ ...fieldErrors, [fieldName]: error.message });
     } else {
-      setFieldErrors({});
-      handleCloseRegister();
+      const newFieldErrors = fieldErrors;
+      delete newFieldErrors[fieldName];
+      setFieldErrors(newFieldErrors);
     }
   };
 
@@ -302,29 +316,38 @@ function Register({ handleCloseRegister }) {
       idFileUrl,
     };
     signup(dispatch, data);
+    handleCloseRegister();
   };
 
   const handleFileChange = (event) => {
-    handleInputChange("idFileUrl", event.target.files[0]);
+    console.log(event);
     const file = event.target.files[0];
-    setIdFileUrl(file);
-    setFileName(file?.name);
+    console.log(file);
+    if (file) {
+      // setIdFileUrl(file?.name);
+      setFileName(file?.name);
+      handleInputChange("idFileUrl", file?.name);
 
-    if (file.type === "application/pdf") {
-      // setFilePreview(URL.createObjectURL(file));
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      if (file.type === "application/pdf") {
+        // setFilePreview(URL.createObjectURL(file));
+        const reader = new FileReader();
+        reader.onload = () => {
+          setFilePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setFilePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setFilePreview(null);
+      }
     } else {
-      setFilePreview(null);
+      handleInputChange("idFileUrl", "");
+      setFileName("");
+      setFieldErrors({ ...fieldErrors, idFileUrl: "Please upload your ID" });
     }
   };
 
@@ -381,6 +404,36 @@ function Register({ handleCloseRegister }) {
       setFilteredCities([]);
       setCity("");
     }
+  };
+
+  const isFormInvalid = () => {
+    const { error } = schema.validate(
+      {
+        honorific,
+        firstName,
+        middleName,
+        lastName,
+        suffixName,
+        birthDate,
+        gender,
+        contactNo,
+        email,
+        password,
+        confirmPassword,
+        country,
+        province,
+        city,
+        barangay,
+        street,
+        postalCode,
+        idTypeId,
+        idNumber,
+        idFileUrl,
+      },
+      { abortEarly: false }
+    );
+    console.log("all errors", error);
+    return !!error;
   };
 
   return (
@@ -501,10 +554,7 @@ function Register({ handleCloseRegister }) {
                   label="BirthDate"
                   value={birthDate ? dayjs(birthDate) : null}
                   onChange={(e) =>
-                    handleInputChange(
-                      "birthDate",
-                      e.target.value.format("YYYY-MM-DD")
-                    )
+                    handleInputChange("birthDate", e.format("YYYY-MM-DD"))
                   }
                   renderInput={(props) => (
                     <TextField
@@ -606,6 +656,7 @@ function Register({ handleCloseRegister }) {
                 <TextField
                   label="Phone Number"
                   fullWidth
+                  value={phone}
                   inputProps={{
                     maxLength: 10,
                   }}
@@ -637,6 +688,7 @@ function Register({ handleCloseRegister }) {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 label="Password"
+                value={password}
                 autoComplete="new-password"
                 InputProps={{
                   endAdornment: (
@@ -663,6 +715,7 @@ function Register({ handleCloseRegister }) {
                 name="confirmPassword"
                 label="Confirm Password"
                 autoComplete="confirmPassword"
+                value={confirmPassword}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -942,14 +995,14 @@ function Register({ handleCloseRegister }) {
             </Grid>
           </Grid>
           <Button
-            type="submit"
+            // type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             onClick={() => {
               handleClick();
             }}
-            disabled={Object.keys(fieldErrors).length > 0}
+            disabled={isFormInvalid()}
           >
             Submit
           </Button>
