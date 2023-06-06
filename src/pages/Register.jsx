@@ -21,7 +21,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -33,7 +33,6 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { countries, provinces, cities } from "./addressDb/adress.js";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import Joi from "joi";
 import app from "../firebase";
 import {
@@ -44,13 +43,13 @@ import {
 } from "firebase/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import LoadingScreen from "../components/LoadingScreen";
 
 function Register({ handleCloseRegister }) {
   //For Country Code
   const [code, setCode] = React.useState("");
   const [phone, setPhone] = React.useState("");
   const [idTypeIdList, setIdTypeIdList] = React.useState([]);
-
   //For Register Components
   const [showPassword, setShowPassword] = React.useState(false);
   const [honorific, setHonorific] = useState("");
@@ -235,46 +234,6 @@ function Register({ handleCloseRegister }) {
         break;
     }
 
-    // Validate the input using Joi
-    // const { error } = schema.validate(
-    //   {
-    //     honorific,
-    //     firstName,
-    //     middleName,
-    //     lastName,
-    //     suffixName,
-    //     birthDate,
-    //     gender,
-    //     contactNo,
-    //     email,
-    //     password,
-    //     confirmPassword,
-    //     country,
-    //     province,
-    //     city,
-    //     barangay,
-    //     street,
-    //     postalCode,
-    //     idTypeId,
-    //     idNumber,
-    //     idFileUrl,
-    //   },
-    //   { abortEarly: false }
-    // );
-    // Update the field error in state
-    // if (error) {
-    //   const errorMessages = {};
-    //   error.details.forEach((err) => {
-    //     const fieldName = err.path[0];
-    //     const errorMessage = err.message;
-    //     errorMessages[fieldName] = errorMessage;
-    //   });
-    //   setFieldErrors(errorMessages);
-    // } else {
-    //   setFieldErrors({});
-    //   handleCloseRegister();
-    // }
-
     const { error } = schema.extract(fieldName).validate(value);
     console.log("error", error);
     if (error) {
@@ -286,9 +245,11 @@ function Register({ handleCloseRegister }) {
     }
   };
 
+  const [isLoading, setIsLoading] = useState(false);
   //For Form Register
   const dispatch = useDispatch();
   const handleClick = (e) => {
+    setIsLoading(true);
     // e.preventDefault();
     if (Object.keys(fieldErrors).length > 0) {
       return;
@@ -316,7 +277,37 @@ function Register({ handleCloseRegister }) {
       idFileUrl,
     };
     signup(dispatch, data);
+    setIsLoading(false);
     handleCloseRegister();
+  };
+
+  const uploadFileToFirebase = async (file) => {
+    // const storageRef = ref(storage, "path/to/storage/" + file.name);
+    const storage = getStorage(app);
+    const storageRef = ref(storage, file.name);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Progress tracking logic here
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log(progress);
+        // console.log("Upload is " + progress + "% done");
+      },
+      (error) => {
+        // Error handling logic here
+        console.error(error);
+      },
+      () => {
+        // Upload successful, get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          // Save the download URL to Firebase or do something else with it
+          setIdFileUrl(downloadURL);
+        });
+      }
+    );
   };
 
   const handleFileChange = (event) => {
@@ -324,12 +315,9 @@ function Register({ handleCloseRegister }) {
     const file = event.target.files[0];
     console.log(file);
     if (file) {
-      // setIdFileUrl(file?.name);
       setFileName(file?.name);
       handleInputChange("idFileUrl", file?.name);
-
       if (file.type === "application/pdf") {
-        // setFilePreview(URL.createObjectURL(file));
         const reader = new FileReader();
         reader.onload = () => {
           setFilePreview(reader.result);
@@ -344,6 +332,7 @@ function Register({ handleCloseRegister }) {
       } else {
         setFilePreview(null);
       }
+      uploadFileToFirebase(file);
     } else {
       handleInputChange("idFileUrl", "");
       setFileName("");
@@ -1033,6 +1022,7 @@ function Register({ handleCloseRegister }) {
           <Button onClick={handleCloseModal}>Close</Button>
         </DialogActions>
       </Dialog>
+      {isLoading && <LoadingScreen open={isLoading} />}
     </Container>
   );
 }

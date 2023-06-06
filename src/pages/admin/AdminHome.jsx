@@ -59,6 +59,8 @@ import ListOfNurses from "../../components/admin/ListOfNurses/ListOfNurses";
 import ListOfDoctors from "../../components/admin/ListOfDoctors/ListOfDoctors";
 import dayjs from "dayjs";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ListOfToBeApprovedPatient from "../../components/admin/ListOfToBeApprovedPatient/ListOfToBeApprovedPatient";
+import FlakyIcon from "@mui/icons-material/Flaky";
 
 const drawerWidth = 240;
 
@@ -358,6 +360,36 @@ function AdminHome({ toggleMode, mode }) {
             <ListItem
               disablePadding
               sx={{ display: "block" }}
+              onClick={() => setMenuData("List Of To Be Approved Patient")}
+            >
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  <FlakyIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary="List Of To Be Approved Patient"
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              disablePadding
+              sx={{ display: "block" }}
               onClick={() => setMenuData("List Of Approved Patient")}
             >
               <ListItemButton
@@ -384,6 +416,7 @@ function AdminHome({ toggleMode, mode }) {
             </ListItem>
           </List>
           <Divider />
+
           <List>
             <ListItem
               disablePadding
@@ -488,6 +521,13 @@ function AdminHome({ toggleMode, mode }) {
                 ) : (
                   ""
                 )}
+                {menuData === "List Of To Be Approved Patient" ? (
+                  <Typography variant="h4">
+                    List Of To Be Approved Patient
+                  </Typography>
+                ) : (
+                  ""
+                )}{" "}
                 {menuData === "List Of Approved Patient" ? (
                   <Typography variant="h4">List Of Approved Patient</Typography>
                 ) : (
@@ -516,7 +556,6 @@ function AdminHome({ toggleMode, mode }) {
                       label="Dashboard"
                       icon={<HomeIcon fontSize="small" />}
                     />
-
                     {menuData === "New Registered User" ? (
                       <StyledBreadcrumb
                         component="a"
@@ -529,6 +568,18 @@ function AdminHome({ toggleMode, mode }) {
                     ) : (
                       ""
                     )}
+                    {menuData === "List Of To Be Approved Patient" ? (
+                      <StyledBreadcrumb
+                        component="a"
+                        onClick={() => {
+                          setMenuData("List Of To Be Approved Patient");
+                        }}
+                        label="List Of To Be Approved Patient"
+                        icon={<FlakyIcon fontSize="small" />}
+                      />
+                    ) : (
+                      ""
+                    )}{" "}
                     {menuData === "List Of Approved Patient" ? (
                       <StyledBreadcrumb
                         component="a"
@@ -581,6 +632,9 @@ function AdminHome({ toggleMode, mode }) {
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             {menuData === "Dashboard" && <AdminDashboard />}
             {menuData === "New Registered User" && <NewRegisteredUser />}
+            {menuData === "List Of To Be Approved Patient" && (
+              <ListOfToBeApprovedPatient />
+            )}{" "}
             {menuData === "List Of Approved Patient" && (
               <ListOfApprovedPatient />
             )}
