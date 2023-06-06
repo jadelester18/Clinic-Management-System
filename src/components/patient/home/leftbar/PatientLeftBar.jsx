@@ -3,41 +3,28 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
-  Checkbox,
   Divider,
-  FormControl,
-  Grid,
   IconButton,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   Menu,
   MenuItem,
   Modal,
-  Select,
   Stack,
-  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import QuestionAnswerIcon from "@mui/icons-material/QuestionAnswer";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import { useSelector } from "react-redux";
-import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import dayjs from "dayjs";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Circle } from "@mui/icons-material";
 import CircleIcon from "@mui/icons-material/Circle";
 import * as queueSvc from "../../../../redux/GetApiCalls/queue";
 import * as util from "../../../../redux/util";
 import { green, orange, red } from "@mui/material/colors";
+import { EditPatientProfile } from "./EditPatientProfile";
+import { SnackBarContext } from "../../../../context/SnackBarContext";
+import { changePassword } from "../../../../redux/GetApiCalls/auth";
+import LoadingScreen from "../../../LoadingScreen";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -64,9 +51,10 @@ const names = [
 ];
 
 const PatientLeftBar = ({ currentPatient }) => {
-  console.log("HMO CARDS", currentPatient.hmoCards);
-
   const [queueToday, setQueueToday] = useState(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
   //For Profile Modal
   const [openProfile, setOpenProfile] = React.useState(false);
@@ -107,6 +95,23 @@ const PatientLeftBar = ({ currentPatient }) => {
       console.error(error);
     }
   }
+
+  const handleEditSave = async (pwForm) => {
+    setIsLoading(true);
+    try {
+      const { data } = await changePassword({
+        email: currentPatient.email,
+        oldPassword: pwForm.oldPassword,
+        newPassword: pwForm.newPassword,
+      });
+      onShowSuccess("Password changed!");
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const queueColor = () => {
     if (queueToday) {
@@ -281,80 +286,14 @@ const PatientLeftBar = ({ currentPatient }) => {
             </Stack>
           </CardContent>
         </Stack>
-        <Modal
-          open={openProfile}
-          onClose={handleCloseProfile}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Stack
-              direction={{ xs: "column" }}
-              justifyContent="center"
-              alignItems="center"
-              textAlign="center"
-              spacing={2}
-            >
-              <Button
-                sx={{ backgroundColor: "transparent", borderRadius: "100%" }}
-                onClick={() => {
-                  const fileInput = document.getElementById("file-input");
-                  fileInput.click();
-                }}
-              >
-                <Avatar
-                  alt="Doreamon"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
-                  sx={{
-                    m: 1,
-                    bgcolor: "primary.main",
-                    width: { xs: 100, sm: 130, md: 140 },
-                    height: { xs: 100, sm: 130, md: 140 },
-                    border: "5px solid white",
-                    boxShadow: 10,
-                  }}
-                />
-                <input
-                  id="file-input"
-                  hidden
-                  accept="image/*"
-                  type="file"
-                  onChange={(e) => setProfilePic(e.target.files[0])}
-                />
-              </Button>
-              <Typography variant="subtitle2" color="green">
-                Click the Avatar to Change Profile
-              </Typography>
-              <FormControl sx={{ minWidth: "100%" }}>
-                <InputLabel id="demo-multiple-checkbox-label">HMO</InputLabel>
-                <Select
-                  labelId="demo-multiple-checkbox-label"
-                  id="demo-multiple-checkbox"
-                  multiple
-                  value={personName}
-                  onChange={handleChange}
-                  input={<OutlinedInput label="Tag" />}
-                  renderValue={(selected) => selected.join(", ")}
-                  MenuProps={MenuProps}
-                  fullWidth
-                >
-                  {names.map((name) => (
-                    <MenuItem key={name} value={name}>
-                      <Checkbox checked={personName.indexOf(name) > -1} />
-                      <ListItemText primary={name} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              {/* <TextField variant="outlined" label="Add New HMO" fullWidth /> */}
-              <TextField variant="outlined" label="Password" fullWidth />
-              <TextField
-                variant="outlined"
-                label="Confirm Password"
-                fullWidth
-              />
-            </Stack>
-          </Box>
+        <Modal open={openProfile} onClose={handleCloseProfile}>
+          <>
+            <EditPatientProfile
+              patient={currentPatient}
+              onSave={handleEditSave}
+            />
+            {isLoading && <LoadingScreen open={isLoading} />}
+          </>
         </Modal>
       </Card>
     )
@@ -362,19 +301,6 @@ const PatientLeftBar = ({ currentPatient }) => {
 };
 
 export default PatientLeftBar;
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  // border: "2px solid #000",
-  borderRadius: 10,
-  boxShadow: 24,
-  p: 4,
-};
 
 const stylesStatus = {
   button: {

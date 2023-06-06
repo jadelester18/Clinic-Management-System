@@ -31,9 +31,6 @@ const PatientDashboard = () => {
               </Grid>
             </Stack>
           </Grid>
-          {/* <Grid xs={12}>
-            <DoctorContentBottom />
-          </Grid> */}
         </Grid>
       </Stack>
     </Box>

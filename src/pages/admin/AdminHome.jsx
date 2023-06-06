@@ -243,6 +243,7 @@ function AdminHome({ toggleMode, mode }) {
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem("accessToken");
   };
 
   //For Notification Button/Badge

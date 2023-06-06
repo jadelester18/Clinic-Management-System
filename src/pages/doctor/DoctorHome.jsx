@@ -198,7 +198,6 @@ function DoctorHome({ toggleMode, mode }) {
   const fetchProfile = async () => {
     try {
       const { data } = await doctorSvc.getProfile();
-      console.log("DOCTOR PROFILE", data);
       setProfile(data);
     } catch (error) {
       console.error(error);
@@ -209,7 +208,6 @@ function DoctorHome({ toggleMode, mode }) {
     try {
       const isIn = event.target.checked;
       const { data } = await doctorSvc.updateDoctorAvailability(isIn);
-      console.log("updated doctor", data);
       setProfile(data);
       onShowSuccess(
         isIn
