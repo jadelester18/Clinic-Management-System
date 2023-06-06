@@ -66,9 +66,7 @@ function Register({ handleCloseRegister }) {
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [country, setCountry] = React.useState("");
   const [province, setProvince] = React.useState("");
-  console.log("province", province);
   const [city, setCity] = React.useState("");
-  console.log("city", city);
   const [barangay, setBarangay] = React.useState([]);
   const [street, setStreet] = React.useState("");
   const [postalCode, setPostalCode] = React.useState("");
@@ -76,6 +74,7 @@ function Register({ handleCloseRegister }) {
   const [idTypeId, setIdTypeId] = React.useState("");
   const [idNumber, setIdNumber] = React.useState("");
   const [idFileUrl, setIdFileUrl] = React.useState("");
+  console.log("idFileUrl", idFileUrl);
 
   //For Viewing File Selected
   const [fileName, setFileName] = useState("");
@@ -84,7 +83,7 @@ function Register({ handleCloseRegister }) {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setIdFileUrl(file);
+    setIdFileUrl(file?.name);
     setFileName(file?.name);
 
     if (file.type === "application/pdf") {
@@ -125,8 +124,7 @@ function Register({ handleCloseRegister }) {
 
   //For Handling the Joi Error message
   const [fieldErrors, setFieldErrors] = useState({});
-
-  console.log(fieldErrors);
+  console.log("fieldErrors");
 
   // Update contactNo whenever code or phone change
   React.useEffect(() => {

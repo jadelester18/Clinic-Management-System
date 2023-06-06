@@ -23,6 +23,7 @@ import AdminHome from "./pages/admin/AdminHome";
 import MedicalCertificate from "./pages/MedicalCertificate";
 import ReferralCertificate from "./pages/ReferralCertificate";
 import PatientReports from "./pages/PatientReports";
+import { ResetPassword } from "./pages/ResetPassword";
 
 function App() {
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -163,6 +164,26 @@ function App() {
             element={
               userObject === null ? (
                 <ForgetPassword />
+              ) : user?.enabled === true ? (
+                user?.role === "ROLE_DOCTOR" ? (
+                  <Navigate to={"/doctor"} replace={true} />
+                ) : user?.role === "ROLE_NURSE" ? (
+                  <Navigate to={"/nurse"} replace={true} />
+                ) : user?.role === "ROLE_PATIENT" ? (
+                  <Navigate to={"/patient"} replace={true} />
+                ) : (
+                  <Navigate to={"/"} />
+                )
+              ) : (
+                <Navigate to={"/"} />
+              )
+            }
+          />
+          <Route
+            path="/forgot-password/:token"
+            element={
+              userObject === null ? (
+                <ResetPassword />
               ) : user?.enabled === true ? (
                 user?.role === "ROLE_DOCTOR" ? (
                   <Navigate to={"/doctor"} replace={true} />
