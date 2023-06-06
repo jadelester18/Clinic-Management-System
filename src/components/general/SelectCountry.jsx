@@ -5,10 +5,7 @@ import { Autocomplete, Box, TextField } from "@mui/material";
 export default function SelectCountry({ value, onSelect }) {
   return (
     <Autocomplete
-      autoWidth
-      size="small"
       options={countries.sort((a, b) => a.label.localeCompare(b.label))}
-      autoHighlight
       value={value}
       onChange={onSelect}
       getOptionLabel={(option) => option.label}
@@ -31,10 +28,9 @@ export default function SelectCountry({ value, onSelect }) {
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Choose a country"
+          label="Country"
           inputProps={{
             ...params.inputProps,
-            autoComplete: "new-password",
           }}
         />
       )}

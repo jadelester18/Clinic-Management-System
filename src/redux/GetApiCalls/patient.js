@@ -7,3 +7,7 @@ export function searchPatients(searchPatientsDto) {
 export function updatePatient(patientId, createPersonDto) {
   return http.put(`/patients/${patientId}`, createPersonDto);
 }
+
+export function createPatient(createPersonDto) {
+  return http.post(`/patients`, createPersonDto);
+}
