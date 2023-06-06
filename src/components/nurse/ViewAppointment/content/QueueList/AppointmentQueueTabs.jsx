@@ -1,7 +1,12 @@
 import { Button, Grid, Typography } from "@mui/material";
 import React from "react";
+import * as util from "../../../../../redux/util";
 
-export default function AppointmentQueueTabs({ activeTab, onTabChange }) {
+export default function AppointmentQueueTabs({
+  activeTab,
+  onTabChange,
+  doctor,
+}) {
   const styles = {
     gContainer: {
       spacing: 2,
@@ -28,6 +33,11 @@ export default function AppointmentQueueTabs({ activeTab, onTabChange }) {
         >
           Queue
         </Button>
+      </Grid>
+      <Grid item>
+        <Typography variant="h6">{`For ${
+          doctor ? util.name(doctor) : "All Doctors"
+        }`}</Typography>
       </Grid>
     </Grid>
   );
