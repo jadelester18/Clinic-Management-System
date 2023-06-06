@@ -134,7 +134,8 @@ const PatientLeftBar = ({ currentPatient }) => {
 
   const styles = {
     card: {
-      width: { xs: 360, sm: 600, md: 400 },
+      // width: { xs: 360, sm: 600, md: 400 },
+      // minHeight: 5
       justifyContent: "center",
       alignItems: "center",
       boxShadow: 10,
@@ -159,6 +160,7 @@ const PatientLeftBar = ({ currentPatient }) => {
               <MoreVertIcon />
             </IconButton>
           }
+          sx={{ mt: { lg: 0, md: 10 } }}
         />
         <Menu
           sx={{ mt: "45px" }}

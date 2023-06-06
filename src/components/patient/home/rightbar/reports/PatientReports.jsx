@@ -38,29 +38,27 @@ const PatientReports = ({ reports, onView }) => {
   };
   return (
     <>
-      <Card sx={{ maxWidth: { md: 400 }, borderRadius: 10, boxShadow: 10 }}>
-        <CardHeader
-          avatar={
-            <Avatar sx={{ bgcolor: orange[500] }}>
-              <SummarizeIcon />
-            </Avatar>
-          }
-          subheader={<Typography variant="h6">My Reports</Typography>}
-        />
-        <CardContent>
-          <List sx={styles.list}>
-            {reports.length > 0 ? (
-              reports.map((report) => (
-                <ReportRow key={report.id} report={report} onView={onView} />
-              ))
-            ) : (
-              <Box textAlign={`center`}>
-                <Typography variant="body1">No reports to show</Typography>
-              </Box>
-            )}
-          </List>
-        </CardContent>
-      </Card>
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: orange[500] }}>
+            <SummarizeIcon />
+          </Avatar>
+        }
+        subheader={<Typography variant="h6">My Reports</Typography>}
+      />
+      <CardContent>
+        <List sx={styles.list}>
+          {reports.length > 0 ? (
+            reports.map((report) => (
+              <ReportRow key={report.id} report={report} onView={onView} />
+            ))
+          ) : (
+            <Box textAlign={`center`}>
+              <Typography variant="body1">No reports to show</Typography>
+            </Box>
+          )}
+        </List>
+      </CardContent>
       {/* {isMedCertOpen && (
         <MedicalCertificateDialog
           open={isMedCertOpen}

@@ -23,10 +23,10 @@ import BackupTableIcon from "@mui/icons-material/BackupTable";
 import * as util from "../../../../../redux/util";
 
 const PatientAppointments = ({ appointments, onView }) => {
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(null);
 
   const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
+    setExpanded(isExpanded ? panel : null);
   };
 
   const styles = {
@@ -62,6 +62,8 @@ const PatientAppointments = ({ appointments, onView }) => {
                 key={appointment.id}
                 appointment={appointment}
                 onView={onView}
+                expanded={expanded}
+                handleChange={handleChange}
               />
             ))
           ) : (
@@ -76,7 +78,7 @@ const PatientAppointments = ({ appointments, onView }) => {
 };
 export default PatientAppointments;
 
-const AppointmentRow = ({ appointment, onView }) => {
+const AppointmentRow = ({ appointment, onView, expanded, handleChange }) => {
   const { doctor, remark, date, timeSlot, status } = appointment;
 
   const statusColor = () => {
@@ -87,10 +89,16 @@ const AppointmentRow = ({ appointment, onView }) => {
         return green[500];
       case "CANCELLED":
         return grey[500];
+      default:
+        return null;
     }
   };
+
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }} sx={{ width: "100%" }}>
+    <Accordion
+      expanded={expanded === appointment.id}
+      onChange={handleChange(appointment.id)}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Grid container spacing={1}>
           <Grid item xs={12}>

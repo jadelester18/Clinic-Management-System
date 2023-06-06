@@ -2,6 +2,7 @@ import {
   Box,
   Card,
   CardActions,
+  CardContent,
   Grid,
   Pagination,
   Stack,
@@ -95,7 +96,7 @@ const PatientRightBar = ({ currentPatient }) => {
   };
 
   const styles = {
-    card: { borderRadius: 10, boxShadow: 10 },
+    card: { borderRadius: 10, boxShadow: 10, minHeight: 600 },
   };
 
   useEffect(() => {
@@ -108,71 +109,67 @@ const PatientRightBar = ({ currentPatient }) => {
 
   return (
     <>
-      <Box>
-        <Grid container spacing={0}>
-          <Grid xs={12}>
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              justifyContent={{ xs: "center", md: "flex-start" }}
-              alignItems={{ xs: "center", md: "flex-start" }}
-              spacing={2}
+      <Grid container spacing={2}>
+        <Grid item xs={12} lg={8}>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            sx={{ textAlign: { xs: "center" } }}
+          >
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{ textAlign: { xs: "center", md: "left" } }}
             >
-              <Grid item lg={8}>
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  justifyContent={{ xs: "center", md: "flex-start" }}
-                  alignItems={{ xs: "center", md: "flex-start" }}
-                  spacing={2}
-                >
-                  <Grid item lg={6}>
-                    <Typography variant="h3">
-                      Hello, {currentPatient?.firstName}!
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      How are you feeling today?
-                    </Typography>
-                  </Grid>
-                  <Grid item lg={6} textAlign={"right"}>
-                    <Typography variant="h6">{formattedDate}</Typography>
-                    <Typography variant="h3" color="text.secondary">
-                      {currentTime}
-                    </Typography>
-                  </Grid>
-                </Stack>
-                <Stack
-                  direction={{ xs: "column", lg: "row" }}
-                  justifyContent={{ xs: "center", md: "flex-start" }}
-                  alignItems={{ xs: "center", md: "flex-start" }}
-                  spacing={2}
-                  mt={4}
-                >
-                  <Grid item lg={5}>
-                    <PatientMedication report={reports[0]} />
-                  </Grid>
-                  <Grid item lg={7}>
-                    <Card sx={styles.card}>
-                      <PatientAppointments
-                        appointments={appointments}
-                        onView={setSelectedAppointment}
-                      />
-                      <CardActions sx={{ justifyContent: "center" }}>
-                        <Pagination
-                          page={page}
-                          count={totalPages}
-                          onChange={(event, page) => setPage(page)}
-                        />
-                      </CardActions>
-                    </Card>
-                  </Grid>
-                </Stack>
-              </Grid>
-              <Grid item lg={4}>
-                <PatientReports reports={reports} onView={setSelectedReport} />
-              </Grid>
-            </Stack>
+              <Typography variant="h3">
+                Hello, {currentPatient?.firstName}!
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                How are you feeling today?
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{ textAlign: { xs: "center", md: "right" } }}
+            >
+              <Typography variant="h6">{formattedDate}</Typography>
+              <Typography variant="h3" color="text.secondary">
+                {currentTime}
+              </Typography>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} lg={5}>
+              <Card sx={styles.card}>
+                <PatientMedication report={reports[0]} />
+              </Card>
+            </Grid>
+            <Grid item xs={12} lg={7}>
+              <Card sx={styles.card}>
+                <PatientAppointments
+                  appointments={appointments}
+                  onView={setSelectedAppointment}
+                />
+                <CardActions sx={{ justifyContent: "center" }}>
+                  <Pagination
+                    page={page}
+                    count={totalPages}
+                    onChange={(event, page) => setPage(page)}
+                  />
+                </CardActions>
+              </Card>
+            </Grid>
           </Grid>
         </Grid>
-      </Box>
+        <Grid item xs={12} lg={4}>
+          <Card sx={styles.card}>
+            <PatientReports reports={reports} onView={setSelectedReport} />
+          </Card>
+        </Grid>
+      </Grid>
       {appointmentIsOpen && (
         <UpdateAppointmentDialog
           appointment={selectedAppointment}
