@@ -21,6 +21,7 @@ import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
 } from "../../../../redux/default";
+import { useSelector } from "react-redux";
 
 export default function UpdateAppointmentDialog({
   appointment,
@@ -28,6 +29,10 @@ export default function UpdateAppointmentDialog({
   onClose,
   onSave,
 }) {
+  const loginDetails = useSelector((state) => state.user?.user);
+  const userIsNurse = loginDetails.user.role === "ROLE_NURSE";
+  const userIsPatient = loginDetails.user.role === "ROLE_PATIENT";
+
   const [form, setForm] = useState({
     id: 0,
     patient: null,
@@ -190,8 +195,11 @@ export default function UpdateAppointmentDialog({
                     sx={{ color: "red" }}
                     mt={2}
                   >
-                    Note: Changes to the appointment must be coordinated with
-                    the patient.
+                    {userIsNurse &&
+                      `Note: Changes to the appointment must be coordinated with
+                    the patient.`}
+                    {userIsPatient &&
+                      `Note: Changes to the appointment must be coordinated at nurse@thegbc.com / (02) 6666-6666.`}
                   </DialogContentText>
                 </Grid>
               </Grid>

@@ -129,6 +129,7 @@ function DoctorViewAppointmentQueue() {
         checkInStatus: "FINISHED",
       });
       fetchQueues();
+      fetchReports();
       onShowSuccess("Queue updated!");
     } catch (error) {
       console.error(error);

@@ -1,10 +1,199 @@
-import { Box, Grid, Stack, Typography, useTheme } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Card,
+  CardActions,
+  Grid,
+  Pagination,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import PatientMedication from "./medication/PatientMedication";
-import LabReports from "./reports/LabReports";
-import PatientCompilation from "./activities/PatientCompilation";
+import PatientReports from "./reports/PatientReports";
+import PatientAppointments from "./activities/PatientAppointments";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import * as appointmentSvc from "../../../../redux/GetApiCalls/appointment";
+import UpdateAppointmentDialog from "../../../nurse/ViewNewAppointment/righbar/UpdateAppointmentDialog";
+import { DEFAULT_DATE_FORMAT } from "../../../../redux/default";
+import { SnackBarContext } from "../../../../context/SnackBarContext";
+import LoadingScreen from "../../../LoadingScreen";
+import * as reportSvc from "../../../../redux/GetApiCalls/report";
+import ReportDialog from "../../../nurse/ViewAppointment/content/QueueList/ReportDialog";
+
+const DEFAULT_PAGE_SIZE = 5;
+
+const PatientRightBar = ({ currentPatient }) => {
+  const [reports, setReports] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const appointmentIsOpen = !!selectedAppointment;
+
+  const [selectedReport, setSelectedReport] = useState(null);
+  const reportIsOpen = !!selectedReport;
+  const [isSavingReport, setIsSavingReport] = useState(false);
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
+
+  const fetchAppointments = async () => {
+    try {
+      if (currentPatient) {
+        const { data } = await appointmentSvc.searchAppointments({
+          patientId: currentPatient.id,
+          doctorId: null,
+          date: null,
+          status: null,
+          pageNo: page - 1,
+          pageSize: DEFAULT_PAGE_SIZE,
+        });
+        setAppointments(data.content);
+        setTotalPages(data.totalPages);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchReports = async () => {
+    try {
+      if (currentPatient) {
+        const { data } = await reportSvc.searchReports({
+          patientId: currentPatient.id,
+        });
+        console.log("reports", data);
+        setReports(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdateAppointment = async (
+    appointmentId,
+    updateAppointmentDto
+  ) => {
+    setIsUpdating(true);
+    try {
+      const { data } = await appointmentSvc.updateAppointment(
+        appointmentId,
+        updateAppointmentDto
+      );
+      fetchAppointments();
+      onShowSuccess("Appointment updated!");
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const styles = {
+    card: { borderRadius: 10, boxShadow: 10 },
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [page]);
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  return (
+    <>
+      <Box>
+        <Grid container spacing={0}>
+          <Grid xs={12}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent={{ xs: "center", md: "flex-start" }}
+              alignItems={{ xs: "center", md: "flex-start" }}
+              spacing={2}
+            >
+              <Grid item lg={8}>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  justifyContent={{ xs: "center", md: "flex-start" }}
+                  alignItems={{ xs: "center", md: "flex-start" }}
+                  spacing={2}
+                >
+                  <Grid item lg={6}>
+                    <Typography variant="h3">
+                      Hello, {currentPatient?.firstName}!
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      How are you feeling today?
+                    </Typography>
+                  </Grid>
+                  <Grid item lg={6} textAlign={"right"}>
+                    <Typography variant="h6">{formattedDate}</Typography>
+                    <Typography variant="h3" color="text.secondary">
+                      {currentTime}
+                    </Typography>
+                  </Grid>
+                </Stack>
+                <Stack
+                  direction={{ xs: "column", lg: "row" }}
+                  justifyContent={{ xs: "center", md: "flex-start" }}
+                  alignItems={{ xs: "center", md: "flex-start" }}
+                  spacing={2}
+                  mt={4}
+                >
+                  <Grid item lg={5}>
+                    <PatientMedication report={reports[0]} />
+                  </Grid>
+                  <Grid item lg={7}>
+                    <Card sx={styles.card}>
+                      <PatientAppointments
+                        appointments={appointments}
+                        onView={setSelectedAppointment}
+                      />
+                      <CardActions sx={{ justifyContent: "center" }}>
+                        <Pagination
+                          page={page}
+                          count={totalPages}
+                          onChange={(event, page) => setPage(page)}
+                        />
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                </Stack>
+              </Grid>
+              <Grid item lg={4}>
+                <PatientReports reports={reports} onView={setSelectedReport} />
+              </Grid>
+            </Stack>
+          </Grid>
+        </Grid>
+      </Box>
+      {appointmentIsOpen && (
+        <UpdateAppointmentDialog
+          appointment={selectedAppointment}
+          open={appointmentIsOpen}
+          onClose={() => setSelectedAppointment(null)}
+          onSave={handleUpdateAppointment}
+        />
+      )}
+      {reportIsOpen && (
+        <ReportDialog
+          open={reportIsOpen}
+          reportId={selectedReport.id}
+          onClose={() => setSelectedReport(null)}
+        />
+      )}
+      {isUpdating && <LoadingScreen open={isUpdating} />}
+    </>
+  );
+};
+
+export default PatientRightBar;
 
 //Getting the current date
 const currentDate = new Date().toLocaleString("en-US", {
@@ -24,95 +213,3 @@ const currentTime = new Date().toLocaleTimeString("en-US", {
   hour12: true,
 });
 // console.log(currentTime); // Output: "4:26 PM"
-
-const PatientRightBar = () => {
-  const userLoggedinDetails = useSelector((state) => state.user);
-  let userObject = userLoggedinDetails?.user;
-  let user = userLoggedinDetails?.user?.user;
-  let accesstoken = userObject?.token;
-
-  //Get the user post
-  const [userPatientDetails, setUserPatientDetails] = useState();
-  console.log(userPatientDetails);
-
-  useEffect(() => {
-    const getUserDetails = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:8080/api/v1/patients/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${accesstoken}`, // Use the 'Authorization' header
-            },
-          }
-        );
-        setUserPatientDetails(res.data);
-        console.log(res.data); // Log the response data
-      } catch (error) {
-        console.log("Post details have an issue.");
-      }
-    };
-    getUserDetails();
-  }, []);
-
-  return (
-    <Box>
-      <Grid container spacing={0}>
-        <Grid xs={12}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent={{ xs: "center", md: "flex-start" }}
-            alignItems={{ xs: "center", md: "flex-start" }}
-            spacing={2}
-          >
-            <Grid item lg={8}>
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                justifyContent={{ xs: "center", md: "flex-start" }}
-                alignItems={{ xs: "center", md: "flex-start" }}
-                spacing={2}
-              >
-                <Grid item lg={6}>
-                  <Typography variant="h3">
-                    Hello, {userPatientDetails?.firstName}!
-                  </Typography>
-                  <Typography variant="h6" color="text.secondary">
-                    How are you feeling today?
-                  </Typography>
-                </Grid>
-                <Grid item lg={6} textAlign={"right"}>
-                  <Typography variant="h6">{formattedDate}</Typography>
-                  <Typography variant="h3" color="text.secondary">
-                    {currentTime}
-                  </Typography>
-                </Grid>
-              </Stack>
-              <Stack
-                direction={{ xs: "column", lg: "row" }}
-                justifyContent={{ xs: "center", md: "flex-start" }}
-                alignItems={{ xs: "center", md: "flex-start" }}
-                spacing={2}
-                mt={4}
-              >
-                <Grid item lg={5}>
-                  <PatientMedication />
-                </Grid>
-                <Grid item lg={7}>
-                  <PatientCompilation />
-                </Grid>
-              </Stack>
-            </Grid>
-            <Grid item lg={4}>
-              <LabReports />
-            </Grid>
-          </Stack>
-        </Grid>
-        {/* <Grid xs={12}>
-            <DoctorContentBottom />
-          </Grid> */}
-      </Grid>
-    </Box>
-  );
-};
-
-export default PatientRightBar;

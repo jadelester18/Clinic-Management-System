@@ -2,7 +2,6 @@ import React, { Fragment, useState } from "react";
 import ReportSectionHeader from "./ReportSectionHeader";
 import {
   Box,
-  Container,
   Grid,
   IconButton,
   Stack,
@@ -13,13 +12,16 @@ import {
 import { grey } from "@mui/material/colors";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PrescriptionDialog from "./PrescriptionDialog";
-import * as util from "../../redux/util";
+import { Prescription } from "../general/Prescription";
+import PrintIcon from "@mui/icons-material/Print";
 
 export default function PrescriptionsSection({
   form,
   onAdd,
   onRemove,
   disabled,
+  onPrint,
+  disablePrint,
 }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -43,23 +45,21 @@ export default function PrescriptionsSection({
   };
   return (
     <>
-      <ReportSectionHeader title={`Prescriptions`} />
+      <Stack direction={`row`} spacing={2} alignItems={`center`}>
+        <ReportSectionHeader title={`Prescriptions`} />
+        <Tooltip title="Print prescription">
+          <IconButton color="primary" onClick={onPrint} disabled={disablePrint}>
+            <PrintIcon />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+
       <Grid container spacing={2}>
         {form.prescriptions.length > 0 ? (
           form.prescriptions.map((prescription, index) => (
             <Fragment key={prescription.id}>
               <Grid item xs={10}>
-                <Stack sx={styles.outline}>
-                  <Stack direction={`row`} justifyContent={`space-between`}>
-                    <Typography variant="body2">
-                      {prescription.formulation}
-                    </Typography>
-                    <Typography variant="body2">{`# ${prescription.subscription}`}</Typography>
-                  </Stack>
-                  <Typography variant="caption">{`Sig. ${util.signatura(
-                    prescription.signatura
-                  )}`}</Typography>
-                </Stack>
+                <Prescription prescription={prescription} outlined={true} />
               </Grid>
               {!disabled && (
                 <Grid item xs={2}>

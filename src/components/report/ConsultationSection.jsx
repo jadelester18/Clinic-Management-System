@@ -10,7 +10,7 @@ import React from "react";
 import ReportSectionHeader from "./ReportSectionHeader";
 import { CONSULTATION_TYPES } from "../../redux/default";
 
-export default function ConsultationSection({ form, onChange }) {
+export default function ConsultationSection({ form, onChange, disabled }) {
   return (
     <>
       <ReportSectionHeader
@@ -19,7 +19,7 @@ export default function ConsultationSection({ form, onChange }) {
       />
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <FormControl sx={{ width: "100%" }}>
+          <FormControl sx={{ width: "100%" }} disabled={disabled}>
             <RadioGroup
               name="consultationType"
               value={form.consultationType}
