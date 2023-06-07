@@ -220,7 +220,12 @@ export default function UpdateAppointmentDialog({
           justifyContent={`space-between`}
           width={"100%"}
         >
-          <Button onClick={handleCancel} variant="outlined" color="error">
+          <Button
+            onClick={handleCancel}
+            variant="outlined"
+            color="error"
+            disabled={!form?.dateTime?.isAfter(dayjs(), "day")}
+          >
             Cancel
           </Button>
           <Stack direction={`row`} spacing={1}>
