@@ -44,8 +44,12 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import LoadingScreen from "../components/LoadingScreen";
+import { SnackBarContext } from "../context/SnackBarContext";
 
 function Register({ handleCloseRegister }) {
+  const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
+  const [isLoading, setIsLoading] = useState(false);
+
   //For Country Code
   const [code, setCode] = React.useState("");
   const [phone, setPhone] = React.useState("");
@@ -238,6 +242,7 @@ function Register({ handleCloseRegister }) {
     console.log("error", error);
     if (error) {
       setFieldErrors({ ...fieldErrors, [fieldName]: error.message });
+      
     } else {
       const newFieldErrors = fieldErrors;
       delete newFieldErrors[fieldName];
@@ -245,7 +250,6 @@ function Register({ handleCloseRegister }) {
     }
   };
 
-  const [isLoading, setIsLoading] = useState(false);
   //For Form Register
   const dispatch = useDispatch();
   const handleClick = (e) => {
@@ -279,6 +283,7 @@ function Register({ handleCloseRegister }) {
     signup(dispatch, data);
     setIsLoading(false);
     handleCloseRegister();
+    onShowSuccess("Register Successful");
   };
 
   const uploadFileToFirebase = async (file) => {
