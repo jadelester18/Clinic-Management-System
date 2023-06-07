@@ -10,9 +10,8 @@ import { useDispatch } from "react-redux";
 import { loginStart, loginSuccess } from "../redux/UserReducer";
 
 const VerifyUser = () => {
-  const dispatch = useDispatch();
-  let location = useLocation();
-  let token = location.pathname.split("/")[2];
+  const { token } = useParams();
+  console.log("token ", token);
   const navigate = useNavigate();
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
 
@@ -32,8 +31,10 @@ const VerifyUser = () => {
   };
 
   useEffect(() => {
-    verifyEmail();
-  }, []);
+    if (token) {
+      verifyEmail();
+    }
+  }, [token]);
 
   return <div>Welcome</div>;
 };

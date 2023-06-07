@@ -219,26 +219,7 @@ function App() {
               )
             }
           />
-          <Route
-            path="/verify/:token"
-            element={
-              userObject !== null ? (
-                <VerifyUser />
-              ) : user?.enabled === true ? (
-                user?.role === "ROLE_DOCTOR" ? (
-                  <Navigate to={"/doctor"} replace={true} />
-                ) : user?.role === "ROLE_NURSE" ? (
-                  <Navigate to={"/nurse"} replace={true} />
-                ) : user?.role === "ROLE_PATIENT" ? (
-                  <Navigate to={"/patient"} replace={true} />
-                ) : (
-                  <Navigate to={"/"} />
-                )
-              ) : (
-                <Navigate to={"/"} />
-              )
-            }
-          />
+          <Route path="/verify/:token" element={<VerifyUser />} />
           <Route
             path="/profile/:id"
             element={
