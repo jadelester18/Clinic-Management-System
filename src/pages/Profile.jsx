@@ -192,7 +192,7 @@ function Profile() {
 
           <Avatar
             alt="Remy Sharp"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
+            src={profile?.avatarUrl}
             sx={{
               width: { xs: 150, sm: 160, md: 180 },
               height: { xs: 150, sm: 160, md: 180 },
@@ -394,8 +394,8 @@ function Profile() {
               spacing: { xs: 0, sm: 0, md: 2 },
             }}
           >
-            <LeftBarProfile />
-            <VideoProfileContent />
+            {/* <LeftBarProfile /> */}
+            {/* <VideoProfileContent /> */}
           </Stack>
         </Box>
       </Box>
