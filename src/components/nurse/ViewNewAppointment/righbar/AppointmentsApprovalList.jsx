@@ -36,6 +36,7 @@ import axios from "axios";
 import AppointmentRow from "./AppointmentRow";
 import * as appointmentSvc from "../../../../redux/PostApiCalls/patientAppointment";
 import ConfirmDialog from "../../../ConfirmDialog";
+import { useSelector } from "react-redux";
 
 const DEFAULT_DIALOG = {
   appointmentId: 0,
@@ -43,8 +44,13 @@ const DEFAULT_DIALOG = {
 };
 
 function AppointmentsApprovalList({ appointments, onUpdate, onStatusChange }) {
+  const loginDetails = useSelector((state) => state.user?.user);
+  const userIsNurse = loginDetails?.user?.role === "ROLE_NURSE";
+  const userIsPatient = loginDetails?.user?.role === "ROLE_PATIENT";
+
   const [approvalDialog, setApprovalDialog] = useState(DEFAULT_DIALOG);
   const [revertDialog, setRevertDialog] = useState(DEFAULT_DIALOG);
+  const [cancelDialog, setCancelDialog] = useState(DEFAULT_DIALOG);
 
   function handleApprove(appointmentId) {
     onStatusChange(appointmentId, "APPROVED");
@@ -56,29 +62,14 @@ function AppointmentsApprovalList({ appointments, onUpdate, onStatusChange }) {
     setRevertDialog(DEFAULT_DIALOG);
   }
 
+  function handleCancel(appointmentId) {
+    console.log("appointmentID", appointmentId);
+    onStatusChange(appointmentId, "CANCELLED");
+    setCancelDialog(DEFAULT_DIALOG);
+  }
+
   return (
     <>
-      {/* <ListItem>
-            <Grid
-              container
-              spacing={2}
-              justifyContent="space-around"
-              columns={{ xs: 4, sm: 8, md: 12 }}
-              fontWeight="bold"
-              sx={{ paddingTop: "8px" }}
-              position="sticky"
-              top={0}
-              bgcolor="background.paper"
-              zIndex={1}
-            >
-              <Typography variant="subtitle1">Name</Typography>
-              <Typography variant="subtitle1"></Typography>
-              <Typography variant="subtitle1">Type</Typography>
-              <Typography variant="subtitle1">Time</Typography>
-              <Typography variant="subtitle1">Action</Typography>
-            </Grid>
-          </ListItem> */}
-
       <List
         sx={{
           width: "100%",
@@ -110,7 +101,9 @@ function AppointmentsApprovalList({ appointments, onUpdate, onStatusChange }) {
                 onRevert={(appointmentId) =>
                   setRevertDialog({ appointmentId, open: true })
                 }
-                onCancel={() => {}}
+                onCancel={(appointmentId) =>
+                  setCancelDialog({ appointmentId, open: true })
+                }
               />
               <Divider variant="inset" component="li" />
             </Fragment>
@@ -135,6 +128,19 @@ function AppointmentsApprovalList({ appointments, onUpdate, onStatusChange }) {
           open={revertDialog.open}
           onConfirm={() => handleRevert(revertDialog.appointmentId)}
           onClose={() => setRevertDialog(DEFAULT_DIALOG)}
+        />
+      )}
+      {cancelDialog.open && (
+        <ConfirmDialog
+          title="Cancel appointment?"
+          subtitle={
+            userIsNurse
+              ? "Ensure that the cancellation is properly coordinated and the patient is properly informed."
+              : "Ensure that the cancellation is properly coordinated and the clinic is properly informed."
+          }
+          open={cancelDialog.open}
+          onConfirm={() => handleCancel(cancelDialog.appointmentId)}
+          onClose={() => setCancelDialog(DEFAULT_DIALOG)}
         />
       )}
     </>

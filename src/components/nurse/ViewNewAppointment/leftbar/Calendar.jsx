@@ -49,10 +49,10 @@ function Calendar({ date, onDateChange, appointments }) {
   };
 
   useEffect(() => {
-    if (date && appointments) {
-      fetchHighlightedDays(date);
+    if (appointments) {
+      fetchHighlightedDays(dayjs());
     }
-  }, [date, appointments]);
+  }, [appointments]);
 
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "block" } }}>

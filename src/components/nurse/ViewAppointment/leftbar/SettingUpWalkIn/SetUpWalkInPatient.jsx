@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -6,8 +7,11 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormControlLabel,
+  FormLabel,
   Grid,
   List,
+  RadioGroup,
   Stack,
   Step,
   StepButton,
@@ -22,34 +26,139 @@ import DoctorRow from "./DoctorSearchStep/DoctorRow";
 import PatientRow from "./PatientSearchStep/PatientRow";
 import PatientHeader from "./PatientSearchStep/PatientHeader";
 import DoctorHeader from "./DoctorSearchStep/DoctorHeader";
-import { DISPLAY_DATE_FORMAT } from "../../../../../redux/default";
+import {
+  DEFAULT_DATE_FORMAT,
+  DISPLAY_DATE_FORMAT,
+} from "../../../../../redux/default";
+import { FormControl } from "@mui/base";
+import SelectPatientType from "./SelectPatientType";
+import {
+  cities,
+  countries,
+  provinces,
+} from "../../../../../pages/addressDb/adress";
+import dayjs from "dayjs";
+import * as patientSvc from "../../../../../redux/GetApiCalls/patient";
+
+const DEFAULT_FORM = {
+  honorific: "",
+  firstName: "",
+  lastName: "",
+  suffixName: "",
+  birthDate: null,
+  gender: "",
+  contactNo: "",
+  email: "",
+  country: null,
+  province: null,
+  city: null,
+  barangay: "",
+  street: "",
+  postalCode: "",
+};
 
 const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
   const steps = ["Search Patient", "Search Doctor", "Summary"];
   const [activeStep, setActiveStep] = React.useState(0);
+  console.log("activestep", activeStep);
   const [completed, setCompleted] = React.useState({});
   const [form, setForm] = useState({
+    patientType: "EXISTING",
     patient: null,
     doctor: null,
   });
-  console.log("form", form);
+
+  const [patientForm, setPatientForm] = useState(DEFAULT_FORM);
+
+  const fillUpPatientForm = (patient) => {
+    const countryForAddress = countries.find(
+      (country) => country.label === patient.address?.country
+    );
+    const province = provinces.find(
+      (province) => province.name === patient.address.province
+    );
+
+    const filteredCities = cities.filter(
+      (city) => city.province_code === province.id
+    );
+    const city = filteredCities.find(
+      (city) => city.name === patient.address.city
+    );
+    setPatientForm({
+      ...patient,
+      ...patient.address,
+      birthDate: dayjs(patient.birthDate),
+      country: countryForAddress,
+      province: province,
+      city: city,
+    });
+  };
 
   const handleSelect = (value, origin) => {
     switch (origin) {
       case "patient":
-        setForm({ ...form, patient: value });
+        {
+          setForm({ ...form, patient: value });
+          if (value) {
+            fillUpPatientForm(value);
+          } else {
+            setPatientForm(DEFAULT_FORM);
+          }
+        }
         break;
       case "doctor":
         setForm({ ...form, doctor: value });
+        break;
+      case "patientType":
+        setForm({ ...form, patientType: value });
         break;
       default:
         throw new Error("Invalid input");
     }
   };
 
-  const handleSubmit = () => {
-    onSubmit(form.patient.id, form.doctor.id);
+  const handleSubmit = async () => {
+    if (form.patientType === "EXISTING") {
+      onSubmit(form.patient.id, form.doctor.id);
+    } else {
+      const newPatient = await registerPatient();
+      console.log("newPatient in handleSubmit", newPatient);
+      if (newPatient) {
+        onSubmit(newPatient.id, form.doctor.id);
+      }
+    }
     onClose();
+  };
+
+  const registerPatient = async () => {
+    try {
+      const createPatientDto = convertFormToDto(patientForm);
+      const { data } = await patientSvc.createPatient(createPatientDto);
+      console.log("new patient", data);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const convertFormToDto = (form) => {
+    return {
+      honorific: form.honorific,
+      firstName: form.firstName,
+      middleName: form.middleName,
+      lastName: form.lastName,
+      suffixName: form.suffixName,
+      gender: form.gender,
+      birthDate: form.birthDate.format(DEFAULT_DATE_FORMAT),
+      contactNo: form.contactNo,
+      street: form.street,
+      barangay: form.barangay,
+      city: form.city.name,
+      province: form.province.name,
+      country: form.country.label,
+      postalCode: form.postalCode,
+      email: form.email,
+    };
   };
 
   const handleNext = () => {
@@ -94,11 +203,19 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
 
           {activeStep === 0 && (
             <Grid item xs={12}>
-              <PatientSearchStep
-                selected={form.patient}
-                onSelect={(patient) => handleSelect(patient, "patient")}
-              />
-              <CreatingNewWalkIn patient={form.patient} />
+              <Box m={1}>
+                <SelectPatientType
+                  value={form.patientType}
+                  onChange={(value) => handleSelect(value, "patientType")}
+                />
+              </Box>
+              {form.patientType === "EXISTING" && (
+                <PatientSearchStep
+                  selected={form.patient}
+                  onSelect={(patient) => handleSelect(patient, "patient")}
+                />
+              )}
+              <CreatingNewWalkIn form={patientForm} setForm={setPatientForm} />
             </Grid>
           )}
 
@@ -115,13 +232,18 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
           {activeStep === 2 && (
             <Grid item xs={12}>
               <List>
-                <Divider textAlign="center">PATIENT</Divider>
-                <PatientHeader />
-                <PatientRow
-                  selected={form.patient}
-                  patient={form.patient}
-                  onSelect={() => {}}
-                />
+                {form.patient && (
+                  <>
+                    <Divider textAlign="center">PATIENT</Divider>
+                    <PatientHeader />
+                    <PatientRow
+                      selected={form.patient}
+                      patient={form.patient}
+                      onSelect={() => {}}
+                    />
+                  </>
+                )}
+
                 <Divider textAlign="center">DOCTOR</Divider>
                 <DoctorHeader />
                 <DoctorRow
@@ -134,7 +256,6 @@ const SetUpWalkInPatient = ({ open, onClose, date, onSubmit }) => {
             </Grid>
           )}
         </Grid>
-        {/* Creating Patient Form */}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>

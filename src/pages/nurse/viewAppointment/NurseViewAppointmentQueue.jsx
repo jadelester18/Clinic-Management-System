@@ -49,9 +49,11 @@ function NurseViewAppointmentQueue() {
   async function fetchDoctorStatusList() {
     try {
       if (date) {
+        console.log("date in status list", date.format(DEFAULT_DATE_FORMAT));
         const { data } = await doctorSvc.getDoctorStatusList(
           date.format(DEFAULT_DATE_FORMAT)
         );
+        console.log("STATUS LIST", data);
         setDoctorStatusList(data);
       }
     } catch (error) {
@@ -127,7 +129,6 @@ function NurseViewAppointmentQueue() {
 
   function handleDateChange(event) {
     setDate(event);
-    fetchDoctorStatusList(event.format(DEFAULT_DATE_FORMAT));
   }
 
   async function handleCreateWalkIn(patientId, doctorId) {
@@ -150,7 +151,7 @@ function NurseViewAppointmentQueue() {
         setSelectedStatus("FOR_ASSESSMENT");
         setSelectedDoctor(data.report.doctor);
       }
-
+      fetchDoctorStatusList();
       onShowSuccess("Patient added to queue");
     } catch (error) {
       console.error(error);
@@ -241,6 +242,7 @@ function NurseViewAppointmentQueue() {
                 <CardContent mt={6}>
                   {/* HEADER TABS */}
                   <AppointmentQueueTabs
+                    doctor={selectedDoctor}
                     activeTab={activeTab}
                     onTabChange={(tab) => setActiveTab(tab)}
                   />
@@ -253,7 +255,6 @@ function NurseViewAppointmentQueue() {
                       onViewReport={(reportId) => setSelectedReportId(reportId)}
                     />
                   )}
-
                   {activeTab === "APPOINTMENT" && (
                     <ApprovedAppointments
                       appointments={appointments}

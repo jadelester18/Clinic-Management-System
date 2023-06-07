@@ -1,34 +1,4 @@
-import {
-  Autocomplete,
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  DatePicker,
-  LocalizationProvider,
-  StaticDateTimePicker,
-} from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Box, Grid, Stack, TextField } from "@mui/material";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import {
@@ -40,43 +10,13 @@ import SelectHonorific from "../../../../../general/SelectHonorific";
 import SelectBirthdate from "../../../../../general/SelectBirthdate";
 import SelectGender from "../../../../../general/SelectGender";
 import SelectCountry from "../../../../../general/SelectCountry";
+import SelectProvince from "../../../../../general/SelectProvince";
+import SelectCity from "../../../../../general/SelectCity";
 
-const CreatingNewWalkIn = ({ patient }) => {
-  const [form, setForm] = useState({
-    honorific: "",
-    firstName: "",
-    lastName: "",
-    suffixName: "",
-    birthDate: null,
-    gender: "",
-    countryForPhone: null,
-    contactNo: "",
-    email: "",
-    country: "",
-    province: "",
-    city: "",
-    barangay: "",
-    street: "",
-    postalCode: "",
-  });
-  // console.log("form", form);
-
-  const [country, setCountry] = React.useState([]);
-  const [province, setProvince] = React.useState([]);
-  const [city, setCity] = React.useState([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [filteredCities, setFilteredCities] = useState([]);
-
-  const handleProvinceChange = (event) => {
-    setSelectedProvince(event);
-
-    const filteredCities = cities.filter(
-      (city) => city.province_code === event
-    );
-    setFilteredCities(filteredCities);
-  };
-
+const CreatingNewWalkIn = ({ form, setForm }) => {
   function handleSelect(event, value, origin) {
+    console.log(value);
+    console.log(origin);
     switch (origin) {
       case "honorific":
         setForm({ ...form, honorific: value });
@@ -87,6 +27,15 @@ const CreatingNewWalkIn = ({ patient }) => {
       case "gender":
         setForm({ ...form, gender: value });
         break;
+      case "province":
+        setForm({ ...form, province: value });
+        break;
+      case "city":
+        setForm({ ...form, city: value });
+        break;
+      case "country":
+        setForm({ ...form, country: value });
+        break;
       default:
         throw new Error("Invalid input");
     }
@@ -96,28 +45,6 @@ const CreatingNewWalkIn = ({ patient }) => {
     const { name, value } = event.target;
     setForm({ ...form, [name]: value });
   }
-
-  useEffect(() => {
-    if (patient) {
-      const countryForPhone = countries.find((country) => {
-        const areaCode = patient.contactNo.substring(1, 3);
-        return country.code === areaCode;
-      });
-      const countryForAddress = countries.find(
-        (country) => country.label === patient.address?.country
-      );
-      setForm({
-        ...patient,
-        ...patient.address,
-        birthDate: dayjs(patient.birthDate),
-        countryForPhone: countryForPhone,
-        contactNo: "",
-        country: countryForAddress,
-        province: "",
-        city: "",
-      });
-    }
-  }, [patient]);
 
   return (
     <Box>
@@ -138,7 +65,9 @@ const CreatingNewWalkIn = ({ patient }) => {
             <Grid item xs={4}>
               <SelectHonorific
                 value={form.honorific}
-                onSelect={(event) => handleSelect(event, "honorific")}
+                onSelect={(event) =>
+                  handleSelect(event, event.target.value, "honorific")
+                }
               />
             </Grid>
             <Grid item xs={4}>
@@ -187,71 +116,32 @@ const CreatingNewWalkIn = ({ patient }) => {
             <Grid item xs={4}>
               <SelectBirthdate
                 value={form.birthDate}
-                onChange={(event) => handleSelect(event, "birthDate")}
+                onChange={(event) => handleSelect(event, event, "birthDate")}
               />
             </Grid>
             <Grid item xs={4}>
               <SelectGender
                 value={form.gender}
-                onSelect={(event) => handleSelect(event, "gender")}
+                onSelect={(event) =>
+                  handleSelect(event, event.target.value, "gender")
+                }
               />
             </Grid>
-            {/* TODO: CONTACT NO */}
             <Grid item xs={4}>
               <Stack direction="row">
-                <Autocomplete
-                  id="country-select-demo"
-                  sx={{ mr: 1, width: 250 }}
-                  options={countries.sort((a, b) =>
-                    a.label.localeCompare(b.label)
-                  )}
-                  autoHighlight
-                  getOptionLabel={(option) => option.code + " +" + option.phone}
-                  renderOption={(props, option) => (
-                    <Box
-                      component="li"
-                      sx={{
-                        "& > img": { mr: 2, flexShrink: 0 },
-                        display: "flex",
-                        flexDirection: "column",
-                        textAlign: "center",
-                      }}
-                      {...props}
-                    >
-                      <img
-                        loading="lazy"
-                        width="20"
-                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                        alt=""
-                      />
-                      {/* {option.label} */}({option.code}) +{option.phone}
-                    </Box>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Code"
-                      size="small"
-                      inputProps={{
-                        ...params.inputProps,
-                        autoComplete: "new-password", // disable autocomplete and autofill
-                      }}
-                    />
-                  )}
-                />
                 <TextField
-                  label="Phone Number"
-                  size="small"
+                  name="contactNo"
+                  value={form.contactNo}
+                  onChange={handleTextInput}
+                  label="Contact no."
                   fullWidth
-                  inputProps={{
-                    maxLength: 10,
-                  }}
+                  margin="dense"
                 />
               </Stack>
             </Grid>
             <Grid item xs={4}>
               <TextField
+                name="email"
                 value={form.email}
                 margin="dense"
                 label="Email"
@@ -271,65 +161,18 @@ const CreatingNewWalkIn = ({ patient }) => {
             </Grid>
             {/* TODO: ADDRESS */}
             <Grid item xs={4}>
-              <Autocomplete
-                id="country-select-demo"
-                autoWidth
-                options={provinces}
-                autoHighlight
-                size="small"
-                onChange={(event, value) => {
-                  setProvince(value.name);
-                  handleProvinceChange(value.id);
-                }}
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => (
-                  <Box
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...props}
-                  >
-                    {option.name}
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose a province"
-                    inputProps={{
-                      ...params.inputProps,
-                      autoComplete: "new-password",
-                    }}
-                  />
-                )}
+              <SelectProvince
+                value={form.province}
+                onSelect={(event, value) =>
+                  handleSelect(event, value, "province")
+                }
               />
             </Grid>
             <Grid item xs={4}>
-              <Autocomplete
-                id="country-select-demo"
-                autoWidth
-                options={filteredCities}
-                autoHighlight
-                size="small"
-                getOptionLabel={(option) => option.name}
-                renderOption={(props, option) => (
-                  <Box
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...props}
-                  >
-                    {option.name}
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Choose a city"
-                    inputProps={{
-                      ...params.inputProps,
-                      autoComplete: "new-password",
-                    }}
-                  />
-                )}
+              <SelectCity
+                value={form.city}
+                onSelect={(event, value) => handleSelect(event, value, "city")}
+                province={form.province}
               />
             </Grid>
             <Grid item xs={4}>

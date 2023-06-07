@@ -22,6 +22,7 @@ import { SnackBarContext } from "../../../../context/SnackBarContext";
 import LoadingScreen from "../../../LoadingScreen";
 import * as reportSvc from "../../../../redux/GetApiCalls/report";
 import ReportDialog from "../../../nurse/ViewAppointment/content/QueueList/ReportDialog";
+import ConfirmDialog from "../../../ConfirmDialog";
 
 const DEFAULT_PAGE_SIZE = 5;
 
@@ -41,6 +42,8 @@ const PatientRightBar = ({ currentPatient }) => {
 
   const [isUpdating, setIsUpdating] = useState(false);
   const { onShowSuccess, onShowFail } = useContext(SnackBarContext);
+
+  const [cancelDialog, setCancelDialog] = useState(DEFAULT_DIALOG);
 
   const fetchAppointments = async () => {
     try {
@@ -94,6 +97,28 @@ const PatientRightBar = ({ currentPatient }) => {
       setIsUpdating(false);
     }
   };
+
+  function handleCancel(appointmentId) {
+    handleStatusChange(appointmentId, "CANCELLED");
+    setCancelDialog(DEFAULT_DIALOG);
+  }
+
+  async function handleStatusChange(appointmentId, newStatus) {
+    setIsUpdating(true);
+    try {
+      const { data } = await appointmentSvc.changeAppointmentStatus(
+        appointmentId,
+        { status: newStatus }
+      );
+      fetchAppointments();
+      onShowSuccess("Appointment cancelled");
+    } catch (error) {
+      console.error(error);
+      onShowFail(error.response.data.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  }
 
   const styles = {
     card: { borderRadius: 10, boxShadow: 10, minHeight: 600 },
@@ -176,6 +201,9 @@ const PatientRightBar = ({ currentPatient }) => {
           open={appointmentIsOpen}
           onClose={() => setSelectedAppointment(null)}
           onSave={handleUpdateAppointment}
+          onCancel={(appointmentId) =>
+            setCancelDialog({ appointmentId, open: true })
+          }
         />
       )}
       {reportIsOpen && (
@@ -186,8 +214,24 @@ const PatientRightBar = ({ currentPatient }) => {
         />
       )}
       {isUpdating && <LoadingScreen open={isUpdating} />}
+      {cancelDialog.open && (
+        <ConfirmDialog
+          title="Cancel appointment?"
+          subtitle={
+            "Ensure that the cancellation is properly coordinated and the clinic is properly informed."
+          }
+          open={cancelDialog.open}
+          onConfirm={() => handleCancel(cancelDialog.appointmentId)}
+          onClose={() => setCancelDialog(DEFAULT_DIALOG)}
+        />
+      )}
     </>
   );
+};
+
+const DEFAULT_DIALOG = {
+  appointmentId: 0,
+  open: false,
 };
 
 export default PatientRightBar;

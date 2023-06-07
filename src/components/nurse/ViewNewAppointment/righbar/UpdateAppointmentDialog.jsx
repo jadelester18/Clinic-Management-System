@@ -7,6 +7,7 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -28,6 +29,7 @@ export default function UpdateAppointmentDialog({
   open,
   onClose,
   onSave,
+  onCancel,
 }) {
   const loginDetails = useSelector((state) => state.user?.user);
   const userIsNurse = loginDetails.user.role === "ROLE_NURSE";
@@ -75,6 +77,11 @@ export default function UpdateAppointmentDialog({
       ),
       updateReason: form.updateReason,
     });
+    onClose();
+  }
+
+  function handleCancel() {
+    onCancel(form.id);
     onClose();
   }
 
@@ -208,14 +215,25 @@ export default function UpdateAppointmentDialog({
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={isFormDisabled()}
+        <Stack
+          direction={`row`}
+          justifyContent={`space-between`}
+          width={"100%"}
         >
-          Save
-        </Button>
+          <Button onClick={handleCancel} variant="outlined" color="error">
+            Cancel
+          </Button>
+          <Stack direction={`row`} spacing={1}>
+            <Button onClick={onClose}>Close</Button>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={isFormDisabled()}
+            >
+              Save
+            </Button>
+          </Stack>
+        </Stack>
       </DialogActions>
     </Dialog>
   );
