@@ -95,7 +95,7 @@ const DoctorsCardInfo = ({ doctor }) => {
             border: "5px solid white",
             boxShadow: 10,
           }}
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
+          src={doctor.avatarUrl || ""}
         />
         <CardContent>
           <Typography variant="h6">

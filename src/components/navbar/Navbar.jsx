@@ -372,10 +372,7 @@ function Navbar({ toggleMode, mode }) {
             </Menu>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  alt="Remy Sharp"
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWadeZ6aQggj21bHnsjbOyRJ9ZavJGiYnG-oI7fN_tzH4qNXZnOh3GQr4vkpYNqN95C7Y&usqp=CAU"
-                />
+                <Avatar alt="Remy Sharp" src={user?.avatarUrl || ""} />
               </IconButton>
             </Tooltip>
             <Menu

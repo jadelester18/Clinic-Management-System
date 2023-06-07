@@ -34,7 +34,7 @@ export const signup = async (dispatch, user) => {
       `http://localhost:8080/api/v1/auth/register`,
       user
     );
-    dispatch(loginSuccess(res.data));
+    // dispatch(loginSuccess(res.data));
   } catch (error) {
     const errorMessage = error.response.data.message;
     dispatch(loginFailure(errorMessage));
