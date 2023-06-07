@@ -7,7 +7,7 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { blue } from "@mui/material/colors";
 import { orange } from "@mui/material/colors";
 import { green } from "@mui/material/colors";
@@ -16,8 +16,53 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TroubleshootIcon from "@mui/icons-material/Troubleshoot";
 import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import * as appointmentSvc from "../../../redux/GetApiCalls/appointment";
+import * as queueSvc from "../../../redux/GetApiCalls/queue";
+import dayjs from "dayjs";
+import { DEFAULT_DATE_FORMAT } from "../../../redux/default";
+
+const DEFAULT_PAGE_SIZE = 100;
 
 const NurseDashboard = () => {
+  const [appointments, setAppointments] = useState([]);
+  const [queues, setQueues] = useState([]);
+
+  async function fetchAppointments() {
+    try {
+      const { data } = await appointmentSvc.searchAppointments({
+        patientId: null,
+        date: null,
+        doctorId: null,
+        status: null,
+        pageNo: 0,
+        pageSize: DEFAULT_PAGE_SIZE,
+      });
+      setAppointments(data.content);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function fetchQueues() {
+    try {
+      const { data: queuesPage } = await queueSvc.searchQueues({
+        date: dayjs().format(DEFAULT_DATE_FORMAT),
+        checkInStatus: null,
+        doctorId: null,
+        pageNo: 0,
+        pageSize: DEFAULT_PAGE_SIZE,
+      });
+      setQueues(queuesPage.content);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchAppointments();
+    fetchQueues();
+  }, []);
+
   return (
     <Box>
       <Grid container spacing={2}>
@@ -57,7 +102,11 @@ const NurseDashboard = () => {
                   }}
                   variant="h2"
                 >
-                  10
+                  {
+                    appointments.filter(
+                      (appointment) => appointment.status === "PENDING_APPROVAL"
+                    ).length
+                  }
                 </Typography>
                 <CardMedia height="140" alt="green iguana">
                   <PersonAddIcon
@@ -121,7 +170,11 @@ const NurseDashboard = () => {
                   }}
                   variant="h2"
                 >
-                  10
+                  {
+                    appointments.filter(
+                      (appointment) => appointment.status === "APPROVED"
+                    ).length
+                  }
                 </Typography>
                 <CardMedia height="140" alt="green iguana">
                   <TroubleshootIcon
@@ -171,7 +224,7 @@ const NurseDashboard = () => {
                   }}
                   variant="body2"
                 >
-                  For Assessment
+                  For Assessment Today
                 </Typography>
                 <Typography
                   sx={{
@@ -185,7 +238,11 @@ const NurseDashboard = () => {
                   }}
                   variant="h2"
                 >
-                  10
+                  {
+                    queues.filter(
+                      (queue) => queue.checkInStatus === "FOR_ASSESSMENT"
+                    ).length
+                  }
                 </Typography>
                 <CardMedia height="140" alt="green iguana">
                   <MedicalInformationIcon
@@ -235,7 +292,7 @@ const NurseDashboard = () => {
                   }}
                   variant="body2"
                 >
-                  Total Patient Finished
+                  Total Patient Finished Today
                 </Typography>
                 <Typography
                   sx={{
@@ -249,7 +306,10 @@ const NurseDashboard = () => {
                   }}
                   variant="h2"
                 >
-                  10
+                  {
+                    queues.filter((queue) => queue.checkInStatus === "FINISHED")
+                      .length
+                  }
                 </Typography>
                 <CardMedia height="140" alt="green iguana">
                   <AssessmentIcon
